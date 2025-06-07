@@ -9,7 +9,7 @@ const AdminWithdrawPanel = () => {
   const fetchRequests = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:4001/api/v1/admin/withdrawals",
+        "https://ladlilaxmi.onrender.com/api/v1/admin/withdrawals",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -29,7 +29,7 @@ const AdminWithdrawPanel = () => {
   const updateStatus = async (id, status) => {
     try {
       await axios.patch(
-        `http://localhost:4001/api/v1/withdraw/update/${id}`,
+        `https://ladlilaxmi.onrender.com/api/v1/withdraw/update/${id}`,
         { status },
         {
           headers: { Authorization: `Bearer ${token}` },
