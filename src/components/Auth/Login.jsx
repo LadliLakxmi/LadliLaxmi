@@ -32,7 +32,7 @@ const Login = () => {
     try {
       // Call the backend login API
       const response = await axios.post(
-        "http://localhost:4001/api/v1/auth/login", // Changed to match common user login endpoint
+        "https://ladlilaxmi.onrender.com/api/v1/auth/login", // Changed to match common user login endpoint
         {
           email: formData.email,
           password: formData.password,
