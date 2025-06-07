@@ -12,7 +12,7 @@ const Profile = () => {
     const fetchData = async () => {
       try {
         const data = await axios.get(
-          `http://localhost:4001/api/v1/profile/getprofile/${userId}`,{
+          `https://ladlilaxmi.onrender.com/api/v1/profile/getprofile/${userId}`,{
            headers: {
               Authorization: `Bearer ${token}`,
             },}
