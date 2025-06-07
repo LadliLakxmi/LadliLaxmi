@@ -18,7 +18,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("token"); // ✅ define token here
         const res = await axios.get(
-          "http://localhost:4001/api/v1/admin/getallusercount",
+          "https://ladlilaxmi.onrender.com/api/v1/admin/getallusercount",
           {
             headers: {
               Authorization: `Bearer ${token}`,
