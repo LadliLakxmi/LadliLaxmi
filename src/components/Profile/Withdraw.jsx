@@ -49,7 +49,7 @@ const Withdraw = ({ user }) => {
 
     const fetchWithdrawn = async () => {
       try {
-        const res = await axios.get("http://localhost:4001/api/v1/withdraw/summary", {
+        const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/withdraw/summary", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -116,7 +116,7 @@ const Withdraw = ({ user }) => {
             }),
       };
 
-      await axios.post("http://localhost:4001/api/v1/withdraw/request", payload, {
+      await axios.post("https://ladlilaxmi.onrender.com/api/v1/withdraw/request", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
