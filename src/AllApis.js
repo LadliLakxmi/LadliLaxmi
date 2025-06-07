@@ -1,6 +1,6 @@
 import { getAllUsers } from "../Server/controllers/Admin"
 
-const BaseUrl = "http://localhost:4001/"
+const BaseUrl = "https://ladlilaxmi.onrender.com/"
 
 
 export const Apis = {
