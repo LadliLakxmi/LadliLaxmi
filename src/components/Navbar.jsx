@@ -4,7 +4,7 @@ import { Link as ScrollLink } from "react-scroll";
 import { jwtDecode } from "jwt-decode";
 import { useToken } from "../hooks/usetoken";
 import { FaUserTie, FaBars, FaTimes } from "react-icons/fa";
-
+import Logo from "../assets/Logo.jpeg";
 const Navbar = ({ role }) => {
   const navigate = useNavigate();
   const token = useToken();
@@ -38,8 +38,13 @@ const Navbar = ({ role }) => {
     <nav className="sticky top-0 z-50 bg-[#06091b] border-b-2 border-gray-600 text-amber-100">
       <div className="flex justify-between items-center px-4 py-3 lg:px-8">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <svg
+        <div
+          className="flex hover:scale-90 items-center space-x-2 cursor-pointer"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          {/* <svg
             width="40"
             height="40"
             viewBox="0 0 24 24"
@@ -54,7 +59,10 @@ const Navbar = ({ role }) => {
             <circle cx="9" cy="7" r="4" />
             <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
+          </svg> */}
+
+          <img src={Logo} alt="Logo" className="h-14" />
+
           <p className="text-xl font-semibold">Ladli Lakshmi</p>
         </div>
 
