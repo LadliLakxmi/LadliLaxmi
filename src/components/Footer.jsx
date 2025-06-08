@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+    const navigate = useNavigate();
     return (
         <footer className="bg-gray-800 text-white py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased border-t-[1px] border-gray-600">
             <div className="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-3 gap-10">
@@ -17,13 +19,14 @@ const Footer = () => {
                 <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
                     <h4 className="text-lg sm:text-xl font-semibold mb-3">Quick Links</h4>
                     <ul className="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-xs">
-                        {["About Us", "FAQ", "Contact", "Privacy Policy"].map((link) => (
+                        {["About Us", "FAQ", "Contact"].map((link) => (
                             <li key={link}>
-                                <a href="#" className="text-gray-400 hover:text-rose-500 transition text-sm sm:text-base">
+                                <a href="#about" className="text-gray-400 hover:text-rose-500 transition text-sm sm:text-base">
                                     {link}
                                 </a>
                             </li>
                         ))}
+                        <li onClick={()=>{navigate('/privacypolicy')}} className='cursor-pointer'>Privacy Policy</li>
                     </ul>
                 </div>
 
@@ -39,7 +42,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* Desktop Copyright */}
+            
             <div className="mt-4 text-center hidden lg:block">
                 <p className="text-gray-500 text-xs">&copy; {new Date().getFullYear()} Ladli Lakshmi Janhit Trust. All rights reserved.</p>
             </div>
