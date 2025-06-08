@@ -203,7 +203,7 @@ const Withdraw = ({ user }) => {
                     value={formData[field]}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black placeholder-gray-500"
                     placeholder={`Enter ${field === "accountHolder" ? "Account Holder Name" : field === "accountNumber" ? "Account Number" : field === "ifscCode" ? "IFSC Code" : "Bank Name"}`}
                   />
                 </div>
@@ -245,7 +245,7 @@ const Withdraw = ({ user }) => {
               min={1}
               max={finalLimit}
               placeholder={`Maximum: ₹${finalLimit.toFixed(2)}`}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm no-spinner"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm no-spinner text-black placeholder-gray-500"
             />
           </div>
 
