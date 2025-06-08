@@ -20,7 +20,6 @@ const UserSidebar = ({ user }) => {
           },
         ]
       : []),
-    // {to:"/userdashboard/donatePage",label:"Activate/Upgrade Levels"},
     { to: "/userdashboard/downline", label: "My Downline" },
     { to: "/userdashboard/myteam", label: "My Team" },
     { to: "/userdashboard/transactions", label: "Transaction History" },
@@ -28,8 +27,8 @@ const UserSidebar = ({ user }) => {
 
   return (
     <>
-      {/* Mobile hamburger button */}
-      <div className="md:hidden p-4  bg-gray-800 text-white flex justify-between items-center">
+      {/* Mobile Header with Hamburger */}
+      <div className="md:hidden p-4 bg-gray-800 text-white flex justify-between items-center">
         <h3 className="text-lg font-bold">Welcome, {user?.name}!</h3>
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -65,8 +64,8 @@ const UserSidebar = ({ user }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg  transform transition-transform duration-300
-          flex flex-col p-6 justify-evenly
+          fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform transition-transform duration-300 z-50
+          flex flex-col p-6 justify-evenly overflow-y-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:relative md:translate-x-0 md:top-0 md:h-auto md:shadow-none
         `}
@@ -82,8 +81,8 @@ const UserSidebar = ({ user }) => {
           </p>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex ">
+        {/* Navigation Links */}
+        <nav className="flex">
           <ul className="space-y-3">
             {links.map(({ to, label }) => (
               <SidebarLink
@@ -97,7 +96,7 @@ const UserSidebar = ({ user }) => {
         </nav>
 
         {/* Logout */}
-        <div className="mt-6 border-t border-gray-700 pt-4">
+        <div className="mt-6 border-t border-white pt-4">
           <Logout />
         </div>
       </aside>
@@ -113,7 +112,7 @@ const UserSidebar = ({ user }) => {
   );
 };
 
-// Reusable Sidebar Link
+// Reusable Link Component
 const SidebarLink = ({ to, label, onClick }) => (
   <li>
     <NavLink
