@@ -253,12 +253,12 @@ const Activation = () => {
   });
   return (
     <div className="w-full flex flex-col justify-center items-center">
-      <div className="border-b p-4 text-4xl rounded-md">Activation</div>
+      <div className="border-b p-4 text-4xl rounded-md">Activate Level 1</div>
       <div className="flex flex-col md:flex-row mt-4 gap-10 items-center ">
         <div className="flex flex-col  items-center">
           <img className="p-4 h-[25rem] w-[20rem]" src={QRcode} alt="" />
-          <p className="text-7xl p-4 mt-0">
-            ☝🏻 <p className="text-xl">Pay Here</p>{" "}
+          <p className="text-4xl p-4 mt-0 text-amber-500">
+            ☝🏻 Pay ₹400 Here
           </p>
         </div>
         <div className="flex flex-col  text-xl gap-4 p-4 px-8">
@@ -267,7 +267,7 @@ const Activation = () => {
           <p> Please Send Screen Shot on </p>
           <p className="text-2xl w-full py-4 bg-gray-900 p-2 rounded-2xl">
             WhatsApp<span className="w-20px">:-</span>{" "}
-            <strong>+91 78200 09103</strong>{" "}
+            <strong className="text-green-500">+91 78200 09103</strong>{" "}
           </p>
           <p className="text-amber-300">
             Along with Name , Email id & Referral code
