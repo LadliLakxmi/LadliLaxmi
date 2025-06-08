@@ -3,7 +3,7 @@ import React from 'react';
 
 const TermsAndConditions = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl w-full bg-white shadow-lg rounded-lg p-6 sm:p-8">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center mb-8 border-b-2 pb-4">
           Terms and Conditions & Privacy Policy
