@@ -115,7 +115,7 @@ export default function StatsCharts({ stats, type }) {
     };
 
     return (
-        <div className="p-4 bg-white rounded shadow ">
+        <div className="p-4 bg-gray-200 rounded shadow ">
             <ResponsiveContainer width="100%" height={300}>
                 {renderChart()}
             </ResponsiveContainer>
