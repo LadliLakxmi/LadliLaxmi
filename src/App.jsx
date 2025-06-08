@@ -98,6 +98,7 @@ let role=""
 
         {/* Fallback Route: For any unmatched paths, redirect to the Home page.
               This uses the 'Navigate' component for declarative redirection. */}
+        <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
