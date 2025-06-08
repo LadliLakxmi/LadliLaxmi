@@ -17,6 +17,7 @@ import Home from "./Pages/Home";
 import Registration from "./Pages/Registration";
 import Profile from "./Pages/Profile";
 import AdminMain from "./Admin/AdminMain";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 
 
 // Inline PrivateRoute component
