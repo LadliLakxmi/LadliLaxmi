@@ -28,7 +28,8 @@ export default function UserTable({ users }) {
             <th className="py-2 px-4 text-left">Email</th>
             <th className="py-2 px-4 text-left">Referral Code</th>
             <th className="py-2 px-4 text-left">Status</th>
-            {/* <th className="py-2 px-4 text-left">Action</th> */}
+            <th className="py-2 px-4 text-left">Wallet Balance</th>
+            <th className="py-2 px-4 text-left">Blocked Balance</th>
           </tr>
         </thead>
         <tbody>
@@ -38,6 +39,8 @@ export default function UserTable({ users }) {
               <td className="py-2 px-4">{user?.email || "N/A"}</td>
               <td className="py-2 px-4">{user?.referralCode || "N/A"}</td>
               <td className="py-2 px-4">{user?.isActive ? "Active" : "Inactive"}</td>
+              <td className="py-2 px-4">₹{user?.walletBalance}</td>
+              <td className="py-2 px-4">₹{user?.blockedForUpgrade}</td>
               
             </tr>
           ))}
