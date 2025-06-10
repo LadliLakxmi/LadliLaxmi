@@ -20,10 +20,10 @@ const generateToken = (user) => {
 // @desc    Register a new user
 // @access  Public
 exports.register = async (req, res) => {
-  const { name, email, password, confirmPassword, referredBy } = req.body; // referredBy will be the referralCode
+  const { name, email, password, phone,confirmPassword, referredBy } = req.body; // referredBy will be the referralCode
 
   try {
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !phone || !password || !confirmPassword) {
       return res.status(403).send({
         success: false,
         message: "All Fields are required",
@@ -60,7 +60,8 @@ exports.register = async (req, res) => {
           .status(400)
           .json({ success: false, message: "Invalid referrer code provided." });
       }
-     
+      // Find a slot under the provided referrer
+      console.log(referrer._id);
       slotUser = await findMatrixSlot(referrer._id);
       if (!slotUser) {
         return res.status(400).json({
@@ -69,8 +70,7 @@ exports.register = async (req, res) => {
         });
       }
     } else {
-      
-     // Case 2: No referral code provided, place under company
+      // Case 2: No referral code provided, place under company
       
       referrer = await User.findOne({ referralCode: "R7079AEU" }); 
       if (!referrer) {
@@ -78,9 +78,12 @@ exports.register = async (req, res) => {
         return res.status(500).json({
           success: false,
           message:
-            "No company id found to place unreferred signups. Please ensure company account exists.",
+            "No company id found to place unreferred signups. Please ensure an admin account exists.",
         });
       }
+      console.log(
+        `No referral code provided. Placing user under admin: ${referrer.email}`
+      );
 
       // Find a slot under the found admin user
       slotUser = await findMatrixSlot(referrer._id);
@@ -93,8 +96,12 @@ exports.register = async (req, res) => {
         });
       }
     }
+    console.log("slotUser", slotUser);
+    console.log("slotUser referre code", slotUser.referralCode);
     const hashed = await bcrypt.hash(password, 10);
-
+    // Generate a unique referral code for the new user based on their _id
+    // This will be set by the schema's default function, but ensure _id is available first
+    // For now, let's keep the simple unique code generation here, or rely on schema default
     const newReferralCode =
       "R" +
       Date.now().toString().slice(-4) +
@@ -106,6 +113,7 @@ exports.register = async (req, res) => {
       password: hashed,
       referralCode: newReferralCode, // Generated code for new user
       sponserdBy: referredBy ? referredBy : referrer.referralCode,
+      phone, // Include phone in response
       referredBy: slotUser.referralCode, // Always set to slot user's referralCode
       currentLevel: 0, // Initial level
     });
@@ -131,6 +139,7 @@ exports.register = async (req, res) => {
       email: newUser.email, // Include email in response
       name: newUser.name, // Include name in response
       referralCode: newUser.referralCode, // Include new user's referral code
+      phone: newUser.phone,
       token: generateToken(newUser._id), // Use newUser._id for token generation
       message: "Registration successful. Please activate your account.",
     });
