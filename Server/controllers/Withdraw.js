@@ -1,52 +1,3 @@
-// const User = require('../models/User');
-// const WithdrawRequest = require('../models/WithdrawRequest');
-
-// exports.WithdrawRequest = async (req, res) => {
-//   try {
-//     const userId = req.user.id;
-//     const { amount, bankDetails } = req.body;
-//     console.log(req.body)
-
-//     if (!amount || typeof amount !== 'number' || amount <= 0) {
-//       return res.status(400).json({ message: 'Invalid amount' });
-//     }
-
-//     const user = await User.findById(userId);
-//     if (!user) return res.status(404).json({ message: 'User not found' });
-
-//      const availableBalance = user.walletBalance - user.blockedForUpgrade;
-
-//     if (amount > availableBalance) {
-//       return res.status(400).json({ message: "Insufficient available balance" });
-//     }
-
-//     // Save bank details only if not already present
-//     if (!user.bankDetails && bankDetails) {
-//       user.bankDetails = bankDetails;
-//       await user.save();
-//     }
-
-//     // Optional: Prevent multiple pending requests
-//     const existing = await WithdrawRequest.findOne({ user: userId, status: 'pending' });
-//     if (existing) {
-//       return res.status(400).json({ message: 'A withdrawal request is already pending.' });
-//     }
-
-//     const withdrawRequest = new WithdrawRequest({
-//       user: userId,
-//       amount,
-//       status: 'pending',
-//       createdAt: new Date(),
-//     });
-
-//     await withdrawRequest.save();
-
-//     return res.status(200).json({ message: 'Withdraw request submitted' });
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ message: 'Server error' });
-//   }
-// };
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const WithdrawRequest = require("../models/WithdrawRequest");
@@ -119,11 +70,25 @@ exports.WithdrawRequest = async (req, res) => {
       });
     }
 
-    // 🏦 Save bank details if not already stored
+    // --- CRUCIAL CHANGE HERE ---
+    // 🏦 Save bank details if not already stored, AND include phoneNumber
     if (!user.bankDetails && bankDetails) {
-      user.bankDetails = bankDetails;
+      // Validate that essential bankDetails fields, including phoneNumber, are present if this is the first time saving them
+      if (!bankDetails.accountHolder || !bankDetails.accountNumber || !bankDetails.ifscCode || !bankDetails.bankName || !bankDetails.phoneNumber) {
+        return res.status(400).json({ message: 'All bank details fields including phone number are required.' });
+      }
+      user.bankDetails = {
+        accountHolder: bankDetails.accountHolder,
+        accountNumber: bankDetails.accountNumber,
+        ifscCode: bankDetails.ifscCode,
+        bankName: bankDetails.bankName,
+        phoneNumber: bankDetails.phoneNumber, // <--- ADDED THIS LINE
+      };
       await user.save();
     }
+    // If bank details already exist but you want to allow updating them,
+    // you would need additional logic here or a separate endpoint for updating bank details.
+    // For now, it only saves if bankDetails are not present.
 
     // 🚫 Prevent multiple pending requests
     const existing = await WithdrawRequest.findOne({
