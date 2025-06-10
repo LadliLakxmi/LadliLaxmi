@@ -5,7 +5,19 @@ const walletTransactionSchema = new mongoose.Schema(
     amount: { type: Number, required: true },
     type: {
       type: String,
-      enum: ["donation_sent", "donation_received"],
+      // **UPDATED ENUM VALUES HERE**
+      enum: [
+        "donation_sent",
+        "donation_received",
+        "upgrade_payment_sent",         // When a user pays for an upgrade
+        "upline_upgrade_commission",    // When an upline receives an upgrade payment from a downline
+        "admin_upgrade_revenue",        // When admin receives an upgrade payment due to no eligible upline
+        "deposit",
+        "withdrawal",
+        "fund_transfer_sent",
+        "fund_transfer_received",
+        "admin"
+      ],
       required: true,
     },
     status: {
@@ -13,63 +25,14 @@ const walletTransactionSchema = new mongoose.Schema(
       enum: ["pending", "completed", "failed"],
       default: "pending",
     },
-    donationLevel: { type: Number, default: null },
+    donationLevel: { type: Number, default: null }, // Good for tracking which level upgrade this was
     fromUser: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
     toUser: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-    token: { type: String },
-    referenceId: { type: mongoose.Schema.Types.ObjectId }, // Optional link to donation, withdrawal etc.
+    token: { type: String }, // If this is used for payment gateway tokens, etc.
+    referenceId: { type: mongoose.Schema.Types.ObjectId }, // Optional link to Donation, Withdrawal, etc.
     description: String,
   },
   { timestamps: true }
 );
 
 module.exports = mongoose.model("WalletTransaction", walletTransactionSchema);
-
-
-
-
-// const mongoose = require('mongoose');
-
-// const walletTransactionSchema = new mongoose.Schema(
-//   {
-//     amount: {
-//       type: Number,
-//       required: true,
-//     },
-//     type: {
-//       type: String,
-//       // enum: ["deposit", "withdrawal", "donation_sent", "donation_received"],
-//       enum: ["donation_sent", "donation_received"],
-//       required: true,
-//     },
-//     status: {
-//       type: String,
-//       enum: ["pending", "completed", "failed"],
-//       default: "pending",
-//     },
-//     donationLevel: {
-//       type: Number,
-//       default: null,
-//     },
-//     fromUser: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "User",
-//       default: null,
-//     },
-//     toUser: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "User",
-//       default: null,
-//     },
-//     token: {
-//       type: String,
-//     },
-//     referenceId: {
-//       type: mongoose.Schema.Types.ObjectId, // Could reference Donation, Withdrawal, etc.
-//     },
-//     description: String,
-//   },
-//   { timestamps: true }
-// );
-
-// module.exports = mongoose.model('WalletTransaction', walletTransactionSchema);
