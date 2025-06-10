@@ -55,7 +55,7 @@ const UpgradePage = ({ user }) => {
 
     try {
       const response = await axios.post(
-        'http://localhost:4001/api/v1/upgrade',
+        'https://ladlilaxmi.onrender.com/api/v1/upgrade',
         {
           userId: user._id,
           level: nextLevel,
