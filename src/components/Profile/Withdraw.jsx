@@ -77,7 +77,7 @@ const Withdraw = ({ user }) => {
 
     const fetchWithdrawn = async () => {
       try {
-        const res = await axios.get("http://localhost:4001/api/v1/withdraw/summary", {
+        const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/withdraw/summary", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
