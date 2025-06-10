@@ -293,3 +293,98 @@ exports.verifyPayment = async (req, res) => {
         session.endSession(); // End the session
     }
 };
+
+
+// New controller for transferring funds from wallet to downline
+exports.transferFundsToDownline = async (req, res) => {
+  const senderId = req.user.id; // The user initiating the transfer (from token)
+  const { recipientReferralCode, amount } = req.body;
+
+  // 1. Validate Input
+  if (!recipientReferralCode || !amount || typeof amount !== 'number' || amount <= 0) {
+    return res.status(400).json({ message: "Invalid recipient referral code or amount." });
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // 2. Fetch Sender (user initiating the transfer)
+    const sender = await User.findById(senderId).session(session);
+    if (!sender) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "Sender user not found." });
+    }
+
+    // 3. Fetch Recipient (downline user)
+    const recipient = await User.findOne({ referralCode: recipientReferralCode }).session(session);
+    if (!recipient) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "Recipient user not found with that referral code." });
+    }
+
+    
+    // 5. Check Sender's Wallet Balance
+    if (sender.walletBalance < amount) {
+      await session.abortTransaction();
+      return res.status(400).json({ message: "Insufficient wallet balance to transfer." });
+    }
+
+    // 6. Update Balances
+    sender.walletBalance -= amount;
+    recipient.walletBalance += amount;
+
+    // 7. Create Wallet Transactions for both sender and recipient
+    const transactionId = uuidv4();
+
+    // Sender's transaction
+    const senderTxn = new WalletTransaction({
+      amount: -amount, // Negative as it's an expense
+      type: "fund_transfer_sent",
+      status: "completed",
+      toUser: recipient._id,
+      description: `Funds transferred to downline user ${recipient.name || recipient.email} (${recipient.referralCode})`,
+      transactionId: transactionId,
+      processedAt: new Date(),
+    });
+    await senderTxn.save({ session });
+    sender.walletTransactions.push(senderTxn._id);
+
+    // Recipient's transaction
+    const recipientTxn = new WalletTransaction({
+      amount: amount, // Positive as it's income
+      type: "fund_transfer_received",
+      status: "completed",
+      fromUser: sender._id,
+      description: `Funds received from upline user ${sender.name || sender.email} (${sender.referralCode})`,
+      transactionId: transactionId,
+      processedAt: new Date(),
+    });
+    await recipientTxn.save({ session });
+    recipient.walletTransactions.push(recipientTxn._id);
+
+    // 8. Save updated User documents
+    await sender.save({ session });
+    await recipient.save({ session });
+
+    // 9. Commit Transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    return res.status(200).json({
+      success: true,
+      message: `Successfully transferred ₹${amount.toFixed(2)} to ${recipient.name || 'downline user'}.`,
+      senderNewBalance: sender.walletBalance.toFixed(2),
+    });
+
+  } catch (error) {
+    await session.abortTransaction(); // Rollback on error
+    session.endSession();
+    console.error("Error transferring funds to downline:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to transfer funds. Please try again later.",
+      error: error.message,
+    });
+  }
+};
