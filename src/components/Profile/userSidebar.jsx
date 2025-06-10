@@ -1,14 +1,38 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Logout from "../Auth/Logout";
+import {
+  FaTachometerAlt,
+  FaMoneyBillWave,
+  FaDonate,
+  FaLevelUpAlt,
+  FaUsers,
+  FaHandshake,
+  FaHistory,
+  FaGift,
+  FaTimes,
+  FaBars,
+} from "react-icons/fa"; // Importing react-icons for better visuals
 
 const UserSidebar = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClose = () => setIsOpen(false);
 
+  // Define a mapping of labels to icons
+  const iconMap = {
+    Dashboard: <FaTachometerAlt className="inline-block mr-3 text-gold-400" />,
+    Withdraw: <FaMoneyBillWave className="inline-block mr-3 text-green-400" />,
+    "Activate Level 1": <FaDonate className="inline-block mr-3 text-purple-400" />,
+    Upgrade: <FaLevelUpAlt className="inline-block mr-3 text-indigo-400" />, // Generic for upgrade levels
+    "My Downline": <FaUsers className="inline-block mr-3 text-orange-400" />,
+    "My Team": <FaHandshake className="inline-block mr-3 text-pink-400" />,
+    "Transaction History": <FaHistory className="inline-block mr-3 text-teal-400" />,
+    "Donate Downline": <FaGift className="inline-block mr-3 text-red-400" />,
+  };
+
   const links = [
-    { to: "/userdashboard/dashboardOverview", label: "Dashboard" },
+    { to: "/userdashboard/", label: "Dashboard" },
     { to: "/userdashboard/withdraw", label: "Withdraw" },
     ...(user?.currentLevel === 0
       ? [{ to: "/userdashboard/donatePage", label: "Activate Level 1" }]
@@ -23,72 +47,59 @@ const UserSidebar = ({ user }) => {
     { to: "/userdashboard/downline", label: "My Downline" },
     { to: "/userdashboard/myteam", label: "My Team" },
     { to: "/userdashboard/transactions", label: "Transaction History" },
-  ];
+    { to: "/userdashboard/donate", label: "Donate Downline" },
+  ].map((link) => ({
+    ...link,
+    icon: iconMap[link.label.includes("Upgrade") ? "Upgrade" : link.label], // Handle upgrade label generically
+  }));
 
   return (
     <>
       {/* Mobile Header with Hamburger */}
-      <div className="md:hidden p-4 bg-gray-800 text-white flex justify-between items-center">
-        <h3 className="text-lg font-bold">Welcome, {user?.name}!</h3>
+      <div className="md:hidden p-4 bg-gradient-to-r from-gray-900 to-gray-700 text-white flex justify-between items-center shadow-lg">
+        <h3 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">
+          Welcome, {user?.name}!
+        </h3>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="focus:outline-none"
+          className="focus:outline-none text-white text-2xl"
           aria-label="Toggle menu"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {isOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
+          {isOpen ? <FaTimes /> : <FaBars />}
         </button>
       </div>
 
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform transition-transform duration-300 z-50
-          flex flex-col p-6 justify-evenly overflow-y-auto
+          fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
+          flex flex-col p-6 justify-between overflow-y-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:relative md:translate-x-0 md:top-0 md:h-auto md:shadow-none
         `}
       >
         {/* Desktop User Info */}
-        <div className="hidden md:block text-center mb-6 border-b border-gray-700 pb-6">
-          <h3 className="text-2xl font-bold mb-1">Welcome, {user?.name}!</h3>
-          <p className="text-sm text-gray-400">
-            Level: {user?.currentLevel || 0}
-          </p>
-          <p className="text-xl text-blue-400 font-semibold">
-            Balance: ₹{user?.walletBalance?.toFixed(2) || "0.00"}
+        <div className="hidden md:block text-center mb-8 border-b border-gray-700 pb-6">
+          <h3 className="text-3xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">
+            {user?.name}
+          </h3>
+          <p className="text-md text-gray-300 flex items-center justify-center">
+            <span className="mr-2 text-green-400 font-bold">Level:</span>
+            <span className="text-lg font-bold text-yellow-300">
+              {user?.currentLevel || 0}
+            </span>
           </p>
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex">
-          <ul className="space-y-3">
-            {links.map(({ to, label }) => (
+        <nav className="flex-grow">
+          <ul className="space-y-4">
+            {links.map(({ to, label, icon }) => (
               <SidebarLink
                 key={to}
                 to={to}
                 label={label}
+                icon={icon}
                 onClick={handleClose}
               />
             ))}
@@ -96,7 +107,7 @@ const UserSidebar = ({ user }) => {
         </nav>
 
         {/* Logout */}
-        <div className="mt-6 border-t border-white pt-4">
+        <div className="mt-8 pt-6 border-t border-gray-700">
           <Logout />
         </div>
       </aside>
@@ -104,7 +115,7 @@ const UserSidebar = ({ user }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-60 z-40 md:hidden"
           onClick={handleClose}
         />
       )}
@@ -113,20 +124,22 @@ const UserSidebar = ({ user }) => {
 };
 
 // Reusable Link Component
-const SidebarLink = ({ to, label, onClick }) => (
+const SidebarLink = ({ to, label, icon, onClick }) => (
   <li>
     <NavLink
       to={to}
       onClick={onClick}
       className={({ isActive }) =>
-        `block px-4 py-2.5 rounded-lg text-lg transition-colors duration-200 ${
-          isActive
-            ? "bg-blue-600 text-white font-semibold"
-            : "text-gray-200 hover:bg-gray-700 hover:text-white"
-        }`
+        `flex items-center px-5 py-3 rounded-xl text-lg font-medium transition-all duration-300 ease-in-out
+         ${
+           isActive
+             ? "bg-gradient-to-r from-blue-700 to-blue-500 text-white shadow-lg transform scale-105"
+             : "text-gray-200 hover:bg-gray-700 hover:text-white hover:shadow-md"
+         }`
       }
     >
-      {label}
+      {icon}
+      <span>{label}</span>
     </NavLink>
   </li>
 );
