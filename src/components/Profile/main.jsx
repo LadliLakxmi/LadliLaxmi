@@ -7,13 +7,14 @@ import TransactionHistory from "./TransactionHistory";
 import MyTeam from "./MyTeam";
 import Withdraw from "./Withdraw";
 import UpgradePage from "./UpgradePage";
+import DonateDownline from "./DonateDownline"
 
 const Main = ({ user }) => {
 console.log("user main",user)
   return (
     <div className="flex flex-col w-full min-h-screen px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 ">
       <Routes>
-        <Route
+        {/* <Route
           path="/"
           element={
             <div className="flex flex-col items-center justify-center text-center text-white px-4 py-10 sm:py-16">
@@ -29,8 +30,8 @@ console.log("user main",user)
               <h3 className="text-4xl sm:text-5xl mt-4">👈</h3>
             </div>
           }
-        />
-        <Route path="/dashboardOverview" element={<DashboardOverview user={user} walletTransactions={user.walletTransactions}/>} />
+        /> */}
+        <Route path="/" element={<DashboardOverview user={user} walletTransactions={user.walletTransactions}/>} />
         <Route path="/withdraw" element={<Withdraw user={user} />} />
         <Route
           path="/downline"
@@ -55,6 +56,10 @@ console.log("user main",user)
           path="/transactions"
           element={<TransactionHistory walletTransactions={user.walletTransactions} />}
         />
+        <Route
+          path="/donate"
+          element={<DonateDownline user={user} />} 
+                  />
       </Routes>
     </div>
   );
