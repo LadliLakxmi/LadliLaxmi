@@ -1,108 +1,133 @@
 import React from "react";
+import { Network, UserCircle, Share2, Award, User, Layers } from 'lucide-react'; // All necessary Lucide icons
 
-// Level colors
+// Enhanced Level Colors for a richer look
 const levelColors = [
-  "bg-blue-100 border-blue-500",
-  "bg-green-100 border-green-500",
-  "bg-yellow-100 border-yellow-500",
-  "bg-purple-100 border-purple-500",
-  "bg-pink-100 border-pink-500",
-  "bg-indigo-100 border-indigo-500",
+  "bg-blue-600 border-blue-400",    // Level 0 or default: Deeper blue
+  "bg-indigo-600 border-indigo-400", // Level 1: Indigo
+  "bg-purple-600 border-purple-400", // Level 2: Purple
+  "bg-fuchsia-600 border-fuchsia-400",// Level 3: Fuchsia
+  "bg-rose-600 border-rose-400",     // Level 4: Rose
+  "bg-red-600 border-red-400",       // Level 5: Red
+  "bg-orange-600 border-orange-400", // Level 6: Orange
+  "bg-amber-600 border-amber-400",   // Level 7: Amber
+  "bg-lime-600 border-lime-400",     // Level 8: Lime
+  "bg-emerald-600 border-emerald-400",// Level 9: Emerald
+  "bg-teal-600 border-teal-400",     // Level 10: Teal
+  "bg-cyan-600 border-cyan-400"      // Level 11: Cyan
 ];
 
-const TreeNode = ({ user, isLast = false, parentHasSiblings = false }) => {
-  const currentLevel = user.currentLevel || 0;
-  const bgColor = levelColors[Math.min(currentLevel, levelColors.length - 1)];
-
-  return (
-    <div className="flex flex-col items-center relative min-w-[10rem] mx-1">
-      {/* Connector from top */}
-      {currentLevel > 0 && (
-        <div className="absolute top-0 h-6 w-0.5 bg-gray-400"></div>
-      )}
-
-      {/* Node */}
-      <div className={`${bgColor} p-2 sm:p-3 rounded-lg border-2 text-center mb-2 w-32 sm:w-40 md:w-48 shadow-sm relative z-10`}>
-        <div className="font-bold truncate text-sm sm:text-base">{user.name}</div>
-        <div className="text-xs truncate">ID: {user.referralCode || user._id?.slice(-6) || "N/A"}</div>
-        <div className="text-xs sm:text-sm">Level: {currentLevel}</div>
-      </div>
-
-      {/* Children */}
-      {user.matrixChildren?.length > 0 && (
-        <div className="relative flex justify-center w-full">
-          {/* Horizontal connector */}
-          <div className="absolute top-0 left-0 right-0 flex justify-center">
-            <div className="h-0.5 bg-gray-400 w-full max-w-[90%] mx-auto"></div>
-          </div>
-
-          <div className="flex flex-row flex-wrap justify-center gap-2 sm:gap-4 md:gap-6 pt-6 w-full">
-            {user.matrixChildren.map((child, index) => (
-              <React.Fragment key={child._id || index}>
-                {/* Vertical line to each child */}
-                <div
-                  className="absolute top-0 h-6 w-0.5 bg-gray-400"
-                  style={{
-                    left: `${(index + 0.5) * (100 / user.matrixChildren.length)}%`,
-                    transform: "translateX(-50%)",
-                  }}
-                ></div>
-
-                <TreeNode
-                  user={child}
-                  isLast={index === user.matrixChildren.length - 1}
-                  parentHasSiblings={user.matrixChildren.length > 1}
-                />
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const MemoizedTreeNode = React.memo(TreeNode);
-
 const Dashboard = ({ user }) => {
-  return (
-    <div className="p-4 text-black shadow-lg rounded-lg mt-4 sm:mt-8 w-full max-w-7xl mx-auto bg-white">
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-6 text-blue-700">
-        Matrix Network
-      </h2>
 
-      {user ? (
-        <>
-          <div className="bg-blue-50 mx-auto border border-blue-200 w-full max-w-md p-3 sm:p-4 rounded-md shadow text-center mb-4 sm:mb-6">
-            <div className="font-semibold text-sm sm:text-base md:text-lg">{user.name}</div>
-            <div className="text-xs sm:text-sm text-gray-600 truncate">{user.email}</div>
-            <div className="text-xs sm:text-sm text-gray-600 mt-1">
-              <span>Code: {user.referralCode}</span>
-              <span className="ml-2 sm:ml-4">Level: {user.currentLevel}</span>
-            </div>
-          </div>
+  // TreeNode component (formerly from TreeNode.jsx) moved inside Dashboard
+  const TreeNode = React.memo(({ user: member }) => { // Renamed prop to 'member' to avoid conflict with Dashboard's 'user'
+    const currentLevel = member.currentLevel || 0;
+    // Ensure the color index is within bounds, defaulting to the last color for higher levels
+    const colorIndex = Math.min(currentLevel, levelColors.length - 1);
+    const bgColorClass = levelColors[colorIndex];
 
-          <div className="overflow-x-auto px-2">
-            <div className="flex justify-center min-w-max">
-              {user.matrixChildren?.length > 0 ? (
-                <div className="flex flex-row flex-wrap justify-center gap-2 sm:gap-4">
-                  {user.matrixChildren.map((child, index) => (
-                    <MemoizedTreeNode key={child._id || index} user={child} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-gray-500 text-center py-8 sm:py-12 w-full">
-                  No downline members found
-                </div>
-              )}
-            </div>
+    return (
+      <div className="flex flex-col items-center relative min-w-[8rem] sm:min-w-[10rem] mx-2 transition-all duration-300 ease-in-out">
+        {/* Node Content */}
+        <div className={`p-3 sm:p-4 rounded-lg border-2 ${bgColorClass} text-white text-center w-36 sm:w-44 md:w-52 shadow-lg relative z-10
+          transform transition-transform duration-200 hover:scale-105 hover:shadow-xl group`}>
+          {/* Connection line from parent to this node, only if not the root of the tree (Level 0 usually) */}
+          {currentLevel > 0 && (
+            <div className="absolute -top-4 left-1/2 h-4 w-0.5 bg-gray-400 z-0"></div>
+          )}
+
+          <User size={32} className="mx-auto mb-1 text-white opacity-80 group-hover:opacity-100 transition-opacity duration-200" />
+          <div className="font-extrabold truncate text-base sm:text-lg mb-1">{member.name}</div>
+          <div className="font-extrabold truncate text-base sm:text-lg mb-1">{member.phone}</div>
+          <div className="text-xs sm:text-sm text-gray-200 truncate">ID: {member.referralCode || member._id?.slice(-6) || "N/A"}</div>
+          <div className="text-sm sm:text-base font-semibold mt-1 flex items-center justify-center gap-1">
+            <Layers size={16} className="text-white opacity-70" /> Level: {currentLevel}
           </div>
-        </>
-      ) : (
-        <div className="text-gray-500 text-center py-8 sm:py-12">
-          Loading user data...
         </div>
-      )}
+
+        {/* Children */}
+        {member.matrixChildren?.length > 0 && (
+          <div className="relative flex justify-center w-full mt-2">
+            {/* Horizontal connector line for siblings */}
+            <div className="absolute -top-1 left-0 right-0 h-0.5 bg-gray-400 mx-auto w-[calc(100%-2rem)]"></div>
+
+            <div className="flex flex-row flex-wrap justify-center gap-4 sm:gap-6 pt-4 w-full">
+              {member.matrixChildren.map((child, index) => (
+                <React.Fragment key={child._id || index}>
+                  {/* Vertical line from horizontal connector to each child */}
+                  <div
+                    className="absolute h-4 w-0.5 bg-gray-400 z-0"
+                    style={{
+                      top: '-1px', // Align with the horizontal line
+                      left: `calc(${(index + 0.5) * (100 / member.matrixChildren.length)}% - 0.125rem)`, // Center on child
+                      transform: "translateX(-50%)",
+                    }}
+                  ></div>
+
+                  <TreeNode user={child} /> {/* Recursive call to itself */}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  });
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-4 sm:p-8">
+      {/* Main Dashboard Container */}
+      <div className=" text-white p-1 md:p-4 rounded-2xl shadow-2xl w-full max-w-7xl mx-auto relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse"></div>
+        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse delay-200"></div>
+
+        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg flex items-center justify-center gap-3">
+          <Network size={44} /> Your Matrix Network
+        </h2>
+
+        {user ? (
+          <>
+            {/* User's Root Node Information */}
+            <div className="bg-blue-700/60 border border-blue-500 w-full max-w-md mx-auto p-4 sm:p-6 rounded-xl shadow-lg text-center mb-8 transform transition-all duration-300 hover:scale-105">
+              <UserCircle size={48} className="mx-auto mb-2 text-blue-200 drop-shadow-md" />
+              <h3 className="font-extrabold text-xl sm:text-2xl text-yellow-300 mb-1">{user.name}</h3>
+              <p className="text-sm sm:text-base text-blue-100 mb-2 truncate">{user.email}</p>
+              <p className="text-sm sm:text-base text-blue-100 mb-2 ">{user.phone}</p>
+              <div className="text-sm sm:text-base text-blue-100 flex items-center justify-center gap-4">
+                <span className="flex items-center gap-1">
+                  <Share2 size={16} /> Code: <span className="font-mono">{user.referralCode}</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <Award size={16} /> Level: <span className="font-semibold">{user.currentLevel}</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Matrix Children Display */}
+            <div className="overflow-x-auto py-4 px-2 custom-scrollbar">
+              <div className="flex justify-center min-w-max">
+                {user.matrixChildren?.length > 0 ? (
+                  <div className="flex flex-row flex-wrap justify-center gap-4 sm:gap-6">
+                    {user.matrixChildren.map((child, index) => (
+                      <TreeNode key={child._id || index} user={child} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-blue-800/40 border border-blue-600 rounded-lg p-8 text-blue-200 text-center text-lg animate-fadeIn shadow-inner w-full">
+                    <p className="mb-4">It looks a little empty here!</p>
+                    <p>Start referring to build your powerful matrix network.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="text-blue-300 text-center py-12 text-xl font-semibold">
+            Loading your network data...
+          </div>
+        )}
+      </div>
     </div>
   );
 };
