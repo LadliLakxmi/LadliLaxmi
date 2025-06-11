@@ -14,6 +14,12 @@ router.get("/getalluserCount", auth, isAdmin, getUserCount);
 // Get all users
 router.get("/getalluser", auth, isAdmin, getAllUsers);
 
+// NEW ROUTE: To fetch user by email
+router.get('/users/by-email',auth , isAdmin,getUserByEmail);
+
+// EXISTING ROUTE: To update user by ID (frontend will provide ID after fetching by email)
+router.put('/users/:id', auth , isAdmin , updateUserByAdmin);
+
 // Delete user by ID
 router.delete("/deleteUser/:id", auth, isAdmin, deleteUser);
 router.get("/withdrawals", auth, isAdmin, withdrawals);
