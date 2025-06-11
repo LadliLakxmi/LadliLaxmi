@@ -20,6 +20,9 @@ const Sidebar = () => {
         <NavLink to="/Admindashboard/payments" className={linkClass}>
           Payments
         </NavLink>
+         <NavLink to="/Admindashboard/update" className={linkClass}>
+          Update Users
+        </NavLink>
         
         <NavLink to="/Admindashboard/reports" className={linkClass}>
           Reports
