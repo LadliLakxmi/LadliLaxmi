@@ -14,9 +14,9 @@ const MyTeam = ({ team, matrixChildren }) => {
       {/* Main Team Header Card - Enhanced Design */}
       <div className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 rounded-xl shadow-xl mb-8 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 transform transition-all duration-300 hover:scale-[1.01]">
         <div className="flex items-center gap-4">
-          <Users size={48} className="text-blue-300 drop-shadow-md" />
+          <Users size={48} className="text-blue-300 " />
           <div>
-            <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg">
+            <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 ">
               {teamName}
             </h2>
             <p className="text-blue-200 text-lg">Your Network Overview</p>
