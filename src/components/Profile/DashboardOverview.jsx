@@ -59,7 +59,7 @@ const InfoCard = ({ title, value, color, icon: Icon }) => {
     >
       {Icon && (
         <div className={`mb-3 ${iconColor}`}>
-          <Icon size={40} className="drop-shadow-md" />
+          <Icon size={40} className="-md" />
         </div>
       )}
       <h3 className={`text-lg sm:text-xl font-semibold mb-1 ${text}`}>
@@ -203,25 +203,27 @@ const DashboardOverview = ({ user }) => {
         <span className="text-lg font-semibold text-center md:text-left">
           Share your referral link and grow your network:
         </span>
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-          <a
-            href={`${BASE_REGISTRATION_URL}?referralCode=${user.referralCode}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-grow bg-blue-700 px-4 py-2 rounded-lg text-sm sm:text-base font-bold truncate hover:bg-blue-900 transition-colors cursor-pointer text-center"
-            title={`${BASE_REGISTRATION_URL}?referralCode=${user.referralCode}`}
-          >
-            <span className="block w-full overflow-hidden text-ellipsis whitespace-nowrap">
-              {BASE_REGISTRATION_URL}?referralCode={user.referralCode}
-            </span>
-          </a>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base font-semibold bg-white text-blue-800 rounded-lg hover:bg-blue-100 transition-all duration-300 transform hover:scale-105 shadow-md"
-          >
-            <ClipboardCopy size={18} /> Copy Link
-          </button>
-        </div>
+      <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+  <a
+    href={`${BASE_REGISTRATION_URL}?referralCode=${user.referralCode}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex-grow bg-blue-700 px-4 py-2 rounded-lg text-sm sm:text-base font-bold break-words border text-wrap hover:bg-blue-900 transition-colors cursor-pointer text-center"
+    title={`${BASE_REGISTRATION_URL}?referralCode=${user.referralCode}`}
+  >
+    <span className="block w-full">
+      {BASE_REGISTRATION_URL}?referralCode={user.referralCode}
+    </span>
+  </a>
+
+  <button
+    onClick={handleCopy}
+    className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base font-semibold bg-white text-blue-800 rounded-lg hover:bg-blue-100 transition-all duration-300 transform hover:scale-105 shadow-md"
+  >
+    <ClipboardCopy size={18} /> Copy Link
+  </button>
+</div>
+
       </div>
 
       {/* Overview Cards */}
