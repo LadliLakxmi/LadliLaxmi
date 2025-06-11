@@ -6,6 +6,7 @@ import Users from './pages/Users';
 import Payments from './pages/Payments';
 import Reports from './pages/Reports';
 import Sidebar from './Components/Sidebar';
+import UpdateUser from './pages/Updateuser'
 
 
 function AdminLayout({ children }) {
@@ -32,6 +33,7 @@ const AdminMain = () =>  {
             <Route path="/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
             <Route path="/users" element={<AdminLayout><Users /></AdminLayout>} />
             <Route path="/payments" element={<AdminLayout><Payments /></AdminLayout>} />
+                      <Route path="/update" element={<AdminLayout><UpdateUser /></AdminLayout>} />
         
             <Route path="/reports" element={<AdminLayout><Reports /></AdminLayout>} />
           </>
