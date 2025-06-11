@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 const Registration = () => {
   
-    const [showLogin, setShowLogin] = useState(true); // Correct usage of useState
+    const [showLogin, setShowLogin] = useState(false); // Correct usage of useState
   return (
     <div>
         <div className="border-gray-300 shadow-2xl p-4  ">
