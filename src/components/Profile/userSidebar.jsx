@@ -72,7 +72,7 @@ const UserSidebar = ({ user }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-20 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
+          fixed top-20 left-0 h-[80vh] w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
           flex flex-col p-6 justify-between overflow-y-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:relative md:translate-x-0 md:top-0 md:h-auto md:shadow-none
