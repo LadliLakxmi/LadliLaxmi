@@ -10,7 +10,7 @@ export default function UserTable({ users }) {
   //   if (!confirmDelete) return;
 
   //   try {
-  //     await axios.delete(`http://localhost:4001/api/v1/admin/deleteUser/${userId}`);
+  //     await axios.delete(`https://ladlilaxmi.onrender.com/api/v1/admin/deleteUser/${userId}`);
   //     setUsers(prev => prev.filter(user => user._id !== userId));
   //     alert("User deleted successfully");
   //   } catch (error) {

@@ -76,6 +76,7 @@ const UserSidebar = ({ user }) => {
           flex flex-col p-6 justify-between overflow-y-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:relative md:translate-x-0 md:top-0 md:h-auto md:shadow-none
+          z-50 // ADD THIS LINE: Ensure sidebar is above everything else
         `}
       >
         {/* Desktop User Info */}
@@ -115,7 +116,7 @@ const UserSidebar = ({ user }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-opacity-60 z-100 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-60 z-40 md:hidden" // z-40 ensures it's below the sidebar (z-50)
           onClick={handleClose}
         />
       )}
@@ -123,7 +124,7 @@ const UserSidebar = ({ user }) => {
   );
 };
 
-// Reusable Link Component
+// Reusable Link Component (no changes needed here)
 const SidebarLink = ({ to, label, icon, onClick }) => (
   <li>
     <NavLink
@@ -131,11 +132,11 @@ const SidebarLink = ({ to, label, icon, onClick }) => (
       onClick={onClick}
       className={({ isActive }) =>
         `flex items-center px-5 py-3 rounded-xl text-lg font-medium transition-all duration-300 ease-in-out
-         ${
-           isActive
-             ? "bg-gradient-to-r from-blue-700 to-blue-500 text-white shadow-lg transform scale-105"
-             : "text-gray-200 hover:bg-gray-700 hover:text-white hover:shadow-md"
-         }`
+          ${
+            isActive
+              ? "bg-gradient-to-r from-blue-700 to-blue-500 text-white shadow-lg transform scale-105"
+              : "text-gray-200 hover:bg-gray-700 hover:text-white hover:shadow-md"
+          }`
       }
     >
       {icon}

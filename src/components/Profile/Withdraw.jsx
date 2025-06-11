@@ -150,7 +150,7 @@ const Withdraw = ({ user }) => {
             }),
       };
 
-      await axios.post("http://localhost:4001/api/v1/withdraw/request", payload, {
+      await axios.post("https://ladlilaxmi.onrender.com/api/v1/withdraw/request", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -177,7 +177,7 @@ const Withdraw = ({ user }) => {
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-green-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse"></div>
         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse delay-200"></div>
 
-        <h2 className="text-3xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg flex items-center justify-center gap-3">
+        <h2 className="text-3xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500  flex items-center justify-center gap-3">
           <Banknote size={36} /> Withdraw Your Earnings
         </h2>
 
@@ -407,7 +407,7 @@ export default Withdraw;
 
 //     const fetchWithdrawn = async () => {
 //       try {
-//         const res = await axios.get("http://localhost:4001/api/v1/withdraw/summary", {
+//         const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/withdraw/summary", {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //           },
