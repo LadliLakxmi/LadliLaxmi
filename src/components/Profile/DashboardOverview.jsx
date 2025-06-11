@@ -120,7 +120,7 @@ const DashboardOverview = ({ user }) => {
       setTransactionsError(null);
       try {
         const response = await fetch(
-          `http://localhost:4001/api/v1/wallet-transactions/user/${user._id}`
+          `https://ladlilaxmi.onrender.com/api/v1/wallet-transactions/user/${user._id}`
         );
 
         if (!response.ok) {
@@ -190,7 +190,7 @@ const DashboardOverview = ({ user }) => {
     <div className="p-4 sm:p-6 lg:p-10 bg-gradient-to-br from-gray-50 to-gray-200 rounded-3xl shadow-2xl w-full max-w-7xl mx-auto border border-gray-100">
       {/* Welcome Section */}
       <div className="mb-8 text-center">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-800 mb-2 drop-shadow-md">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl z-0 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-800 mb-2 drop-shadow-md">
           Welcome, {user.name?.split(" ")[0] || "User"}!
         </h2>
         <p className="text-gray-700 text-md sm:text-lg mb-4 font-medium">
