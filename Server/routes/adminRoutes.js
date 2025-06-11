@@ -6,6 +6,8 @@ const {
   getUserCount,
   deleteUser,
   withdrawals,
+    getUserByEmail,
+  updateUserByAdmin
 } = require("../controllers/Admin");
 const router = express.Router();
 // Get total user count
