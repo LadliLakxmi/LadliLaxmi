@@ -325,7 +325,7 @@ const UpdateUser = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const API_BASE_URL = 'http://localhost:4001/api/v1/admin'; // Adjust if different
+  const API_BASE_URL = 'https://ladlilaxmi.onrender.com/api/v1/admin'; // Adjust if different
 
   // Helper for authenticated requests
   const getAuthHeaders = () => {
