@@ -6,7 +6,7 @@ import Users from './pages/Users';
 import Payments from './pages/Payments';
 import Reports from './pages/Reports';
 import Sidebar from './Components/Sidebar';
-import UpdateUser from './pages/Updateuser'
+import UpdateUser from './pages/UpdateUser'
 
 
 function AdminLayout({ children }) {
