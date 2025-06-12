@@ -8,7 +8,7 @@ const Sidebar = () => {
     }`;
 
   return (
-    <div className="w-64 bg-gray-800 text-white h-screen p-4">
+    <div className="w-64 md:w-50 bg-gray-800 text-white h-screen p-4">
       <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
       <nav className="flex flex-col space-y-2">
         <NavLink to="/Admindashboard/dashboard" className={linkClass}>
