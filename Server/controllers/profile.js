@@ -35,20 +35,52 @@ exports.getProfile = async (req, res) => {
       .populate("directReferrals", "name email")
       .populate("matrixChildren", "name email referralCode currentLevel")
       .populate("donationsSent")
-      .populate("donationsReceived")
+      .populate({
+                path: "donationsReceived", // Populate the donationsReceived array
+                select: "amount status"    // Select only the 'amount' and 'status' fields
+            })
       .populate("walletTransactions")
       .lean();
 
     if (!rootUser) {
       return res.status(404).json({ message: "User not found." });
     }
+    // Calculate total income from populated donationsReceived
+        let totalIncome = 0;
+
+          if (rootUser.donationsReceived && rootUser.donationsReceived.length > 0) {
+            totalIncome = rootUser.donationsReceived.reduce((sum, donation) => {
+                // Ensure only 'completed' donations count towards income, if applicable
+                // You might want to adjust this based on your business logic
+                if (donation.status === 'completed' || !donation.status) { // Assuming no status means it's complete
+                    return sum + donation.amount;
+                }
+                return sum;
+            }, 0);
+        }
 
     const hierarchyRoot = await buildMatrixHierarchy(userId);
     if (!hierarchyRoot) {
       return res.status(404).json({ message: "Hierarchy data not available." });
     }
+     // Attach totalIncome to the root of the hierarchy object
+        // You can attach it to `hierarchyRoot` directly or to `rootUser` before creating `hierarchyRoot`
+        // For simplicity and clarity, let's add it to the `profile` object we send back.
+        const profileWithIncome = {
+            ...hierarchyRoot, // This contains the nested matrixChildren structure
+            totalIncome: totalIncome, // Add the calculated total income
+            // You might want to include other top-level details from rootUser here if not already in hierarchyRoot
+            // e.g., email, phone, referralCode if buildMatrixHierarchy doesn't include them for the root
+            email: rootUser.email,
+            phone: rootUser.phone,
+            referralCode: rootUser.referralCode,
+            // ... any other top-level fields you explicitly need for the main profile card
+        };
 
-    res.status(200).json({ profile: hierarchyRoot });
+
+
+    res.status(200).json({ profile: profileWithIncome });
+    // res.status(200).json({ profile: hierarchyRoot });
   } catch (error) {
     console.error("Error fetching profile:", error);
     
