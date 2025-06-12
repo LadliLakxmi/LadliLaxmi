@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,11 +24,11 @@ const UpgradePage = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [successAnimation, setSuccessAnimation] = useState(false);
   const token = localStorage.getItem("token");
-
+   const navigate = useNavigate()
   // Ensure user and its properties are available, provide fallbacks
   const currentLevel = user?.currentLevel ?? 0;
   const walletBalance = user?.walletBalance ?? 0;
-  const blockedForUpgrade = user?.blockedForUpgrade ?? 0;
+  // const blockedForUpgrade = user?.blockedForUpgrade ?? 0;
 
   const nextLevel = currentLevel + 1;
   const nextLevelData = LEVELS[nextLevel];
@@ -36,8 +37,7 @@ const UpgradePage = ({ user }) => {
   // Conditions for the button state
   const isAtMaxLevel = !nextLevelData;
   const hasInsufficientBalance = walletBalance < upgradeCost;
-  const hasInsufficientBlockedAmount = blockedForUpgrade < upgradeCost;
-  const canUpgrade = !isAtMaxLevel && !hasInsufficientBalance && !hasInsufficientBlockedAmount;
+  const canUpgrade = !isAtMaxLevel && !hasInsufficientBalance;
 
   const handleUpgrade = async () => {
     if (!canUpgrade) {
@@ -45,9 +45,7 @@ const UpgradePage = ({ user }) => {
         toast.info("You are already at the highest level. Keep earning!");
       } else if (hasInsufficientBalance) {
         toast.error(`Wallet balance (₹${walletBalance}) is less than required (₹${upgradeCost}). Please deposit funds.`);
-      } else if (hasInsufficientBlockedAmount) {
-        toast.warning(`Blocked amount (₹${blockedForUpgrade}) is less than required (₹${upgradeCost}). Please ensure sufficient blocked funds.`);
-      }
+      } 
       return;
     }
 
@@ -77,6 +75,7 @@ const UpgradePage = ({ user }) => {
       setTimeout(() => {
         setSuccessAnimation(false); // Hide animation after 3s
       }, 3000);
+      navigate("/")
     } catch (error) {
       const err = error.response?.data?.message || "An unexpected error occurred during upgrade.";
       toast.error(err);
