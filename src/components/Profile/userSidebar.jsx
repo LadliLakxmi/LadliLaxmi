@@ -56,7 +56,7 @@ const UserSidebar = ({ user }) => {
   return (
     <>
       {/* Mobile Header with Hamburger */}
-      <div className="md:hidden p-4 bg-gradient-to-r from-gray-900 to-gray-700 text-white flex justify-between items-center shadow-lg fixed top-0 w-full z-50">
+      <div className="md:hidden p-4 bg-gradient-to-r from-gray-900 to-gray-700 text-white flex justify-between items-center shadow-lg fixed top-20 w-full z-50">
         <h3 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">
           Welcome, {user?.name}!
         </h3>
@@ -72,7 +72,7 @@ const UserSidebar = ({ user }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 md:top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
+          fixed top-20 md:top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
           flex flex-col p-6 justify-between overflow-y-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:relative md:translate-x-0 md:h-auto md:shadow-none
@@ -95,7 +95,7 @@ const UserSidebar = ({ user }) => {
 
         {/* Navigation Links */}
         <nav className="flex-grow">
-          <ul className="space-y-4">
+          <ul className=" space-y-4">
             {links.map(({ to, label, icon }) => (
               <SidebarLink
                 key={to}
@@ -106,12 +106,12 @@ const UserSidebar = ({ user }) => {
               />
             ))}
           </ul>
-        </nav>
-
         {/* Logout */}
-        <div className="mt-8 pt-6 border-t border-gray-700">
+        <div className=" pt-6 border-t border-gray-700">
           <Logout />
         </div>
+        </nav>
+
       </aside>
 
       {/* Mobile Overlay */}
