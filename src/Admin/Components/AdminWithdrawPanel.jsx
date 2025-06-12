@@ -108,16 +108,15 @@ const AdminWithdrawPanel = () => {
                       {req.status}
                     </span>
                   </td>
-                  <td className="py-3 px-6 text-left">
+                 <td className="py-3 px-6 text-left">
                     {/* Safely display bank details */}
-                    {console.log(req.bankDetails)}
-                    {req.bankDetails ? (
+                    {req ? (
                       <>
-                        <p>Holder: {req.bankDetails.accountHolder || 'N/A'}</p>
-                        <p>Acc: {req.bankDetails.accountNumber || 'N/A'}</p>
-                        <p>IFSC: {req.bankDetails.ifscCode || 'N/A'}</p>
-                        <p>Bank: {req.bankDetails.bankName || 'N/A'}</p>
-                        {req.bankDetails.phoneNumber && <p>Phone: {req.bankDetails.phoneNumber}</p>}
+                        <p>Holder: {req.user?.name || 'N/A'}</p>
+                        <p>Acc: {req.user?.bankDetails.accountNumber || 'N/A'}</p>
+                        <p>IFSC: {req.user?.bankDetails.ifscCode || 'N/A'}</p>
+                        <p>Bank: {req.user?.bankDetails.bankName || 'N/A'}</p>
+                        {req.user?.phone && <p>Phone: {req.user?.phone}</p>}
                       </>
                     ) : (
                       'Not provided'
