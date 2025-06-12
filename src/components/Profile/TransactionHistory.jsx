@@ -51,7 +51,7 @@ const TransactionHistory = ({ user, walletTransactions }) => {
   }
 
   return (
-    <div className="p-8 bg-white rounded-lg shadow-lg max-w-6xl mx-auto">
+    <div className="p-8 mt-10 md:mt-0 bg-white rounded-lg shadow-lg max-w-6xl mx-auto">
       <h2 className="text-4xl font-extrabold text-gray-800 mb-8 pb-4 border-b-4 border-blue-500">
         Transaction History
       </h2>
