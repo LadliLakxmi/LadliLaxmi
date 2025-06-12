@@ -44,7 +44,7 @@ const Dashboard = ({ user }) => {
         {/* Text Details Below the Circular Node */}
         <div className="mt-3 text-center text-white w-full px-1">
           <div className="font-bold truncate text-sm sm:text-base leading-tight">{member.name || "Unknown"}</div>
-          <div className="text-xs sm:text-sm text-gray-300 truncate leading-tight">{member.phone || "N/A"}</div>
+{/*           <div className="text-xs sm:text-sm text-gray-300 truncate leading-tight">{member.phone || "N/A"}</div> */}
           <div className="text-xs text-gray-400 truncate leading-tight">ID: {member.referralCode || member._id?.slice(-6) || "N/A"}</div>
           <div className="text-xs sm:text-sm font-semibold mt-1 flex items-center justify-center gap-1 text-gray-200 leading-tight">
             <Layers size={14} className="text-white opacity-70" /> Level: {currentLevel}
