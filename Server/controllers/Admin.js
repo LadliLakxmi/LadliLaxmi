@@ -41,7 +41,7 @@ exports.withdrawals = async (req, res) => {
   try {
     const requests = await WithdrawRequest.find().populate({
       path: 'user',
-      select: 'email walletBalance',
+      select: 'email walletBalance bankDetails totalWithdrawn ' ,
     }).exec();
 
     res.status(200).json(requests);
