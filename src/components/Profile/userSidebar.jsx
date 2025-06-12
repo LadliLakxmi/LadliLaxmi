@@ -56,7 +56,7 @@ const UserSidebar = ({ user }) => {
   return (
     <>
       {/* Mobile Header with Hamburger */}
-      <div className="md:hidden p-4 bg-gradient-to-r from-gray-900 to-gray-700 text-white flex justify-between items-center shadow-lg">
+      <div className="md:hidden p-4 bg-gradient-to-r from-gray-900 to-gray-700 text-white flex justify-between items-center shadow-lg fixed top-0 w-full z-50">
         <h3 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">
           Welcome, {user?.name}!
         </h3>
@@ -72,14 +72,15 @@ const UserSidebar = ({ user }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-20 left-0 h-[80vh] md:h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
+          fixed top-0 md:top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
           flex flex-col p-6 justify-between overflow-y-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          md:relative md:translate-x-0 md:top-0 md:h-auto md:shadow-none
-          z-50 md:z-0 // ADD THIS LINE: Ensure sidebar is above everything else
+          md:relative md:translate-x-0 md:h-auto md:shadow-none
+          z-40 md:z-auto // Adjusted z-index for mobile to be below header
         `}
+        style={{ paddingTop: '5rem' }} // Add padding to account for fixed header
       >
-        {/* Desktop User Info */}
+        {/* Desktop User Info (hidden on mobile) */}
         <div className="hidden md:block text-center mb-8 border-b border-gray-700 pb-6">
           <h3 className="text-3xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">
             {user?.name}
@@ -116,7 +117,7 @@ const UserSidebar = ({ user }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-60 z-40 md:hidden" // z-40 ensures it's below the sidebar (z-50)
+          className="fixed inset-0 bg-black bg-opacity-60 z-30 md:hidden" // z-30 ensures it's below the sidebar (z-40)
           onClick={handleClose}
         />
       )}
