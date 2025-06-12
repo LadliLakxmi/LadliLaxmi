@@ -1,0 +1,35 @@
+/* ===== Profile.css ===== */
+
+/* Loader container styles */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem; /* Larger font size for visibility */
+  color: #fcd34d; /* A nice yellow/gold color */
+  gap: 1rem; /* Space between symbols */
+  filter: drop-shadow(0 0 5px rgba(252, 211, 77, 0.7)); /* Subtle glow */
+}
+
+/* Base styles for currency symbols */
+.currency-loader {
+  animation: bounceAndFade 1.5s infinite ease-in-out;
+  opacity: 0.2; /* Start with lower opacity */
+}
+
+/* Delay for the second symbol */
+.currency-loader.rupee {
+  animation-delay: 0.75s; /* Start the rupee animation after the dollar */
+}
+
+/* Keyframes for the animation */
+@keyframes bounceAndFade {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-15px); /* How high it bounces */
+    opacity: 1; /* Fully visible at the peak of the bounce */
+  }
+}
