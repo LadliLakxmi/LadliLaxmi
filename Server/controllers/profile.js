@@ -82,9 +82,9 @@ exports.updateBankDetails = async (req, res) => {
       accountNumber,
       ifscCode,
       bankName,
-      phoneNumber,
+     
     };
-
+    user.phone =  phoneNumber
     await user.save(); // Save the updated user document
 
     res.status(200).json({
