@@ -55,7 +55,7 @@ const Profile = () => {
           <UserSidebar user={user} />
         </div>
         <div className="w-full md:w-4/5 rounded-lg shadow-lg">
-          <Main user={user} />
+          <Main user={user} setUser={setUser}/>
         </div>
       </div>
     </div>
