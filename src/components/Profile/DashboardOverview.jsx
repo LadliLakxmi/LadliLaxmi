@@ -563,7 +563,7 @@ const DashboardOverview = ({ user, setUser }) => {
         <p className="text-gray-700 text-md sm:text-lg font-medium">
           Email: {user.email}
         </p>
-        <p className="text-gray-700 text-md sm:text-lg mb-4 font-medium">
+        <p className="text-gray-700 text-md sm:text-lg font-medium">
           Phone: {user.phone}
         </p>
         <p className="text-gray-700 text-md sm:text-lg mb-4 font-medium">
