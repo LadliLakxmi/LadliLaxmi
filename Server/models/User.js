@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       sparse: true, // Allows null/undefined if not unique
+      required:true
       // Consider adding a unique constraint if phone numbers should be unique,
       // but use 'sparse: true' if some users might not have one.
     },
@@ -85,11 +86,17 @@ const userSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
-    blockedForUpgrade: {
-      type: Number,
-      default: 0,
-      min:0
-    },
+  panCard: {
+        type: String,
+        trim: true,
+        uppercase: true, // PAN cards are typically uppercase
+        unique: true, // A PAN card should be unique per user
+        sparse: true, // Allows null/undefined for users who haven't added it yet
+        match: [
+          /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, // Basic Indian PAN card format regex
+          "Please enter a valid Indian PAN card number (e.g., ABCDE1234F)",
+        ],
+      },
 
     walletTransactions: [
       {
