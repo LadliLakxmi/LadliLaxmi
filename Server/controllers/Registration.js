@@ -39,14 +39,28 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Check if user already exists
-    let user = await User.findOne({ email });
-    if (user) {
-      return res
-        .status(400)
-        .json({ message: "User already exists with this email" });
-    }
+    // // Check if user already exists
+    // let user = await User.findOne({ email });
+    // if (user) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "User already exists with this email" });
+    // }
 
+    // --- NEW: Check if user already exists by email OR phone ---
+    let existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return res
+          .status(400)
+          .json({ success: false, message: "User already exists with this email." });
+      }
+      if (existingUser.phone === phone) {
+        return res
+          .status(400)
+          .json({ success: false, message: "User already exists with this phone number." });
+      }
+    }
     let referrer = null;
     let slotUser = null;
 
@@ -96,8 +110,7 @@ exports.register = async (req, res) => {
         });
       }
     }
-    console.log("slotUser", slotUser);
-    console.log("slotUser referre code", slotUser.referralCode);
+
     const hashed = await bcrypt.hash(password, 10);
     // Generate a unique referral code for the new user based on their _id
     // This will be set by the schema's default function, but ensure _id is available first
@@ -151,42 +164,124 @@ exports.register = async (req, res) => {
   }
 };
 
-// ... (your login and changePassword exports remain the same)
+// // ... (your login and changePassword exports remain the same)
+// exports.login = async (req, res) => {
+//   const { email, password } = req.body;
+
+//   try {
+//     // Check if email or password is missing
+//     if (!email || !password) {
+//       return res.status(400).json({
+//         success: false,
+//         message: `Please fill up all the required fields`,
+//       });
+//     }
+
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       return res
+//         .status(401)
+//         .json({ success: false, message: "Invalid email or password" });
+//     }
+
+//     const match = await bcrypt.compare(password, user.password);
+//     if (!match) {
+//       return res
+//         .status(401)
+//         .json({ success: false, message: "Invalid email or password" });
+//     }
+
+//     // Login successful
+//     const token = generateToken(user);
+//     user.token = token;
+//     console.log(token);
+//     const options = {
+//       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
+//       httpOnly: true, // Prevent client-side JS from accessing the cookie
+//       // secure: process.env.NODE_ENV === 'production', // Use secure in production (HTTPS)
+//       // sameSite: 'Lax', // Adjust as needed for CORS
+//     };
+
+//     // Set cookie and return response
+//     res
+//       .cookie("token", token, options)
+//       .status(200)
+//       .json({
+//         // Renamed cookie to 'token' for clarity
+//         success: true,
+//         token,
+//         user: {
+//           // Return necessary user details
+//           _id: user._id,
+//           name: user.name, // Assuming 'name' is used as username
+//           email: user.email,
+//           sponserdBy: user.sponserdBy, // Include sponserdBy
+//           referredBy: user.referredBy, // Include referredBy
+//           currentLevel: user.currentLevel,
+//           walletBalance: user.walletBalance,
+//           referralCode: user.referralCode, // Include referral code
+//           role: user.role, // Include role
+//           token: token, // Include token in user object for client-side use
+//         },
+//         message: "User login successful",
+//       });
+//   } catch (error) {
+//     console.error("Login error:", error);
+//     res.status(500).json({ message: "Server error during login." });
+//   }
+// };
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { identifier, password } = req.body; // 'identifier' can be email or phone
 
   try {
-    // Check if email or password is missing
-    if (!email || !password) {
+    // Check if identifier or password is missing
+    if (!identifier || !password) {
       return res.status(400).json({
         success: false,
         message: `Please fill up all the required fields`,
       });
     }
 
-    const user = await User.findOne({ email });
+    let user;
+
+    // Determine if the identifier is likely an email or a phone number
+    // A simple check: if it contains '@', assume it's an email. Otherwise, assume phone.
+    if (identifier.includes('@')) {
+      user = await User.findOne({ email: identifier });
+    } else {
+      // Basic phone number validation (e.g., all digits)
+      if (!/^\d+$/.test(identifier)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid identifier format. Please use a valid email or phone number.",
+        });
+      }
+      user = await User.findOne({ phone: identifier });
+    }
+
+    // If user not found by either email or phone
     if (!user) {
       return res
         .status(401)
-        .json({ success: false, message: "Invalid email or password" });
+        .json({ success: false, message: "Invalid email/phone number or password" });
     }
 
+    // Validate password
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res
         .status(401)
-        .json({ success: false, message: "Invalid email or password" });
+        .json({ success: false, message: "Invalid email/phone number or password" });
     }
 
     // Login successful
-    const token = generateToken(user);
-    user.token = token;
-    console.log(token);
+    const token = generateToken(user._id); // Assuming generateToken takes user _id
+
     const options = {
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
       httpOnly: true, // Prevent client-side JS from accessing the cookie
-      // secure: process.env.NODE_ENV === 'production', // Use secure in production (HTTPS)
-      // sameSite: 'Lax', // Adjust as needed for CORS
+      // secure: process.env.NODE_ENV === 'production', // Uncomment in production (HTTPS)
+      // sameSite: 'Lax', // Adjust as needed for CORS, 'Strict' or 'Lax' recommended
     };
 
     // Set cookie and return response
@@ -194,21 +289,20 @@ exports.login = async (req, res) => {
       .cookie("token", token, options)
       .status(200)
       .json({
-        // Renamed cookie to 'token' for clarity
         success: true,
         token,
         user: {
-          // Return necessary user details
           _id: user._id,
-          name: user.name, // Assuming 'name' is used as username
+          name: user.name,
           email: user.email,
-          sponserdBy: user.sponserdBy, // Include sponserdBy
-          referredBy: user.referredBy, // Include referredBy
+          phone: user.phone,
+          sponserdBy: user.sponserdBy,
+          referredBy: user.referredBy,
           currentLevel: user.currentLevel,
           walletBalance: user.walletBalance,
-          referralCode: user.referralCode, // Include referral code
-          role: user.role, // Include role
-          token: token, // Include token in user object for client-side use
+          referralCode: user.referralCode,
+          role: user.role,
+          // Removed 'token: token' from user object as it's already in the top-level response and cookie
         },
         message: "User login successful",
       });
@@ -217,6 +311,8 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Server error during login." });
   }
 };
+
+
 
 exports.changePassword = async (req, res) => {
   try {
