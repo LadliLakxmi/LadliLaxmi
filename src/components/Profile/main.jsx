@@ -31,7 +31,7 @@ console.log("user main",user)
             </div>
           }
         /> */}
-        <Route path="/" element={<DashboardOverview user={user} setUser ={setUser} walletTransactions={user.walletTransactions}/>} />
+        <Route path="/" element={<DashboardOverview user={user} setUser={setUser} walletTransactions={user.walletTransactions}/>} />
         <Route path="/withdraw" element={<Withdraw user={user} />} />
         <Route
           path="/downline"
