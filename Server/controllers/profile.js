@@ -268,7 +268,7 @@ exports.updateProfile = async (req, res) => {
     // Assuming req.user.id is set by your authentication middleware (e.g., 'protect')
     // This ensures only the logged-in user can update their own profile.
     const userId = req.user.id; 
-    const { name, email, phone } = req.body;
+    const { name, email, phone ,panCard } = req.body;
 
     // Find the user by their ID
     const user = await User.findById(userId);
@@ -278,7 +278,7 @@ exports.updateProfile = async (req, res) => {
     }
 
     // Input validation (optional but recommended for robust APIs)
-    if (!name && !email && !phone) {
+    if (!name && !email && !phone && panCard) {
       return res.status(400).json({ success: false, message: "No fields provided for update." });
     }
 
@@ -299,6 +299,13 @@ exports.updateProfile = async (req, res) => {
       }
       user.phone = phone;
     }
+    if (panCard && panCard !== user.panCard) {
+      const existingPanUser = await User.findOne({ panCard });
+      if (existingPanUser) {
+        return res.status(400).json({ success: false, message: "This pan number is already in use by another account." });
+      }
+      user.panCard = panCard;
+    }
 
     // Update name if provided
     if (name) {
@@ -317,6 +324,7 @@ exports.updateProfile = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        panCard: user.panCard
         // You might want to return other fields here, but exclude sensitive ones like password
       }
     });
@@ -331,5 +339,3 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error: Could not update profile.' });
   }
 };
-
-
