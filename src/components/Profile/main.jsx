@@ -9,7 +9,7 @@ import Withdraw from "./Withdraw";
 import UpgradePage from "./UpgradePage";
 import DonateDownline from "./DonateDownline"
 
-const Main = ({ user }) => {
+const Main = ({ user,setUser }) => {
 console.log("user main",user)
   return (
     <div className=" flex  flex-col w-full min-h-screen px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 ">
@@ -31,7 +31,7 @@ console.log("user main",user)
             </div>
           }
         /> */}
-        <Route path="/" element={<DashboardOverview user={user} walletTransactions={user.walletTransactions}/>} />
+        <Route path="/" element={<DashboardOverview user={user} setUser ={setUser} walletTransactions={user.walletTransactions}/>} />
         <Route path="/withdraw" element={<Withdraw user={user} />} />
         <Route
           path="/downline"
