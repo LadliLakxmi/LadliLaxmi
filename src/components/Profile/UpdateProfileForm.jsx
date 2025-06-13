@@ -30,8 +30,8 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
 
     try {
       const response = await axios.put(
-        // `https://ladlilaxmi.onrender.com/api/v1/profile/update-profile`, // Ensure this matches your backend route
-        `http://localhost:4001/api/v1/profile/update-profile`, // Ensure this matches your backend route
+        `https://ladlilaxmi.onrender.com/api/v1/profile/update-profile`, // Ensure this matches your backend route
+
         { name, email, phone },
         {
           headers: {
