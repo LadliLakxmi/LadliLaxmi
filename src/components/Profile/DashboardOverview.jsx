@@ -566,6 +566,9 @@ const DashboardOverview = ({ user, setUser }) => {
         <p className="text-gray-700 text-md sm:text-lg mb-4 font-medium">
           Phone: {user.phone}
         </p>
+        <p className="text-gray-700 text-md sm:text-lg mb-4 font-medium">
+          PanCard: {user?.panCard}
+        </p>
       <div className="flex gap-4 items-center justify-center">
         {/* --- NEW: Update Profile Button --- */}
         <button
