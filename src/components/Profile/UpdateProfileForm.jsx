@@ -7,6 +7,7 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [panCard, setPanCard] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -17,6 +18,7 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
       setName(user.name || '');
       setEmail(user.email || '');
       setPhone(user.phone || '');
+      setPanCard(user.panCard || '');
     }
   }, [user]);
 
@@ -30,9 +32,9 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
 
     try {
       const response = await axios.put(
-        `https://ladlilaxmi.onrender.com/api/v1/profile/update-profile`, // Ensure this matches your backend route
-
-        { name, email, phone },
+        // `https://ladlilaxmi.onrender.com/api/v1/profile/update-profile`, // Ensure this matches your backend route
+        `http://localhost:4001/api/v1/profile/update-profile`, // Ensure this matches your backend route
+        { name, email, phone,panCard },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -111,6 +113,19 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
               className="mt-1 text-black block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="panCard" className="block text-sm font-medium text-gray-700 mb-1">
+              Pan Card
+            </label>
+            <input
+              type="text" // Use type="tel" for phone numbers
+              id="panCard"
+              className="mt-1 text-black block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              value={panCard}
+              onChange={(e) => setPanCard(e.target.value)}
               required
             />
           </div>
