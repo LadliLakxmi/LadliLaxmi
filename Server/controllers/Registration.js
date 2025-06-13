@@ -274,14 +274,14 @@ exports.login = async (req, res) => {
         .json({ success: false, message: "Invalid email/phone number or password" });
     }
 
-    // Login successful
-    const token = generateToken(user._id); // Assuming generateToken takes user _id
-
+        // Login successful
+    const token = generateToken(user);
+    user.token = token;
     const options = {
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
       httpOnly: true, // Prevent client-side JS from accessing the cookie
-      // secure: process.env.NODE_ENV === 'production', // Uncomment in production (HTTPS)
-      // sameSite: 'Lax', // Adjust as needed for CORS, 'Strict' or 'Lax' recommended
+      // secure: process.env.NODE_ENV === 'production', // Use secure in production (HTTPS)
+      // sameSite: 'Lax', // Adjust as needed for CORS
     };
 
     // Set cookie and return response
@@ -289,20 +289,21 @@ exports.login = async (req, res) => {
       .cookie("token", token, options)
       .status(200)
       .json({
+        // Renamed cookie to 'token' for clarity
         success: true,
         token,
         user: {
+          // Return necessary user details
           _id: user._id,
-          name: user.name,
+          name: user.name, // Assuming 'name' is used as username
           email: user.email,
-          phone: user.phone,
-          sponserdBy: user.sponserdBy,
-          referredBy: user.referredBy,
+          sponserdBy: user.sponserdBy, // Include sponserdBy
+          referredBy: user.referredBy, // Include referredBy
           currentLevel: user.currentLevel,
           walletBalance: user.walletBalance,
-          referralCode: user.referralCode,
-          role: user.role,
-          // Removed 'token: token' from user object as it's already in the top-level response and cookie
+          referralCode: user.referralCode, // Include referral code
+          role: user.role, // Include role
+          token: token, // Include token in user object for client-side use
         },
         message: "User login successful",
       });
