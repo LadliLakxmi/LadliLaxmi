@@ -41,7 +41,7 @@ console.log("user main",user)
           path="/myteam"
           element={<MyTeam team={user} matrixChildren={user.matrixChildren} />}
         />
-        {user.currentLevel === 0 ? (
+{/*         {user.currentLevel === 0 ? (
           <Route
             path="/donatePage"
             element={<DonatePage user={user} matrixChildren={user.matrixChildren} />}
@@ -51,7 +51,11 @@ console.log("user main",user)
             path={`/upgrade/${user.currentLevel + 1}`}
             element={<UpgradePage user={user} matrixChildren={user.matrixChildren} />}
           />
-        )}
+        )} */}
+        <Route
+            path={`/upgrade/${user.currentLevel + 1}`}
+            element={<UpgradePage user={user} setUser={setUser} matrixChildren={user.matrixChildren} />}
+          />
         <Route
           path="/transactions"
           element={<TransactionHistory walletTransactions={user.walletTransactions} />}
