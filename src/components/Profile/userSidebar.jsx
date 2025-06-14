@@ -23,6 +23,7 @@ const UserSidebar = ({ user }) => {
   const iconMap = {
     Dashboard: <FaTachometerAlt className="inline-block mr-3 text-gold-400" />,
     Withdraw: <FaMoneyBillWave className="inline-block mr-3 text-green-400" />,
+    "Add Fund": <FaMoneyBillWave className="inline-block mr-3 text-green-400" />,
     "Activate Level 1": <FaDonate className="inline-block mr-3 text-purple-400" />,
     Upgrade: <FaLevelUpAlt className="inline-block mr-3 text-indigo-400" />, // Generic for upgrade levels
     "My Downline": <FaUsers className="inline-block mr-3 text-orange-400" />,
@@ -45,6 +46,7 @@ const UserSidebar = ({ user }) => {
           },
         ]
       : []),
+    { to: "/userdashboard/addFund", label: "Add Fund" },
     { to: "/userdashboard/downline", label: "My Downline" },
     { to: "/userdashboard/myteam", label: "My Team" },
     { to: "/userdashboard/transactions", label: "Transaction History" },

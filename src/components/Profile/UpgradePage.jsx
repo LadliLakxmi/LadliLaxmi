@@ -8,7 +8,7 @@ import QRcode from "../../assets/QRcode.jpg";
 
 // Define upgrade levels and their costs (matches backend LEVEL_FLOW.amount)
 const LEVELS = {
-  1: { upgradeCost: 300 },
+  1: { upgradeCost: 400 },
   2: { upgradeCost: 500 },
   3: { upgradeCost: 1000 },
   4: { upgradeCost: 2000 },
@@ -61,7 +61,8 @@ const UpgradePage = ({ user, setUser }) => {
 
     try {
       const response = await axios.post(
-        "https://ladlilaxmi.onrender.com/api/v1/upgrade",
+        // "https://ladlilaxmi.onrender.com/api/v1/upgrade",
+        "http://localhost:4001/api/v1/upgrade",
         {
           userId: user._id,
           level: nextLevel,
@@ -160,36 +161,7 @@ const UpgradePage = ({ user, setUser }) => {
           </div>
         ) : (
           <>
-            {user.currentLevel === 0 ? (
-              <div className="flex flex-col md:flex-row mt-4  items-center ">
-                <div className="flex flex-col w-full items-center">
-                  <img
-                    className="p-2 h-[25rem] w-[25rem]"
-                    src={QRcode}
-                    alt=""
-                  />
-                  <p className="text-4xl mt-0 text-amber-500">
-                    ☝🏻 Pay ₹400 
-                  </p>
-                </div>
-                <div className="flex flex-col  text-xl gap-4 p-2 ">
-                  <p className="text-red-400 text-2xl ">Instructions-</p>
-                  <p>After Payment</p>
-                  <p> Please Send Screen Shot on </p>
-                  <p className="text-2xl w-full py-4 bg-gray-900 p-2 rounded-2xl">
-                    WhatsApp<span className="w-20px">:-</span>{" "}
-                    <strong className="text-green-500">+91 78200 09103</strong>{" "}
-                  </p>
-                  <p className="text-amber-300 ">
-                    Along with Name , Email id & Referral code
-                  </p>
-                  <p>It takes upto 24Hr in your fund addition for</p>
-                  <p> Level 1 Activation</p>
-                </div>
-              </div>
-            ) : (
-              <div></div>
-            )}
+           
                           <div className="space-y-4 mb-6">
                 <div className="flex justify-between items-center bg-purple-700/50 p-4 rounded-lg">
                   <span className="text-lg font-medium text-purple-200">

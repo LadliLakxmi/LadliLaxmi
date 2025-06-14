@@ -319,17 +319,17 @@ const Donation = require("../models/Donation"); // Assuming Donation model is re
 const WalletTransaction = require("../models/WalletTransaction");
 
 const LEVEL_FLOW = {
-  1: { amount: 300, uplineIncome: 600, upgradeCost: 500, netIncome: 100 },
-  2: { amount: 500, uplineIncome: 2000, upgradeCost: 1000, netIncome: 1000 },
-  3: { amount: 1000, uplineIncome: 8000, upgradeCost: 2000, netIncome: 6000 },
-  4: { amount: 2000, uplineIncome: 32000, upgradeCost: 4000, netIncome: 28000 },
-  5: { amount: 4000, uplineIncome: 128000, upgradeCost: 8000, netIncome: 120000 },
-  6: { amount: 8000, uplineIncome: 512000, upgradeCost: 16000, netIncome: 496000 },
-  7: { amount: 16000, uplineIncome: 2048000, upgradeCost: 32000, netIncome: 2016000 },
-  8: { amount: 32000, uplineIncome: 8192000, upgradeCost: 64000, netIncome: 8128000 },
-  9: { amount: 64000, uplineIncome: 32768000, upgradeCost: 128000, netIncome: 32640000 },
-  10: { amount: 128000, uplineIncome: 131072000, upgradeCost: 256000, netIncome: 130816000 },
-  11: { amount: 256000, uplineIncome: 524288000, upgradeCost: null, netIncome: 524288000 },
+  1: { amount: 300, uplineIncome: 600, upgradeCost: 500, sponsorShare: 100,netIncome: 100 },
+  2: { amount: 500, uplineIncome: 2000, upgradeCost: 1000,sponsorShare: 0, netIncome: 1000 },
+  3: { amount: 1000, uplineIncome: 8000, upgradeCost: 2000,sponsorShare: 0, netIncome: 6000 },
+  4: { amount: 2000, uplineIncome: 32000, upgradeCost: 4000,sponsorShare: 0, netIncome: 28000 },
+  5: { amount: 4000, uplineIncome: 128000, upgradeCost: 8000,sponsorShare: 0, netIncome: 120000 },
+  6: { amount: 8000, uplineIncome: 512000, upgradeCost: 16000,sponsorShare: 0, netIncome: 496000 },
+  7: { amount: 16000, uplineIncome: 2048000, upgradeCost: 32000,sponsorShare: 0, netIncome: 2016000 },
+  8: { amount: 32000, uplineIncome: 8192000, upgradeCost: 64000,sponsorShare: 0, netIncome: 8128000 },
+  9: { amount: 64000, uplineIncome: 32768000, upgradeCost: 128000,sponsorShare: 0, netIncome: 32640000 },
+  10: { amount: 128000, uplineIncome: 131072000, upgradeCost: 256000,sponsorShare: 0, netIncome: 130816000 },
+  11: { amount: 256000, uplineIncome: 524288000, upgradeCost: null, sponsorShare: 0,netIncome: 524288000 },
 };
 
 
@@ -406,8 +406,10 @@ exports.initiateUpgrade = async (req, res) => {
         current: user.walletBalance,
       });
     }
+    let sponsorPaymentAmount = flow.sponsorShare;
     // 2. Determine the Recipient Upline for this upgrade
     let recipientUser = null;
+    let sponserUser = null;
     let paymentDestinationType = "Admin"; // Default to admin
 
     // The logic is:
@@ -432,6 +434,20 @@ exports.initiateUpgrade = async (req, res) => {
     const hopsToUpline = user.currentLevel; // This determines how many "levels above" in the hierarchy.
 
     recipientUser = await findSpecificUpline(userId, hopsRequired, session);
+    if(level === 1){
+      sponserUser = await User.findOne({referralCode : user.sponserdBy});
+      if (sponserUser) {
+        paymentDestinationType = "sponsor";
+      } else {
+        sponserUser = await User.findOne({ role: "Admin" }).session(session);
+        if (!sponserUser) {
+          await session.abortTransaction();
+          return res.status(500).json({ message: "Admin user not found for sponsor payment. Critical error." });
+        }
+        paymentDestinationType = "admin";
+      }
+    }
+
 
     if (recipientUser) {
         paymentDestinationType = "upline";
@@ -447,11 +463,15 @@ exports.initiateUpgrade = async (req, res) => {
 
     // 3. Perform Wallet Deductions and Additions
     user.walletBalance -= upgradeCost;
+    if(level === 1){
+      user.walletBalance -= sponsorPaymentAmount;
+    }
     // If you're deducting from 'blockedForUpgrade', modify here:
     // user.blockedForUpgrade -= upgradeCost;
     // if (user.blockedForUpgrade < 0) user.blockedForUpgrade = 0;
 
     recipientUser.walletBalance += upgradeCost;
+    sponserUser.walletBalance += sponsorPaymentAmount;
 
 
     // 4. Create Wallet Transactions
@@ -473,7 +493,7 @@ exports.initiateUpgrade = async (req, res) => {
     // Recipient's (upline/admin) transaction
     const recipientTxn = new WalletTransaction({
       amount: upgradeCost,
-      type: paymentDestinationType === 'admin' ? "admin_upgrade_revenue" : "upline_upgrade_commission",
+      type: paymentDestinationType ==='admin' ? "admin_upgrade_revenue" : "upline_upgrade_commission",
       status: "completed",
       fromUser: user._id,
       description: `Received Level ${level} upgrade payment from ${user.name || user.email}`,
@@ -482,6 +502,22 @@ exports.initiateUpgrade = async (req, res) => {
     });
     await recipientTxn.save({ session });
     recipientUser.walletTransactions.push(recipientTxn._id);
+
+    // If there's a separate sponsor payment for Level 1
+    if (level === 1 && sponsorPaymentAmount > 0 && sponserUser && !recipientUser._id.equals(sponserUser._id)) {
+      const sponsorTxn = new WalletTransaction({
+        amount: sponsorPaymentAmount,
+        type: paymentDestinationType === 'admin' ? "admin_sponsor_share" : "sponsor_commission",
+        status: "completed",
+        fromUser: user._id,
+        description: `Received Level ${level} Sponsor Share from ${user.name || user.email}`,
+        transactionId: uuidv4(), // New UUID for this specific transaction
+        processedAt: new Date(),
+      });
+      await sponsorTxn.save({ session });
+      sponserUser.walletTransactions.push(sponsorTxn._id);
+    }
+
 
     // 5. Record Donation (if you consider upgrade payments as 'donations')
     const donation = new Donation({
@@ -503,7 +539,9 @@ exports.initiateUpgrade = async (req, res) => {
     // 7. Save updated User documents
     await user.save({ session });
     await recipientUser.save({ session }); // Save the upline/admin as well
-
+if (sponserUser && !recipientUser._id.equals(sponserUser._id)) {
+      await sponserUser.save({ session });
+    }
     // 8. Commit Transaction
     await session.commitTransaction();
     session.endSession();

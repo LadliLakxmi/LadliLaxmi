@@ -8,6 +8,7 @@ import MyTeam from "./MyTeam";
 import Withdraw from "./Withdraw";
 import UpgradePage from "./UpgradePage";
 import DonateDownline from "./DonateDownline"
+import AddFund from "./AddFund";
 
 const Main = ({ user,setUser }) => {
 console.log("user main",user)
@@ -33,6 +34,10 @@ console.log("user main",user)
         /> */}
         <Route path="/" element={<DashboardOverview user={user} setUser={setUser} walletTransactions={user.walletTransactions}/>} />
         <Route path="/withdraw" element={<Withdraw user={user} />} />
+        <Route
+          path="/addFund"
+          element={<AddFund user={user} matrixChildren={user.matrixChildren} />}
+        />
         <Route
           path="/downline"
           element={<Dashboard user={user} matrixChildren={user.matrixChildren} />}
