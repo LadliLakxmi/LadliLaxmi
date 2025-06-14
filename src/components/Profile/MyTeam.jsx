@@ -39,11 +39,12 @@ const MyTeam = ({ team, matrixChildren }) => {
         <h3 className="text-2xl font-bold mb-6 flex items-center justify-center gap-2">
           <LayoutGrid size={28} className="text-blue-600  " /> Direct Referrals
         </h3>
-        {members.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2  justify-items-center">
+        {members.length > 0 ? ( 
+          <div className="   justify-items-center">
             {members.map((child, index) => (
-              // Passing `childs` as originally named in your component
+              // Passing childs as originally named in your component
               <MyTeamTemplate key={child._id || index} childs={child} />
+         
             ))}
           </div>
         ) : (
