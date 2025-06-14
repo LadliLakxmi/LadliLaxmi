@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { CheckCircle2, ArrowUpCircle } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 // Define upgrade levels and their costs
 const LEVELS = {
@@ -23,7 +23,7 @@ const LEVELS = {
 const UpgradePage = ({ user, setUser }) => {
   const [loading, setLoading] = useState(false);
   const [successAnimation, setSuccessAnimation] = useState(false);
-  const [isTouching, setIsTouching] = useState(false); // Track touch state
+  const [isTouching, setIsTouching] = useState(false);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -95,7 +95,7 @@ const UpgradePage = ({ user, setUser }) => {
       console.error("Upgrade error:", error.response?.data || error.message);
     } finally {
       setLoading(false);
-      setIsTouching(false); // Reset touch state
+      setIsTouching(false);
     }
   };
 
@@ -110,13 +110,9 @@ const UpgradePage = ({ user, setUser }) => {
 
   return (
     <div className="flex min-h-[calc(100vh-150px)] items-center justify-center p-4">
-      <div className="bg-gradient-to-br border from-purple-800 to-indigo-900 text-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-xl mx-auto relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute -top-10 -right-10 w-80 h-40 bg-purple-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse"></div>
-        <div className="absolute -bottom-10 -left-10 w-80 h-40 bg-indigo-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse delay-200"></div>
-
-        <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg flex items-center justify-center gap-2 md:gap-3">
-          <ArrowUpCircle className="w-6 h-6 md:w-8 md:h-8" />
+      <div className="bg-gradient-to-br border from-purple-800 to-indigo-900 text-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-md mx-auto relative overflow-hidden">
+        
+        <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg">
           Upgrade Your Level
         </h2>
 
@@ -130,7 +126,7 @@ const UpgradePage = ({ user, setUser }) => {
             </p>
           </div>
         ) : (
-          <div className=" flex flex-col items-center">
+          <div className="flex flex-col w-full justify-center items-center">
             <div className="space-y-3 w-full md:space-y-4 mb-4 md:mb-6">
               <div className="flex justify-between items-center bg-purple-700/50 p-3 md:p-4 rounded-lg">
                 <span className="text-base md:text-lg font-medium text-purple-200">
@@ -144,7 +140,7 @@ const UpgradePage = ({ user, setUser }) => {
                 <span className="text-base md:text-lg font-medium text-indigo-200">
                   Upgrade Cost:
                 </span>
-                <span className="text-xl md:text-2xl font-bold text-green-300 flex items-center">
+                <span className="text-xl md:text-2xl font-bold text-green-300">
                   ₹{upgradeCost}
                 </span>
               </div>
@@ -155,7 +151,7 @@ const UpgradePage = ({ user, setUser }) => {
                 <span
                   className={`text-lg md:text-xl font-bold ${
                     hasInsufficientBalance ? "text-red-400" : "text-emerald-300"
-                  } flex items-center`}
+                  }`}
                 >
                   ₹{walletBalance.toFixed(2)}
                 </span>
@@ -165,7 +161,7 @@ const UpgradePage = ({ user, setUser }) => {
             {loading ? (
               <button
                 disabled
-                className="w-full py-3 px-6 rounded-xl bg-purple-600 text-white font-bold text-base md:text-lg flex items-center justify-center opacity-70 cursor-not-allowed shadow-inner"
+                className="w-full py-3 px-6 rounded-xl bg-purple-600 text-white font-bold text-base md:text-lg flex items-center justify-center opacity-70 cursor-not-allowed"
               >
                 <svg
                   className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -199,13 +195,13 @@ const UpgradePage = ({ user, setUser }) => {
                 onTouchStart={handleButtonDown}
                 onTouchEnd={handleButtonUp}
                 disabled={!canUpgrade}
-                className={` py-3 px-6 rounded-xl text-white font-extrabold text-base md:text-lg transition-all duration-300 ease-in-out shadow-lg border-2
+                className={`w-full py-3 px-6 rounded-xl text-white font-extrabold text-base md:text-lg transition-all duration-300 ease-in-out shadow-lg border-2
                   ${
                     canUpgrade
                       ? `bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 ${
                           isTouching ? "scale-95" : ""
                         }`
-                      : "bg-gray-600 opacity-80 cursor-not-allowed pointer-events-none"
+                      : "bg-gray-600 opacity-70 cursor-not-allowed"
                   }`}
               >
                 {canUpgrade
@@ -216,7 +212,7 @@ const UpgradePage = ({ user, setUser }) => {
 
             {successAnimation && (
               <div className="flex items-center justify-center mt-4 md:mt-6 text-green-300 text-lg md:text-xl font-semibold animate-popIn">
-                <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10 mr-2 md:mr-3 animate-pulse-green" />
+                <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10 mr-2 md:mr-3 animate-pulse" />
                 <span>Upgrade Successful!</span>
               </div>
             )}
