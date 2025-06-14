@@ -75,13 +75,12 @@ const UserSidebar = ({ user }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-20 md:top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
+          fixed top-12 md:top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
           flex flex-col p-6 justify-between overflow-y-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:relative md:translate-x-0 md:h-auto md:shadow-none
           z-40 md:z-auto // Adjusted z-index for mobile to be below header
         `}
-        style={{ paddingTop: '5rem' }} // Add padding to account for fixed header
       >
         {/* Desktop User Info (hidden on mobile) */}
         <div className="hidden md:block text-center mb-8 border-b border-gray-700 pb-6">
@@ -97,8 +96,8 @@ const UserSidebar = ({ user }) => {
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-grow">
-          <ul className=" space-y-4">
+        <nav className="">
+          <ul className=" space-y-2">
             {links.map(({ to, label, icon }) => (
               <SidebarLink
                 key={to}
@@ -110,7 +109,7 @@ const UserSidebar = ({ user }) => {
             ))}
           </ul>
         {/* Logout */}
-        <div className=" pt-6 border-t border-gray-700">
+        <div className=" px-8 border-t border-gray-700">
           <Logout />
         </div>
         </nav>
@@ -120,7 +119,7 @@ const UserSidebar = ({ user }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-60 z-30 md:hidden" // z-30 ensures it's below the sidebar (z-40)
+          className="fixed inset-0 bg-opacity-60 z-30 md:hidden" // z-30 ensures it's below the sidebar (z-40)
           onClick={handleClose}
         />
       )}
