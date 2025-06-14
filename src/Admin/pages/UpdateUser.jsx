@@ -307,7 +307,6 @@ const UpdateUser = () => {
     sponserdBy: '', // This will hold the sponsor ID string from the fetched user
     currentLevel: 0,
     walletBalance: 0,
-    blockedForUpgrade: 0,
     totalWithdrawn: 0,
     accountNumber: '',
     accountName: '',
@@ -375,7 +374,6 @@ const UpdateUser = () => {
         sponserdBy: fetchedUser.sponserdBy || '', // This is the original sponsor ID string for update
         currentLevel: fetchedUser.currentLevel || 0,
         walletBalance: fetchedUser.walletBalance || 0,
-        blockedForUpgrade: fetchedUser.blockedForUpgrade || 0,
         totalWithdrawn: fetchedUser.totalWithdrawn || 0,
         // Populate bank details (handle potential null/undefined bankDetails)
         accountNumber: fetchedUser.bankDetails?.accountNumber || '',
@@ -398,7 +396,7 @@ const UpdateUser = () => {
       // Reset form data on error
       setFormData({
         name: '', email: '', phone: '', password: '', referralCode: '', referredBy: '', sponserdBy: '',
-        currentLevel: 0, walletBalance: 0, blockedForUpgrade: 0, totalWithdrawn: 0,
+        currentLevel: 0, walletBalance: 0, totalWithdrawn: 0,
         accountNumber: '', accountName: '', bankName: '', ifscCode: '',
         role: 'user', isActive: true,
       });
@@ -445,7 +443,6 @@ const UpdateUser = () => {
       phone: formData.phone,
       currentLevel: parseInt(formData.currentLevel, 10), // Ensure number type
       walletBalance: parseFloat(formData.walletBalance), // Ensure number type
-      blockedForUpgrade: parseInt(formData.blockedForUpgrade, 10),
       totalWithdrawn: parseFloat(formData.totalWithdrawn),
       role: formData.role,
       isActive: formData.isActive,
@@ -573,10 +570,6 @@ const UpdateUser = () => {
               <input type="number" id="walletBalance" name="walletBalance" value={formData.walletBalance} onChange={handleChange} step="0.01" min="0" className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white" />
             </div>
             <div>
-              <label htmlFor="blockedForUpgrade" className="block text-sm font-medium text-gray-300 mb-1">Blocked For Upgrade:</label>
-              <input type="number" id="blockedForUpgrade" name="blockedForUpgrade" value={formData.blockedForUpgrade} onChange={handleChange} min="0" className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white" />
-            </div>
-            <div>
               <label htmlFor="totalWithdrawn" className="block text-sm font-medium text-gray-300 mb-1">Total Withdrawn:</label>
               <input type="number" id="totalWithdrawn" name="totalWithdrawn" value={formData.totalWithdrawn} onChange={handleChange} step="0.01" min="0" className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white" />
             </div>
@@ -609,7 +602,6 @@ const UpdateUser = () => {
               <label htmlFor="role" className="block text-sm font-medium text-gray-300 mb-1">Role:</label>
               <select id="role" name="role" value={formData.role} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white">
                 <option value="user">User</option>
-                <option value="Admin">Admin</option>
               </select>
             </div>
             <div className="flex items-center mt-6">
