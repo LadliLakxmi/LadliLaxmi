@@ -20,7 +20,7 @@ const AddFund = () => {
           <p className="text-4xl mt-4 font-bold text-amber-500">
             ₹400
           </p>
-          <p className="text-lg text-gray-400 mt-1">for Level 1 Activation</p>
+          <p className="text-lg text-gray-400 mt-1">for Level 1 Activation or more as you want</p>
         </div>
 
         {/* Instructions Section */}
@@ -45,7 +45,7 @@ const AddFund = () => {
           </p>
 
           <p className="text-gray-400 leading-relaxed">
-            Please note that fund additions typically take <strong className="text-white">up to 24 hours</strong> to reflect in your wallet and activate Level 1. We appreciate your patience!
+            Please note that fund additions typically take <strong className="text-white">up to 24 hours</strong> to reflect in your wallet. We appreciate your patience!
           </p>
         </div>
       </div>
