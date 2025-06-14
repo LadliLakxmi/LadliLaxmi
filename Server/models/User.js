@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       sparse: true, // Allows null/undefined if not unique
-      required:true
+      // required:true
       // Consider adding a unique constraint if phone numbers should be unique,
       // but use 'sparse: true' if some users might not have one.
     },

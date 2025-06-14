@@ -16,7 +16,8 @@ const walletTransactionSchema = new mongoose.Schema(
         "withdrawal",
         "fund_transfer_sent",
         "fund_transfer_received",
-        "admin"
+        "admin",
+        "sponsor_commission"
       ],
       required: true,
     },
