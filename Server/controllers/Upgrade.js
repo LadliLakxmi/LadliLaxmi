@@ -406,20 +406,6 @@ exports.initiateUpgrade = async (req, res) => {
         current: user.walletBalance,
       });
     }
-
-    // If you have a 'blockedForUpgrade' mechanism that specifically requires the amount to be in that field
-    // adjust this logic. Currently, the user pays directly from `walletBalance`.
-    // If 'blockedForUpgrade' is a required fund source, uncomment and ensure it's managed correctly.
-    // if (user.blockedForUpgrade < upgradeCost) {
-    //   await session.abortTransaction();
-    //   return res.status(400).json({
-    //     message: "Blocked amount is less than required upgrade cost. Please ensure funds are correctly blocked.",
-    //     required: upgradeCost,
-    //     blocked: user.blockedForUpgrade,
-    //   });
-    // }
-
-
     // 2. Determine the Recipient Upline for this upgrade
     let recipientUser = null;
     let paymentDestinationType = "Admin"; // Default to admin
@@ -434,7 +420,7 @@ exports.initiateUpgrade = async (req, res) => {
     // For level 3, it's 2 hops (user.currentLevel 2, next level 3).
     // The number of hops is `level - 1`.
 
-    const hopsRequired = level - 1; // Example: upgrade to Level 1 -> 0 hops (direct upline payment), Level 2 -> 1 hop, Level 3 -> 2 hops.
+    const hopsRequired = level ; // Example: upgrade to Level 1 -> 0 hops (direct upline payment), Level 2 -> 1 hop, Level 3 -> 2 hops.
                                    // This depends on how 'level' is defined in your problem statement.
                                    // "if user is at level 1 then its upgrade cost amount send to upline at one level 1  above" means 1 hop.
                                    // "if user is at level 2 then its  upgrade amount sent to upline user who is two level above" means 2 hops.
@@ -445,7 +431,7 @@ exports.initiateUpgrade = async (req, res) => {
     // If user.currentLevel is 2, upgrade to Level 3, pay 2 hops (upline's upline's upline)
     const hopsToUpline = user.currentLevel; // This determines how many "levels above" in the hierarchy.
 
-    recipientUser = await findSpecificUpline(userId, hopsToUpline, session);
+    recipientUser = await findSpecificUpline(userId, hopsRequired, session);
 
     if (recipientUser) {
         paymentDestinationType = "upline";
