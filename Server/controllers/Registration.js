@@ -11,7 +11,7 @@ const generateToken = (user) => {
     { id: user._id, email: user.email, role: user.role },
     process.env.JWT_SECRET,
     {
-      expiresIn: "3d",
+      expiresIn: "12h",
     }
   );
 };
@@ -19,6 +19,7 @@ const generateToken = (user) => {
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
+
 exports.register = async (req, res) => {
   const { name, email, password, phone,confirmPassword, referredBy } = req.body; // referredBy will be the referralCode
 
@@ -38,15 +39,6 @@ exports.register = async (req, res) => {
           "Password and Confirm Password do not match. Please try again.",
       });
     }
-
-    // // Check if user already exists
-    // let user = await User.findOne({ email });
-    // if (user) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "User already exists with this email" });
-    // }
-
     // --- NEW: Check if user already exists by email OR phone ---
     let existingUser = await User.findOne({ $or: [{ email }, { phone }] });
     if (existingUser) {
@@ -61,52 +53,23 @@ exports.register = async (req, res) => {
           .json({ success: false, message: "User already exists with this phone number." });
       }
     }
-    let referrer = null;
-    let slotUser = null;
+    let sponser = null;
 
-    if (referredBy) {
-      console.log("referredBy", referredBy);
-      // Case 1: Referral code provided by the new user
-      referrer = await User.findOne({ referralCode: referredBy });
-      console.log("referrer", referrer);
-      if (!referrer) {
+    if(referredBy){
+      sponser = await User.findOne({ referralCode: referredBy });
+      if (!sponser) {
         return res
           .status(400)
           .json({ success: false, message: "Invalid referrer code provided." });
       }
-      // Find a slot under the provided referrer
-      console.log(referrer._id);
-      slotUser = await findMatrixSlot(referrer._id);
-      if (!slotUser) {
-        return res.status(400).json({
-          success: false,
-          message: `No available matrix slot found under referrer with ID: ${referrer._id}.`,
-        });
-      }
-    } else {
-      // Case 2: No referral code provided, place under company
-      
-      referrer = await User.findOne({ referralCode: "R7079AEU" }); 
-      if (!referrer) {
+    }else{
+      sponser = await User.findOne({ referralCode: "R7079AEU" }); 
+      if (!sponser) {
         // This is a critical error if no admin exists to place unreferred users
         return res.status(500).json({
           success: false,
           message:
             "No company id found to place unreferred signups. Please ensure an admin account exists.",
-        });
-      }
-      console.log(
-        `No referral code provided. Placing user under admin: ${referrer.email}`
-      );
-
-      // Find a slot under the found admin user
-      slotUser = await findMatrixSlot(referrer._id);
-      if (!slotUser) {
-        // This might happen if the admin's direct slots are full and `findMatrixSlot` can't find a deeper slot.
-        return res.status(500).json({
-          success: false,
-          message:
-            "Admin's matrix slots are full. Unable to place new user without referral.",
         });
       }
     }
@@ -125,26 +88,12 @@ exports.register = async (req, res) => {
       email,
       password: hashed,
       referralCode: newReferralCode, // Generated code for new user
-      sponserdBy: referredBy ? referredBy : referrer.referralCode,
+      sponserdBy: sponser.referralCode,
       phone, // Include phone in response
-      referredBy: slotUser.referralCode, // Always set to slot user's referralCode
       currentLevel: 0, // Initial level
     });
 
     await newUser.save(); // Save the new user first to get their _id
-
-    // Now, update the slotUser (if one exists) with the new user as a child/direct referral
-    if (slotUser) {
-      // Add new user to the slotUser's matrixChildren
-      slotUser.matrixChildren.push(newUser._id);
-      await slotUser.save();
-      // If a referrer was identified (either explicit or admin), add new user to their directReferrals
-      // This ensures the person who directly "referred" (or system placed under) gets the direct referral credit.
-      if (referrer) {
-        referrer.directReferrals.push(newUser._id);
-        await referrer.save(); // Save the referrer to persist directReferrals update
-      }
-    }
 
     res.status(201).json({
       success: true,
@@ -163,73 +112,152 @@ exports.register = async (req, res) => {
     });
   }
 };
-
-// // ... (your login and changePassword exports remain the same)
-// exports.login = async (req, res) => {
-//   const { email, password } = req.body;
+// exports.register = async (req, res) => {
+//   const { name, email, password, phone,confirmPassword, referredBy } = req.body; // referredBy will be the referralCode
 
 //   try {
-//     // Check if email or password is missing
-//     if (!email || !password) {
+//     if (!name || !email || !phone || !password || !confirmPassword) {
+//       return res.status(403).send({
+//         success: false,
+//         message: "All Fields are required",
+//       });
+//     }
+
+//     // Check if password and confirm password match
+//     if (password !== confirmPassword) {
 //       return res.status(400).json({
 //         success: false,
-//         message: `Please fill up all the required fields`,
+//         message:
+//           "Password and Confirm Password do not match. Please try again.",
 //       });
 //     }
 
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       return res
-//         .status(401)
-//         .json({ success: false, message: "Invalid email or password" });
+//     // // Check if user already exists
+//     // let user = await User.findOne({ email });
+//     // if (user) {
+//     //   return res
+//     //     .status(400)
+//     //     .json({ message: "User already exists with this email" });
+//     // }
+
+//     // --- NEW: Check if user already exists by email OR phone ---
+//     let existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+//     if (existingUser) {
+//       if (existingUser.email === email) {
+//         return res
+//           .status(400)
+//           .json({ success: false, message: "User already exists with this email." });
+//       }
+//       if (existingUser.phone === phone) {
+//         return res
+//           .status(400)
+//           .json({ success: false, message: "User already exists with this phone number." });
+//       }
+//     }
+//     let referrer = null;
+//     let slotUser = null;
+
+//     if (referredBy) {
+//       console.log("referredBy", referredBy);
+//       // Case 1: Referral code provided by the new user
+//       referrer = await User.findOne({ referralCode: referredBy });
+//       console.log("referrer", referrer);
+//       if (!referrer) {
+//         return res
+//           .status(400)
+//           .json({ success: false, message: "Invalid referrer code provided." });
+//       }
+//       // Find a slot under the provided referrer
+//       console.log(referrer._id);
+//       slotUser = await findMatrixSlot(referrer._id);
+//       if (!slotUser) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `No available matrix slot found under referrer with ID: ${referrer._id}.`,
+//         });
+//       }
+//     } else {
+//       // Case 2: No referral code provided, place under company
+      
+//       referrer = await User.findOne({ referralCode: "R7079AEU" }); 
+//       if (!referrer) {
+//         // This is a critical error if no admin exists to place unreferred users
+//         return res.status(500).json({
+//           success: false,
+//           message:
+//             "No company id found to place unreferred signups. Please ensure an admin account exists.",
+//         });
+//       }
+//       console.log(
+//         `No referral code provided. Placing user under admin: ${referrer.email}`
+//       );
+
+//       // Find a slot under the found admin user
+//       slotUser = await findMatrixSlot(referrer._id);
+//       if (!slotUser) {
+//         // This might happen if the admin's direct slots are full and `findMatrixSlot` can't find a deeper slot.
+//         return res.status(500).json({
+//           success: false,
+//           message:
+//             "Admin's matrix slots are full. Unable to place new user without referral.",
+//         });
+//       }
 //     }
 
-//     const match = await bcrypt.compare(password, user.password);
-//     if (!match) {
-//       return res
-//         .status(401)
-//         .json({ success: false, message: "Invalid email or password" });
+//     const hashed = await bcrypt.hash(password, 10);
+//     // Generate a unique referral code for the new user based on their _id
+//     // This will be set by the schema's default function, but ensure _id is available first
+//     // For now, let's keep the simple unique code generation here, or rely on schema default
+//     const newReferralCode =
+//       "R" +
+//       Date.now().toString().slice(-4) +
+//       Math.random().toString(36).substring(2, 5).toUpperCase(); // More unique
+
+//     const newUser = new User({
+//       name,
+//       email,
+//       password: hashed,
+//       referralCode: newReferralCode, // Generated code for new user
+//       sponserdBy: referredBy ? referredBy : referrer.referralCode,
+//       phone, // Include phone in response
+//       referredBy: slotUser.referralCode, // Always set to slot user's referralCode
+//       currentLevel: 0, // Initial level
+//     });
+
+//     await newUser.save(); // Save the new user first to get their _id
+
+//     // Now, update the slotUser (if one exists) with the new user as a child/direct referral
+//     if (slotUser) {
+//       // Add new user to the slotUser's matrixChildren
+//       slotUser.matrixChildren.push(newUser._id);
+//       await slotUser.save();
+//       // If a referrer was identified (either explicit or admin), add new user to their directReferrals
+//       // This ensures the person who directly "referred" (or system placed under) gets the direct referral credit.
+//       if (referrer) {
+//         referrer.directReferrals.push(newUser._id);
+//         await referrer.save(); // Save the referrer to persist directReferrals update
+//       }
 //     }
 
-//     // Login successful
-//     const token = generateToken(user);
-//     user.token = token;
-//     console.log(token);
-//     const options = {
-//       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
-//       httpOnly: true, // Prevent client-side JS from accessing the cookie
-//       // secure: process.env.NODE_ENV === 'production', // Use secure in production (HTTPS)
-//       // sameSite: 'Lax', // Adjust as needed for CORS
-//     };
-
-//     // Set cookie and return response
-//     res
-//       .cookie("token", token, options)
-//       .status(200)
-//       .json({
-//         // Renamed cookie to 'token' for clarity
-//         success: true,
-//         token,
-//         user: {
-//           // Return necessary user details
-//           _id: user._id,
-//           name: user.name, // Assuming 'name' is used as username
-//           email: user.email,
-//           sponserdBy: user.sponserdBy, // Include sponserdBy
-//           referredBy: user.referredBy, // Include referredBy
-//           currentLevel: user.currentLevel,
-//           walletBalance: user.walletBalance,
-//           referralCode: user.referralCode, // Include referral code
-//           role: user.role, // Include role
-//           token: token, // Include token in user object for client-side use
-//         },
-//         message: "User login successful",
-//       });
+//     res.status(201).json({
+//       success: true,
+//       _id: newUser._id,
+//       email: newUser.email, // Include email in response
+//       name: newUser.name, // Include name in response
+//       referralCode: newUser.referralCode, // Include new user's referral code
+//       phone: newUser.phone,
+//       token: generateToken(newUser._id), // Use newUser._id for token generation
+//       message: "Registration successful. Please activate your account.",
+//     });
 //   } catch (error) {
-//     console.error("Login error:", error);
-//     res.status(500).json({ message: "Server error during login." });
+//     console.error("Registration error:", error);
+//     res.status(500).json({
+//       message: "Server error during registration. Please try again later.",
+//     });
 //   }
 // };
+
+
 exports.login = async (req, res) => {
   const { identifier, password } = req.body; // 'identifier' can be email or phone
 
