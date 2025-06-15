@@ -128,6 +128,15 @@ const UpgradePage = ({ user, setUser }) => {
         ) : (
           <div className="flex flex-col w-full justify-center items-center">
             <div className="space-y-3 w-full md:space-y-4 mb-4 md:mb-6">
+               {
+                currentLevel === 0 ? <div className="flex justify-between items-center bg-red-700/50 p-3 md:p-4 rounded-lg">
+                   <span className="text-base md:text-lg font-medium text-purple-200">
+                <strong>
+                  To Start Earning its Compulsary to Activate Level 1  
+                  </strong>
+                </span>
+              </div>: ""
+              }
               <div className="flex justify-between items-center bg-purple-700/50 p-3 md:p-4 rounded-lg">
                 <span className="text-base md:text-lg font-medium text-purple-200">
                   Next Level:
