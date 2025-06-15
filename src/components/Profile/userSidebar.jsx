@@ -75,7 +75,7 @@ const UserSidebar = ({ user }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed mb-20 md:mb-0 mt-30 md:mt-0 top-12 md:top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
+          fixed  top-12 md:top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out
           flex flex-col p-6 justify-between overflow-y-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:relative md:translate-x-0 md:h-auto md:shadow-none
@@ -96,7 +96,7 @@ const UserSidebar = ({ user }) => {
         </div>
 
         {/* Navigation Links */}
-        <nav className="">
+        <nav className="mb-20 mt-20 md:mt-0 md:mb-0">
           <ul className=" space-y-2">
             {links.map(({ to, label, icon }) => (
               <SidebarLink
@@ -109,7 +109,7 @@ const UserSidebar = ({ user }) => {
             ))}
           </ul>
         {/* Logout */}
-        <div className="px-8 border-t border-gray-700">
+        <div className="px-8 border-t mb-40 md:mb-2 border-gray-700">
           <Logout />
         </div>
         </nav>
