@@ -7,7 +7,7 @@ const walletTransactionSchema = new mongoose.Schema(
       type: String,
       // **UPDATED ENUM VALUES HERE**
       enum: [
-        "donation_sent",
+       "donation_sent",
         "donation_received",
         "upgrade_payment_sent",         // When a user pays for an upgrade
         "upline_upgrade_commission",    // When an upline receives an upgrade payment from a downline
@@ -17,7 +17,11 @@ const walletTransactionSchema = new mongoose.Schema(
         "fund_transfer_sent",
         "fund_transfer_received",
         "admin",
-        "sponsor_commission"
+        "sponsor_commission",
+        "admin_sponsor_share",
+        "upline_combined_upgrade_commission_and_sponsor_commission",
+        "admin_combined_upgrade_revenue_and_sponsor_share",
+        "upgrade_payment_sent_and_sponsor_share_sent"
       ],
       required: true,
     },
