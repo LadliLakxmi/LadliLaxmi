@@ -117,7 +117,7 @@ const userSchema = new mongoose.Schema(
     bankDetails: {
       accountNumber: String,
 
-      accountName: String,
+      accountHolder: String,
 
       bankName: String,
 
