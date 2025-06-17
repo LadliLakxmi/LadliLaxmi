@@ -160,14 +160,14 @@ exports.initiateUpgrade = async (req, res) => {
       ) {
         // Fallback to admin if sponsor not found (e.g., initial admin placement)
         sponsorDuringRegistration = await User.findOne({
-          referralCode: "R7365482",
+          referralCode: "R7079AEU",
         }).session(session);
         // here chnage admin with company referral code
         if (!sponsorDuringRegistration) {
           await session.abortTransaction();
           return res
           .status(500)
-          .json({ message: "Kunal account not found for matrix placement." });
+          .json({ message: "Company account not found for matrix placement." });
         }
       }
       console.log("After sponsorDuringRegistration",sponsorDuringRegistration)
@@ -204,7 +204,7 @@ exports.initiateUpgrade = async (req, res) => {
     if (recipientUser) {
       paymentDestinationType = "upline";
     } else {
-      recipientUser = await User.findOne({ referralCode: "R7365482" }).session(session);
+      recipientUser = await User.findOne({ referralCode: "R7079AEU" }).session(session);
       if (!recipientUser) {
         await session.abortTransaction();
         return res.status(500).json({ message: "Company account not found." });
@@ -218,7 +218,7 @@ exports.initiateUpgrade = async (req, res) => {
         referralCode: user.sponserdBy,
       }).session(session);
       if (!sponsorUser) {
-        sponsorUser = await User.findOne({  referralCode: "R7365482" }).session(session);
+        sponsorUser = await User.findOne({  referralCode: "R7079AEU" }).session(session);
         if (!sponsorUser) {
           await session.abortTransaction();
           return res
