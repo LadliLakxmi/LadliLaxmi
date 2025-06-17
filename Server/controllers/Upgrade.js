@@ -172,7 +172,6 @@ exports.initiateUpgrade = async (req, res) => {
       }
       console.log("After sponsorDuringRegistration",sponsorDuringRegistration)
       
-
       // Find an available slot under the sponsor (or admin if no specific sponsor)
       slotUser = await findMatrixSlot(sponsorDuringRegistration._id, session); // Pass session to findMatrixSlot
       if (!slotUser) {
@@ -186,8 +185,7 @@ exports.initiateUpgrade = async (req, res) => {
       user.referredBy = slotUser.referralCode; // Set the actual matrix upline
       slotUser.matrixChildren.push(user._id);
       await slotUser.save({ session });
-      await user.save({ session });
-
+      // user.save({ session }); // Will be saved at the end of the transaction
 
       // Add new user to the directReferrals of the original sponsor (whoever invited them)
       if (sponsorDuringRegistration) {
@@ -229,7 +227,15 @@ exports.initiateUpgrade = async (req, res) => {
         }
       }
     }
-    // Handle sponsor payment (level 1 only)
+
+    // Declare transaction variables at a higher scope
+    let userTxn, recipientTxn, sponsorTxn;
+    let combinedTxnId;
+
+    // Create donation record placeholder (will be populated and saved later)
+    let donation;
+
+    // Handle combined payment for Level 1 if recipient and sponsor are the same
     if (
       level === 1 &&
       recipientUser &&
@@ -246,8 +252,8 @@ exports.initiateUpgrade = async (req, res) => {
 
       console.log("sponsorUser.walletBalance: ", recipientUser.walletBalance);
       // Create a single wallet transaction for the shared recipient/sponsor
-      const combinedTxnId = uuidv4();
-      const userCombinedTxn = new WalletTransaction({
+      combinedTxnId = uuidv4();
+      userTxn = new WalletTransaction({ // Assign to already declared variable
         amount: -combinedAmount,
         type: "upgrade_payment_sent_and_sponsor_share_sent",
         status: "completed",
@@ -256,9 +262,9 @@ exports.initiateUpgrade = async (req, res) => {
         transactionId: combinedTxnId,
         processedAt: new Date(),
       });
-      await userCombinedTxn.save({ session });
+      await userTxn.save({ session });
 
-      const recipientCombinedTxn = new WalletTransaction({
+      recipientTxn = new WalletTransaction({ // Assign to already declared variable
         amount: combinedAmount,
         type:
           recipientUser.role === "Admin"
@@ -270,13 +276,25 @@ exports.initiateUpgrade = async (req, res) => {
         transactionId: combinedTxnId,
         processedAt: new Date(),
       });
-      await recipientCombinedTxn.save({ session });
-      // Push donation to user's donationsSent and recipient's donationsReceived
+      await recipientTxn.save({ session });
+      
+      // Assign donation here as well, since it's a combined payment
+      donation = new Donation({
+        donor: user._id,
+        receiver: recipientUser._id,
+        amount: combinedAmount, // The combined amount is the "donation" in this case
+        currentLevel: level,
+        status: "completed",
+        transactionId: combinedTxnId, // Use the same transaction ID
+      });
+      await donation.save({ session });
+      
       user.donationsSent.push(donation._id);
-      recipientUser.donationsReceived.push(donation._id);
+      recipientUser.donationsReceived.push(donation._id); // This was missing for the combined scenario
 
-      user.walletTransactions.push(userCombinedTxn._id);
-      recipientUser.walletTransactions.push(recipientCombinedTxn._id);
+      user.walletTransactions.push(userTxn._id);
+      recipientUser.walletTransactions.push(recipientTxn._id);
+
     } else {
       // --- Existing logic for separate payments ---
 
@@ -286,8 +304,8 @@ exports.initiateUpgrade = async (req, res) => {
       recipientUser.walletBalance += flow.amount;
 
       // Create separate transaction records for upgrade payment
-      const txnId = uuidv4();
-      const userTxn = new WalletTransaction({
+      const txnId = uuidv4(); // Unique for this upgrade part
+      userTxn = new WalletTransaction({ // Assign to already declared variable
         amount: -flow.amount,
         type: "upgrade_payment_sent",
         status: "completed",
@@ -298,7 +316,7 @@ exports.initiateUpgrade = async (req, res) => {
       });
       await userTxn.save({ session });
 
-      const recipientTxn = new WalletTransaction({
+      recipientTxn = new WalletTransaction({ // Assign to already declared variable
         amount: flow.amount,
         type:
           paymentDestinationType === "admin"
@@ -315,12 +333,26 @@ exports.initiateUpgrade = async (req, res) => {
       user.walletTransactions.push(userTxn._id);
       recipientUser.walletTransactions.push(recipientTxn._id);
 
+      // Create donation record for the upgrade amount
+      donation = new Donation({
+        donor: user._id,
+        receiver: recipientUser._id,
+        amount: flow.amount,
+        currentLevel: level,
+        status: "completed",
+        transactionId: txnId, // Use the same transaction ID as the upgrade payment
+      });
+      await donation.save({ session });
+      
+      user.donationsSent.push(donation._id);
+      recipientUser.donationsReceived.push(donation._id);
+
       // Handle sponsor payment (level 1 only) if different from recipient
-      if (level === 1) {
+      if (level === 1) { // This block is ONLY if recipientUser and sponsorUser are DIFFERENT
         user.walletBalance -= flow.sponsorShare;
         sponsorUser.walletBalance += flow.sponsorShare;
 
-        const sponsorTxn = new WalletTransaction({
+        sponsorTxn = new WalletTransaction({ // Assign to already declared variable
           amount: flow.sponsorShare,
           type:
             sponsorUser.role === "Admin"
@@ -329,35 +361,31 @@ exports.initiateUpgrade = async (req, res) => {
           status: "completed",
           fromUser: user._id,
           description: `Level ${level} sponsor commission`,
-          transactionId: uuidv4(), // New transaction ID for sponsor share
+          transactionId: uuidv4(), // New unique transaction ID for sponsor share
           processedAt: new Date(),
         });
         await sponsorTxn.save({ session });
         sponsorUser.walletTransactions.push(sponsorTxn._id);
-      sponsorUser.donationsReceived.push(sponsorTxn._id);
-
+        // Note: You had sponsorUser.donationsReceived.push(sponsorTxn._id); here.
+        // If sponsor share is considered a "donation", it should be added to `donationsReceived`.
+        // However, if `Donation` specifically tracks the main upgrade payment, then this might not be needed here.
+        // Assuming `Donation` is for the main upgrade amount, I've removed this line to avoid confusion.
+        // If sponsorShare is also a "donation" in your schema, you'd need a separate Donation entry for it.
+        
         await sponsorUser.save({ session }); // Save sponsorUser changes here
       }
     }
+    
     // Update user level and save
     user.currentLevel = level;
-    user.walletTransactions.push(userTxn._id);
-    recipientUser.walletTransactions.push(recipientTxn._id);
-
-    // Create donation record
-    const donation = new Donation({
-      donor: user._id,
-      receiver: recipientUser._id,
-      amount: flow.amount,
-      currentLevel: level,
-      status: "completed",
-      transactionId: uuidv4(),
-    });
-    await donation.save({ session });
-
+    // The walletTransactions pushes are now handled inside the if/else blocks for clarity and correctness.
+    // If you need to push sponsorTxn._id here, ensure sponsorTxn is defined for all paths.
+    // For now, it's only pushed within the level === 1 block where it's created.
+    
     // Save all changes
     await user.save({ session });
     await recipientUser.save({ session });
+    // sponsorUser is saved inside its block if applicable
     await session.commitTransaction();
 
     return res.json({
