@@ -4,6 +4,7 @@ import { Link as ScrollLink } from "react-scroll";
 import { jwtDecode } from "jwt-decode";
 import { useToken } from "../hooks/usetoken";
 import { FaUserTie, FaBars, FaTimes } from "react-icons/fa";
+import Logout from "../components/Auth/Logout"
 import Logo from "../assets/Logo.jpeg";
 const Navbar = ({ role }) => {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ const Navbar = ({ role }) => {
 
   return (
     <nav className="sticky top-0 z-50 bg-[#06091b] border-b-2 border-gray-600 text-amber-100">
+
       <div className="flex justify-between items-center px-4 py-3 lg:px-8">
         {/* Logo */}
         <div
@@ -92,7 +94,11 @@ const Navbar = ({ role }) => {
         </ul>
 
         {/* Profile/Login (Desktop) */}
-        <div className="hidden lg:flex space-x-4 items-center">
+        <div className="hidden  lg:flex space-x-4 items-center ">
+          {user?( 
+            <Logout/>
+          ):("")
+          }
           {role === "Admin" ? (
             <span
               onClick={() => navigate("/Admindashboard/dashboard")}
@@ -110,6 +116,7 @@ const Navbar = ({ role }) => {
                   <FaUserTie className="w-6 h-6" />
                   <span className="text-sm">Profile</span>
                 </div>
+                
               ) : (
                 "Register / Login"
               )}
@@ -155,6 +162,7 @@ const Navbar = ({ role }) => {
                 </ScrollLink>
               </li>
             ))}
+
             <li>
               {role === "Admin" ? (
                 <span
@@ -174,11 +182,14 @@ const Navbar = ({ role }) => {
                     setIsOpen(false);
                   }}
                 >
-                  {user ? (
+                  {user ? (<>
                     <div className="flex items-center space-x-2">
                       <FaUserTie className="w-5 h-5" />
                       <span>Profile</span>
+
                     </div>
+                    <Logout />
+                  </>
                   ) : (
                     "Register / Login"
                   )}
