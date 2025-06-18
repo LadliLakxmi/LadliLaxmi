@@ -318,10 +318,14 @@ const Withdraw = ({ user, fetchUserData }) => {
               </span>
             </p>
           )}
-          <p className="flex justify-between items-center border-t border-green-600 pt-3 mt-3 font-bold text-lg text-yellow-100">
+          <p className="flex justify-between items-center border-t border-b border-green-600 pt-3 mt-3 font-bold text-lg text-yellow-100">
             <span>Main Wallet Withdrawal Cap:</span> {/* Clarified this is for Main Wallet */}
             <span>₹{finalWithdrawalCap.toFixed(2)}</span>
           </p>
+          
+          <p className="flex items-center justify-center text-lg mt-2">Use Sponser Money for Upgrade <span className="text-3xl">↓</span></p>
+          <p onClick={()=>{navigate('/userdashboard/moneyTransfer')}} className=" border-2 border-white px-6 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-95 hover:shadow-lg py-2 mt-4 rounded-xl text-center font-semibold bg-white text-green-800 ">
+            Transfer Sponer Money to Main Wallet </p>
         </div>
 
         <form onSubmit={handleWithdraw} className="space-y-6">
