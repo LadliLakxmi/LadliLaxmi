@@ -349,7 +349,7 @@ exports.transferFundsToDownline = async (req, res) => {
     });
     await senderTxn.save({ session });
     sender.walletTransactions.push(senderTxn._id);
-
+    sender.donationsSent.push(senderTxn._id);
     // Recipient's transaction
     const recipientTxn = new WalletTransaction({
       amount: amount, // Positive as it's income
@@ -362,7 +362,7 @@ exports.transferFundsToDownline = async (req, res) => {
     });
     await recipientTxn.save({ session });
     recipient.walletTransactions.push(recipientTxn._id);
-
+    recipient.donationsReceived.push(recipientTxn._id);
     // 8. Save updated User documents
     await sender.save({ session });
     await recipient.save({ session });
