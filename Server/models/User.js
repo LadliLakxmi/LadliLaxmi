@@ -66,6 +66,11 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+      sponserwalletBalance:{
+      type: Number,
+      default: 0,
+      min: 0,
+    },
 
     donationsSent: [
       {
@@ -112,7 +117,9 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    totalWithdrawn: { type: Number, default: 0 },
+       totalWithdrawn: { type: Number, default: 0 },
+     totalSponserWithdrawn: { type: Number, default: 0 },
+
 
     bankDetails: {
       accountNumber: String,
