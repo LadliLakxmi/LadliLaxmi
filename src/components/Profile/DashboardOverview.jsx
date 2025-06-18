@@ -226,6 +226,12 @@ const DashboardOverview = ({ user, setUser }) => {
       color: "emerald",
       icon: FaWallet,
     },
+        {
+      title: "Sponser Wallet Balance",
+      value: `₹${(user.sponserwalletBalance ?? 0).toFixed(2)}`,
+      color: "emerald",
+      icon: FaWallet,
+    },
     {
       title: "Total Income", // New card
       value: `₹${(user.totalIncome ?? 0).toFixed(2)}`, // Use totalIncome from user prop
