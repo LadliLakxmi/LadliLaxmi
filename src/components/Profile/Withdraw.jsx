@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { IndianRupee, Wallet, Banknote, Landmark, ArrowUpCircle } from 'lucide-react'; // Import ArrowUpCircle for the upgrade icon
+import { IndianRupee, Wallet, Banknote, Landmark, ArrowUpCircle } from 'lucide-react';
 import WithdrawHistory from "./WithdrawHistory";
 
 // Define INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL as the *individual* limit for each level,
 // and we will sum them up dynamically.
 const INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL = {
-  1: { withdrawLimit: 0, nextUpgradeCost: 300 }, // Level 1 might not have a withdraw limit, but has a next upgrade cost for Level 2
+  1: { withdrawLimit: 0, nextUpgradeCost: 300 },
   2: { withdrawLimit: 100, nextUpgradeCost: 500 },
   3: { withdrawLimit: 1000, nextUpgradeCost: 1000 },
   4: { withdrawLimit: 6000, nextUpgradeCost: 2000 },
@@ -18,21 +17,23 @@ const INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL = {
   8: { withdrawLimit: 2016000, nextUpgradeCost: 32000 },
   9: { withdrawLimit: 8128000, nextUpgradeCost: 64000 },
   10: { withdrawLimit: 32640000, nextUpgradeCost: 128000 },
-  11: { withdrawLimit: 130816000, nextUpgradeCost: 0 }, // Assuming 0 for the last level, as there's no next upgrade
+  11: { withdrawLimit: 130816000, nextUpgradeCost: 0 },
 };
 
 // Helper function to calculate cumulative max withdrawal
 const calculateCumulativeMaxWithdrawal = (currentLevel) => {
   let cumulativeMax = 0;
   for (let level = 1; level <= currentLevel; level++) {
-    cumulativeMax += INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL[level]?.withdrawLimit || 0; // Use optional chaining for safety
+    cumulativeMax += INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL[level]?.withdrawLimit || 0;
   }
   return cumulativeMax;
 };
 
 const Withdraw = ({ user, fetchUserData }) => {
+  console.log("User data received:", user); // More descriptive console log
   const [bankDetails, setBankDetails] = useState(null);
   const [formData, setFormData] = useState({
+    walletType: "", // Initialize as empty string
     accountHolder: "",
     accountNumber: "",
     ifscCode: "",
@@ -44,7 +45,8 @@ const Withdraw = ({ user, fetchUserData }) => {
 
   const token = localStorage.getItem("token");
 
-  const currentLevel = user?.currentLevel || 0;
+  // Ensure currentLevel is a number, default to 0 if null/undefined
+  const currentLevel = Number(user?.currentLevel) || 0;
 
   // Calculate the CUMULATIVE max allowed for the user's current level
   const maxAllowedForCurrentLevelCumulative = calculateCumulativeMaxWithdrawal(currentLevel);
@@ -55,27 +57,28 @@ const Withdraw = ({ user, fetchUserData }) => {
   const remainingLimitForLevel = Math.max(maxAllowedForCurrentLevelCumulative - alreadyWithdrawn, 0);
 
   // The final withdrawal cap is the minimum of wallet balance and the remaining cumulative limit
-  const finalWithdrawalCap = Math.min(user?.walletBalance || 0, remainingLimitForLevel);
+  // FIX: Ensure user?.walletBalance is treated as a number
+  const finalWithdrawalCap = Math.min(Number(user?.walletBalance) || 0, remainingLimitForLevel);
 
   // Get the next upgrade cost
-  // If currentLevel is the last level (11), nextUpgradeCost will be 0.
-  // If currentLevel is 0 (not upgraded), show cost for Level 1 or 2 as per your first upgrade logic
   const nextLevelToUpgrade = currentLevel + 1;
   const nextUpgradeCost = INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL[nextLevelToUpgrade]?.nextUpgradeCost || 0;
 
-
   useEffect(() => {
-    if (user?.bankDetails) {
+    // Corrected bank details handling
+    if (user && user.bankDetails) {
       setFormData((prev) => ({
         ...prev,
-        accountHolder: user.name || "",
+        accountHolder: user.name || "", // Assuming user.name is account holder
         accountNumber: user.bankDetails.accountNumber || "",
         ifscCode: user.bankDetails.ifscCode || "",
         bankName: user.bankDetails.bankName || "",
         phoneNumber: user.bankDetails.phoneNumber || "",
       }));
-
-      const hasAnyBankDetail = Object.values(user.bankDetails).some(detail => detail);
+      // Check if any of the bank details are non-empty strings to set bankDetails
+      const hasAnyBankDetail = Object.values(user.bankDetails).some(
+        detail => typeof detail === 'string' && detail.trim() !== ''
+      );
       setBankDetails(hasAnyBankDetail ? user.bankDetails : null);
     } else {
       setFormData(prev => ({
@@ -92,19 +95,27 @@ const Withdraw = ({ user, fetchUserData }) => {
     const fetchWithdrawn = async () => {
       try {
         const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/withdraw/summary", {
+        // const res = await axios.get("http://localhost:4001/api/v1/withdraw/summary", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          params: { // This is where you add query parameters
+            walletType: walletType,
+          },
         });
-        setAlreadyWithdrawn(res.data.alreadyWithdrawn || 0);
+        console.log("withdraw summary",res);
+        setAlreadyWithdrawn(Number(res.data.alreadyWithdrawn) || 0); // Ensure it's a number
       } catch (err) {
         console.error("Failed to fetch withdrawn amount", err);
         toast.error("Failed to load withdrawal summary.");
       }
     };
 
-    fetchWithdrawn();
-  }, [user, token]);
+    if (token) { // Only fetch if token exists
+      fetchWithdrawn();
+    }
+  }, [user, token]); // Add fetchUserData to dependency array if you want it to re-run when fetchUserData changes (unlikely)
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -115,28 +126,66 @@ const Withdraw = ({ user, fetchUserData }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (currentLevel < 1) { // User must be at least Level 1 to initiate withdrawal logic
+    if (currentLevel < 1) {
       toast.error("Please upgrade to Level 1 before withdrawing.");
       setIsLoading(false);
       return;
     }
 
     const amount = Number(formData.amount);
+    const walletType = formData.walletType; // It's already a string from the select
 
     if (!amount || amount <= 0) {
       toast.error("Please enter a valid amount to withdraw.");
       setIsLoading(false);
       return;
     }
-
-    // Use the final calculated cap for validation
-    if (amount > finalWithdrawalCap) {
-      toast.error(
-        `Withdrawal amount exceeds your current limit or available balance. You can only withdraw up to ₹${finalWithdrawalCap.toFixed(2)}.`
-      );
-      setIsLoading(false);
-      return;
+    if (!walletType) { // Ensure a wallet type is selected
+        toast.error("Please select a wallet type to withdraw from.");
+        setIsLoading(false);
+        return;
     }
+
+    // Wallet-specific balance and validation
+    let selectedWalletBalance = 0;
+    let withdrawalLimitApplied = finalWithdrawalCap; // Default to main wallet's calculated cap
+
+    if (walletType === "main") {
+      selectedWalletBalance = Number(user?.walletBalance) || 0;
+      // For main wallet, validate against finalWithdrawalCap (which includes cumulative limit)
+      if (amount > withdrawalLimitApplied) {
+        toast.error(
+          `Withdrawal amount exceeds your current limit or available balance in Main Wallet. You can only withdraw up to ₹${finalWithdrawalCap.toFixed(2)}.`
+        );
+        setIsLoading(false);
+        return;
+      }
+    } else if (walletType === "sponser") { // Note the spelling "sponser" from your option value
+      selectedWalletBalance = Number(user?.sponserwalletBalance) || 0;
+      // For sponser wallet, apply specific limits if any, otherwise just wallet balance
+      // Currently, your INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL applies only to 'main' wallet withdrawals.
+      // If sponser wallet has different rules, implement them here.
+      // For now, let's just check against sponser wallet's balance.
+      if (amount > selectedWalletBalance) {
+          toast.error(`Withdrawal amount exceeds your available balance in sponser Wallet. You can only withdraw up to ₹${selectedWalletBalance.toFixed(2)}.`);
+          setIsLoading(false);
+          return;
+      }
+      // If sponser wallet also contributes to cumulative limit, you'd need more complex logic here.
+      // Assuming sponser wallet has no external cumulative limit for simplicity based on your current code.
+    } else {
+        toast.error("Invalid wallet type selected.");
+        setIsLoading(false);
+        return;
+    }
+
+    // General balance check for the selected wallet
+    if (amount > selectedWalletBalance) {
+        toast.error(`Insufficient funds in your ${walletType === 'main' ? 'Main' : 'sponser'} Wallet.`);
+        setIsLoading(false);
+        return;
+    }
+
 
     // --- Bank Details Saving Logic ---
     if (!bankDetails || !bankDetails.accountNumber) {
@@ -169,7 +218,7 @@ const Withdraw = ({ user, fetchUserData }) => {
         });
 
         if (fetchUserData) {
-          await fetchUserData();
+          await fetchUserData(); // Refresh user data after saving bank details
         }
       } catch (err) {
         console.error("Error saving bank details:", err);
@@ -180,8 +229,10 @@ const Withdraw = ({ user, fetchUserData }) => {
     }
     // --- End Bank Details Saving Logic ---
 
+    // Proceed with withdrawal request
     try {
-      const payload = { amount };
+      const payload = { walletType, amount }; // Use the validated amount and walletType
+      console.log(payload)
       await axios.post("https://ladlilaxmi.onrender.com/api/v1/withdraw/request", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -189,9 +240,17 @@ const Withdraw = ({ user, fetchUserData }) => {
       });
 
       toast.success("Withdraw request submitted successfully! It will be processed shortly.");
-      setFormData((prev) => ({ ...prev, amount: "" }));
-      // Optimistic update for alreadyWithdrawn
-      setAlreadyWithdrawn(prev => prev + amount);
+      setFormData((prev) => ({ ...prev, amount: "" })); // Clear amount field
+
+      // Optimistic update for alreadyWithdrawn only if withdrawing from the main wallet,
+      // assuming sponser wallet withdrawals don't count towards the cumulative limit.
+      if(walletType === "main"){
+        setAlreadyWithdrawn(prev => prev + amount);
+      }
+      // Also, refetch user data to update wallet balances immediately
+      if (fetchUserData) {
+        await fetchUserData();
+      }
 
     } catch (err) {
       console.error("Withdrawal error:", err);
@@ -203,6 +262,18 @@ const Withdraw = ({ user, fetchUserData }) => {
 
   return (
     <div className='flex min-h-[calc(100vh-150px)] items-center justify-center p-4'>
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div className="bg-gradient-to-br from-green-800 to-emerald-900 text-white p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md mx-auto relative overflow-hidden transform transition-all duration-500 ease-in-out hover:scale-[1.01]">
         {/* Decorative background elements */}
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-green-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse"></div>
@@ -215,8 +286,14 @@ const Withdraw = ({ user, fetchUserData }) => {
         {/* Current Balances & Limits Section */}
         <div className="bg-green-700/50 border border-green-600 rounded-lg p-4 mb-6 text-base text-green-100 shadow-md">
           <p className="flex justify-between items-center mb-2">
-            <span className="font-semibold flex items-center"><Wallet size={20} className="mr-2" />Total Wallet Balance:</span>
-            <span className="font-bold text-yellow-300">₹{user?.walletBalance?.toFixed(2) || "0.00"}</span>
+            <span className="font-semibold flex items-center"><Wallet size={20} className="mr-2" />Main Wallet Balance:</span> {/* Clarified label */}
+            <span className="font-bold text-yellow-300">₹{(Number(user?.walletBalance) || 0).toFixed(2)}</span> {/* FIX: Ensure it's a number */}
+          </p>
+
+          <p className="flex justify-between items-center mb-2">
+            <span className="font-semibold flex items-center"><Wallet size={20} className="mr-2" />sponser Wallet Balance:</span> {/* Clarified label */}
+            {/* FIX: Ensure user?.sponserwalletBalance is treated as a number */}
+            <span className="font-bold text-yellow-300">₹{(Number(user?.sponserwalletBalance) || 0).toFixed(2)}</span>
           </p>
 
           <hr className="my-3 border-green-600" />
@@ -233,7 +310,7 @@ const Withdraw = ({ user, fetchUserData }) => {
             <span className="font-semibold">Already Withdrawn:</span>
             <span className="font-bold">₹{alreadyWithdrawn.toFixed(2)}</span>
           </p>
-          {nextLevelToUpgrade <= Object.keys(INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL).length && ( // Only show if there's a next level
+          {nextLevelToUpgrade <= Object.keys(INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL).length && (
             <p className="flex justify-between items-center border-t border-green-600 pt-3 mt-3 font-semibold text-yellow-100">
               <span className="flex items-center gap-1">Next Level Upgrade Cost (Level {nextLevelToUpgrade}):</span>
               <span className="font-bold text-yellow-300">
@@ -242,7 +319,7 @@ const Withdraw = ({ user, fetchUserData }) => {
             </p>
           )}
           <p className="flex justify-between items-center border-t border-green-600 pt-3 mt-3 font-bold text-lg text-yellow-100">
-            <span>Final Withdrawal Cap:</span>
+            <span>Main Wallet Withdrawal Cap:</span> {/* Clarified this is for Main Wallet */}
             <span>₹{finalWithdrawalCap.toFixed(2)}</span>
           </p>
         </div>
@@ -296,8 +373,27 @@ const Withdraw = ({ user, fetchUserData }) => {
             </div>
           )}
 
-          {/* Withdraw Amount Input */}
+          {/* Wallet Type Selection */}
           <div className="mt-8">
+            <label htmlFor="walletType" className="block text-lg font-medium text-yellow-300 mb-2 flex items-center gap-2">
+              <Wallet size={24} /> Choose Wallet Type to Withdraw
+            </label>
+            <select
+              id="walletType"
+              name="walletType"
+              value={formData.walletType}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full text-white px-4 py-3 border border-green-600 rounded-lg shadow-inner bg-green-900/60 focus:outline-none focus:ring-yellow-400 focus:border-yellow-400 text-lg"
+            >
+              <option value="" disabled>Select a wallet</option>
+              <option value="main">Main Wallet</option>
+              <option value="sponser">sponser Wallet</option> {/* Ensure 'sponser' matches your backend expectation */}
+            </select>
+          </div>
+
+          {/* Withdraw Amount Input */}
+          <div className="mt-4">
             <label htmlFor="amount" className="block text-lg font-medium text-yellow-300 mb-2 flex items-center gap-2">
               <IndianRupee size={24} /> Withdraw Amount (₹)
             </label>
@@ -309,8 +405,15 @@ const Withdraw = ({ user, fetchUserData }) => {
               onChange={handleChange}
               required
               min={1}
-              max={finalWithdrawalCap}
-              placeholder={`Max: ₹${finalWithdrawalCap.toFixed(2)}`}
+              // The max attribute of the input should dynamically change based on selected wallet
+              // For now, let's keep it based on finalWithdrawalCap for main, but note this
+              // limitation if sponser wallet has a different cap. It's better to validate on submit.
+              max={formData.walletType === 'main' ? finalWithdrawalCap : (Number(user?.sponserwalletBalance) || 0)} // Dynamic max
+              placeholder={`Max: ₹${
+                formData.walletType === 'main'
+                  ? finalWithdrawalCap.toFixed(2)
+                  : (Number(user?.sponserwalletBalance) || 0).toFixed(2)
+              }`}
               className="mt-1 block w-full text-white placeholder-green-200 px-4 py-3 border border-green-600 rounded-lg shadow-inner bg-green-900/60 focus:outline-none focus:ring-yellow-400 focus:border-yellow-400 text-lg no-spinner"
             />
           </div>
@@ -318,9 +421,9 @@ const Withdraw = ({ user, fetchUserData }) => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || currentLevel < 1 || finalWithdrawalCap <= 0}
+            disabled={isLoading || currentLevel < 1 || (formData.walletType === 'main' && finalWithdrawalCap <= 0) || (formData.walletType === 'sponser' && (Number(user?.sponserwalletBalance) || 0) <= 0)}
             className={`w-full flex justify-center items-center py-3 px-6 border border-transparent rounded-xl shadow-lg font-extrabold text-lg transition-all duration-300 ease-in-out transform
-              ${currentLevel < 1 || isLoading || finalWithdrawalCap <= 0
+              ${(currentLevel < 1 || isLoading || (formData.walletType === 'main' && finalWithdrawalCap <= 0) || (formData.walletType === 'sponser' && (Number(user?.sponserwalletBalance) || 0) <= 0))
                 ? "bg-gray-600 text-gray-300 opacity-80 cursor-not-allowed"
                 : "bg-gradient-to-r from-yellow-500 to-orange-600 text-purple-900 hover:from-yellow-600 hover:to-orange-700 hover:scale-105 active:scale-95"
               }`}
@@ -338,20 +441,8 @@ const Withdraw = ({ user, fetchUserData }) => {
           </button>
         </form>
 
-        <WithdrawHistory /> {/* Keep this line here if you want to show history below the form */}
+        <WithdrawHistory />
 
-        <ToastContainer
-          position="top-center"
-          autoClose={4000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
       </div>
     </div>
   );
@@ -362,10 +453,12 @@ export default Withdraw;
 // import axios from "axios";
 // import { toast, ToastContainer } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
-// import { IndianRupee, Wallet, PiggyBank, Banknote, Landmark } from 'lucide-react'; // Lucide icons
+// import { IndianRupee, Wallet, Banknote, Landmark, ArrowUpCircle } from 'lucide-react'; // Import ArrowUpCircle for the upgrade icon
+// import WithdrawHistory from "./WithdrawHistory";
 
-// // Centralized configuration for levels, including withdrawal limits and next upgrade costs
-// const LEVEL_CONFIG = {
+// // Define INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL as the *individual* limit for each level,
+// // and we will sum them up dynamically.
+// const INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL = {
 //   1: { withdrawLimit: 0, nextUpgradeCost: 300 }, // Level 1 might not have a withdraw limit, but has a next upgrade cost for Level 2
 //   2: { withdrawLimit: 100, nextUpgradeCost: 500 },
 //   3: { withdrawLimit: 1000, nextUpgradeCost: 1000 },
@@ -376,74 +469,75 @@ export default Withdraw;
 //   8: { withdrawLimit: 2016000, nextUpgradeCost: 32000 },
 //   9: { withdrawLimit: 8128000, nextUpgradeCost: 64000 },
 //   10: { withdrawLimit: 32640000, nextUpgradeCost: 128000 },
-//   11: { withdrawLimit: 130816000, nextUpgradeCost: 0 }, // Level 11 has no further upgrade cost
+//   11: { withdrawLimit: 130816000, nextUpgradeCost: 0 }, // Assuming 0 for the last level, as there's no next upgrade
 // };
 
-// const Withdraw = ({ user, fetchUserData }) => { // Add fetchUserData prop to re-fetch user after bank details update
-//   const [bankDetails, setBankDetails] = useState(null); // Will be null if no bank details are saved, or an object if they are
+// // Helper function to calculate cumulative max withdrawal
+// const calculateCumulativeMaxWithdrawal = (currentLevel) => {
+//   let cumulativeMax = 0;
+//   for (let level = 1; level <= currentLevel; level++) {
+//     cumulativeMax += INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL[level]?.withdrawLimit || 0; // Use optional chaining for safety
+//   }
+//   return cumulativeMax;
+// };
+
+// const Withdraw = ({ user, fetchUserData }) => {
+//   const [bankDetails, setBankDetails] = useState(null);
 //   const [formData, setFormData] = useState({
 //     accountHolder: "",
 //     accountNumber: "",
 //     ifscCode: "",
 //     bankName: "",
-//     phoneNumber: "", // Keep phoneNumber here
+//     phoneNumber: "",
 //     amount: "",
 //   });
-//   const [isLoading, setIsLoading] = useState(false); // For button loading state
+//   const [isLoading, setIsLoading] = useState(false);
 
 //   const token = localStorage.getItem("token");
 
-//   // Get user's current level (default to 0 if undefined)
 //   const currentLevel = user?.currentLevel || 0;
 
-//   // Get configuration for the CURRENT level
-//   const currentLevelConfig = LEVEL_CONFIG[currentLevel] || { withdrawLimit: 0, nextUpgradeCost: 0 };
-//   const maxAllowedForLevel = currentLevelConfig.withdrawLimit;
+//   // Calculate the CUMULATIVE max allowed for the user's current level
+//   const maxAllowedForCurrentLevelCumulative = calculateCumulativeMaxWithdrawal(currentLevel);
 
-//   // Get the upgrade cost for the NEXT level
-//   const nextLevelUpgradeCost = LEVEL_CONFIG[currentLevel + 1]?.nextUpgradeCost || 0;
+//   const [alreadyWithdrawn, setAlreadyWithdrawn] = useState(0);
 
-//   // Calculate truly available balance for withdrawal
-//   const availableForWithdrawBeforeLimit = Math.max(
-//     (user?.walletBalance || 0) - nextLevelUpgradeCost,
-//     0
-//   );
+//   // Remaining withdrawal limit based on the cumulative max
+//   const remainingLimitForLevel = Math.max(maxAllowedForCurrentLevelCumulative - alreadyWithdrawn, 0);
 
-//   const [alreadyWithdrawn, setAlreadyWithdrawn] = useState(0); // State for already withdrawn amount
+//   // The final withdrawal cap is the minimum of wallet balance and the remaining cumulative limit
+//   const finalWithdrawalCap = Math.min(user?.walletBalance || 0, remainingLimitForLevel);
 
-//   // Remaining withdrawal limit for the current level
-//   const remainingLimitForLevel = Math.max(maxAllowedForLevel - alreadyWithdrawn, 0);
-
-//   // The final limit is the minimum of (balance - next upgrade cost) and (remaining limit for current level)
-//   const finalWithdrawalCap = Math.min(availableForWithdrawBeforeLimit, remainingLimitForLevel);
+//   // Get the next upgrade cost
+//   // If currentLevel is the last level (11), nextUpgradeCost will be 0.
+//   // If currentLevel is 0 (not upgraded), show cost for Level 1 or 2 as per your first upgrade logic
+//   const nextLevelToUpgrade = currentLevel + 1;
+//   const nextUpgradeCost = INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL[nextLevelToUpgrade]?.nextUpgradeCost || 0;
 
 
 //   useEffect(() => {
-//     // If bank details are present in user prop, initialize formData and set bankDetails state
 //     if (user?.bankDetails) {
 //       setFormData((prev) => ({
 //         ...prev,
-//         accountHolder: user.bankDetails.accountHolder || "",
+//         accountHolder: user.name || "",
 //         accountNumber: user.bankDetails.accountNumber || "",
 //         ifscCode: user.bankDetails.ifscCode || "",
 //         bankName: user.bankDetails.bankName || "",
-//         phoneNumber: user.bankDetails.phoneNumber || "", // Ensure phone number is loaded if it's part of bankDetails
+//         phoneNumber: user.bankDetails.phoneNumber || "",
 //       }));
 
-//       // Check if any of the bank details fields actually have a value
 //       const hasAnyBankDetail = Object.values(user.bankDetails).some(detail => detail);
-//       setBankDetails(hasAnyBankDetail ? user.bankDetails : null); // Set bankDetails to null if all fields are empty
+//       setBankDetails(hasAnyBankDetail ? user.bankDetails : null);
 //     } else {
-//         // If user has no bankDetails object at all, ensure formData is clear and bankDetails is null
-//         setFormData(prev => ({
-//           ...prev,
-//           accountHolder: "",
-//           accountNumber: "",
-//           ifscCode: "",
-//           bankName: "",
-//           phoneNumber: "",
-//         }));
-//         setBankDetails(null);
+//       setFormData(prev => ({
+//         ...prev,
+//         accountHolder: "",
+//         accountNumber: "",
+//         ifscCode: "",
+//         bankName: "",
+//         phoneNumber: "",
+//       }));
+//       setBankDetails(null);
 //     }
 
 //     const fetchWithdrawn = async () => {
@@ -461,7 +555,7 @@ export default Withdraw;
 //     };
 
 //     fetchWithdrawn();
-//   }, [user, token]); // user and token as dependencies
+//   }, [user, token]);
 
 //   const handleChange = (e) => {
 //     const { name, value } = e.target;
@@ -472,7 +566,7 @@ export default Withdraw;
 //     e.preventDefault();
 //     setIsLoading(true);
 
-//     if (currentLevel < 1) {
+//     if (currentLevel < 1) { // User must be at least Level 1 to initiate withdrawal logic
 //       toast.error("Please upgrade to Level 1 before withdrawing.");
 //       setIsLoading(false);
 //       return;
@@ -489,15 +583,14 @@ export default Withdraw;
 //     // Use the final calculated cap for validation
 //     if (amount > finalWithdrawalCap) {
 //       toast.error(
-//         `Withdrawal amount exceeds your current limit. You can only withdraw up to ₹${finalWithdrawalCap.toFixed(2)}.`
+//         `Withdrawal amount exceeds your current limit or available balance. You can only withdraw up to ₹${finalWithdrawalCap.toFixed(2)}.`
 //       );
 //       setIsLoading(false);
 //       return;
 //     }
 
-//     // --- NEW LOGIC: Save bank details if not already saved ---
-//     if (!bankDetails) {
-//       // Validate all bank details fields
+//     // --- Bank Details Saving Logic ---
+//     if (!bankDetails || !bankDetails.accountNumber) {
 //       if (!formData.accountHolder || !formData.accountNumber || !formData.ifscCode || !formData.bankName || !formData.phoneNumber) {
 //         toast.error("Please fill in all bank details and your phone number to proceed.");
 //         setIsLoading(false);
@@ -505,7 +598,6 @@ export default Withdraw;
 //       }
 
 //       try {
-//         // API call to save bank details
 //         await axios.put("https://ladlilaxmi.onrender.com/api/v1/profile/bank-details", {
 //           accountHolder: formData.accountHolder,
 //           accountNumber: formData.accountNumber,
@@ -519,8 +611,6 @@ export default Withdraw;
 //         });
 //         toast.success("Bank details saved successfully!");
 
-//         // Update local bankDetails state to reflect saved details,
-//         // so the form switches to display mode immediately
 //         setBankDetails({
 //           accountHolder: formData.accountHolder,
 //           accountNumber: formData.accountNumber,
@@ -529,30 +619,20 @@ export default Withdraw;
 //           phoneNumber: formData.phoneNumber,
 //         });
 
-//         // Crucial: Re-fetch user data from the parent to ensure the user object is updated
-//         // with the new bank details from the backend.
-//         // This assumes you pass a `fetchUserData` function from the parent component.
 //         if (fetchUserData) {
 //           await fetchUserData();
 //         }
-
 //       } catch (err) {
 //         console.error("Error saving bank details:", err);
 //         toast.error(err.response?.data?.message || "An error occurred while saving bank details.");
 //         setIsLoading(false);
-//         return; // Stop here if bank details saving failed
+//         return;
 //       }
 //     }
-//     // --- END NEW LOGIC ---
+//     // --- End Bank Details Saving Logic ---
 
 //     try {
-//       const payload = {
-//         amount,
-//         // No need to send bankDetails in the withdraw request payload
-//         // if they are already saved on the user model.
-//         // The backend should retrieve them from the user's profile.
-//       };
-
+//       const payload = { amount };
 //       await axios.post("https://ladlilaxmi.onrender.com/api/v1/withdraw/request", payload, {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
@@ -589,32 +669,29 @@ export default Withdraw;
 //             <span className="font-semibold flex items-center"><Wallet size={20} className="mr-2" />Total Wallet Balance:</span>
 //             <span className="font-bold text-yellow-300">₹{user?.walletBalance?.toFixed(2) || "0.00"}</span>
 //           </p>
-//           {nextLevelUpgradeCost > 0 && (
-//             <p className="flex justify-between items-center mb-2">
-//               <span className="font-semibold flex items-center"><PiggyBank size={20} className="mr-2" />Next Upgrade Reserved:</span>
-//               <span className="font-bold text-orange-200">₹{nextLevelUpgradeCost.toFixed(2)}</span>
-//             </p>
-//           )}
 
 //           <hr className="my-3 border-green-600" />
-
-//           <p className="flex justify-between items-center mb-2">
-//             <span className="font-semibold flex items-center">Available for Withdrawal:</span>
-//             <span className="font-bold text-emerald-300">₹{availableForWithdrawBeforeLimit.toFixed(2)}</span>
-//           </p>
 
 //           <p className="flex justify-between items-center mb-2">
 //             <span className="font-semibold">Your Current Level:</span>
 //             <span className="font-bold">{currentLevel > 0 ? `Level ${currentLevel}` : "Not Upgraded"}</span>
 //           </p>
 //           <p className="flex justify-between items-center mb-2">
-//             <span className="font-semibold">Level Max Withdraw Limit:</span>
-//             <span className="font-bold">₹{maxAllowedForLevel.toFixed(2)}</span>
+//             <span className="font-semibold">Cumulative Max Withdraw Limit:</span>
+//             <span className="font-bold">₹{maxAllowedForCurrentLevelCumulative.toFixed(2)}</span>
 //           </p>
 //           <p className="flex justify-between items-center mb-2">
-//             <span className="font-semibold">Already Withdrawn (This Level):</span>
+//             <span className="font-semibold">Already Withdrawn:</span>
 //             <span className="font-bold">₹{alreadyWithdrawn.toFixed(2)}</span>
 //           </p>
+//           {nextLevelToUpgrade <= Object.keys(INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL).length && ( // Only show if there's a next level
+//             <p className="flex justify-between items-center border-t border-green-600 pt-3 mt-3 font-semibold text-yellow-100">
+//               <span className="flex items-center gap-1">Next Level Upgrade Cost (Level {nextLevelToUpgrade}):</span>
+//               <span className="font-bold text-yellow-300">
+//                 {nextUpgradeCost > 0 ? `₹${nextUpgradeCost.toFixed(2)}` : "Max Level Reached!"}
+//               </span>
+//             </p>
+//           )}
 //           <p className="flex justify-between items-center border-t border-green-600 pt-3 mt-3 font-bold text-lg text-yellow-100">
 //             <span>Final Withdrawal Cap:</span>
 //             <span>₹{finalWithdrawalCap.toFixed(2)}</span>
@@ -711,6 +788,8 @@ export default Withdraw;
 //             )}
 //           </button>
 //         </form>
+
+//         <WithdrawHistory /> {/* Keep this line here if you want to show history below the form */}
 
 //         <ToastContainer
 //           position="top-center"
