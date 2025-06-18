@@ -116,6 +116,7 @@ const AdminWithdrawPanel = () => {
                         <p>Acc: {req.user?.bankDetails.accountNumber || 'N/A'}</p>
                         <p>IFSC: {req.user?.bankDetails.ifscCode || 'N/A'}</p>
                         <p>Bank: {req.user?.bankDetails.bankName || 'N/A'}</p>
+                               <p>Wallet Type: {req.walletType || 'N/A'} Wallet</p>
                         {req.user?.phone && <p>Phone: {req.user?.phone}</p>}
                       </>
                     ) : (
