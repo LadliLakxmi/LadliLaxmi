@@ -146,17 +146,38 @@ const DashboardOverview = ({ user, setUser }) => {
         return "Donation Sent";
       case "donation_received":
         return "Donation Received";
-      case "withdrawal_request":
-        return "Withdrawal Request";
-      case "withdrawal_completed":
-        return "Withdrawal Completed";
+      case "upgrade_payment_sent":
+        return "Upgrade Payment Sent";
+      case "upline_upgrade_commission":
+        return "Upline Upgrade Commission";
+      case "admin_upgrade_revenue":
+        return "Admin Upgrade Revenue";
       case "deposit":
         return "Deposit";
+      case "withdrawal":
+        return "Withdrawal";
+      case "fund_transfer_sent":
+        return "Fund Transfer Sent";
+      case "fund_transfer_received":
+        return "Fund Transfer Received";
+      case "admin":
+        return "Admin Adjustment";
+      case "sponsor_commission":
+        return "Sponsor Commission";
+      case "admin_sponsor_share":
+        return "Admin Sponsor Share";
+      case "withdrawal_approved_sponser_wallet":
+        return "Sponsor Wallet Withdrawal Approved";
+      case "upline_combined_upgrade_commission_and_sponsor_commission":
+        return "Combined Upline Commission";
+      case "admin_combined_upgrade_revenue_and_sponsor_share":
+        return "Combined Admin Revenue";
+      case "upgrade_payment_sent_and_sponsor_share_sent":
+        return "Combined Payment Sent";
       default:
         return type.replace(/_/g, " ");
     }
   };
-
   
   useEffect(() => {
     const fetchRecentTransactions = async () => {
@@ -352,7 +373,7 @@ const DashboardOverview = ({ user, setUser }) => {
         ))}
       </div>
 
-      {/* Recent Activity Section */}
+       {/* Recent Activity Section */}
       <div className="p-4 sm:p-6 bg-white rounded-2xl shadow-xl border border-gray-100">
         <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">
           Recent Activity
@@ -371,42 +392,99 @@ const DashboardOverview = ({ user, setUser }) => {
           </p>
         ) : (
           <div className="space-y-4">
-            {recentTransactions.map((tx) => (
-              <div
-                key={tx._id}
-                className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
-              >
-                <div className="flex-1 mb-2 sm:mb-0">
-                  <p className="font-semibold text-gray-800 text-base sm:text-lg">
-                    {getTransactionTypeDisplay(tx.type)}
-                    {tx.type === "donation_sent" &&
-                      tx.toUser &&
-                      ` to ${tx.toUser.name || "User"}`}
-                    {tx.type === "donation_received" &&
-                      tx.fromUser &&
-                      ` from ${tx.fromUser.name || "User"}`}
-                  </p>
-                  <p className="text-gray-500 text-xs sm:text-sm">
-                    {formatDate(tx.createdAt)}
-                    {tx.status && ` | Status: ${tx.status}`}
-                  </p>
-                  {tx.description && (
-                    <p className="text-gray-600 text-xs italic mt-1">
-                      {tx.description}
-                    </p>
-                  )}
-                </div>
+            {recentTransactions.map((tx) => {
+              const isCurrentUserSender = tx.fromUser?._id === user._id;
+              const isCurrentUserReceiver = tx.toUser?._id === user._id;
+
+              let transactionDisplay = getTransactionTypeDisplay(tx.type);
+              let icon = <FaExchangeAlt className="inline-block mr-2" />; // Default icon
+
+              // Logic for "who paid whom"
+              if (tx.type === "donation_sent" || tx.type === "upgrade_payment_sent" || tx.type === "fund_transfer_sent" || tx.type === "combined_payment_sent") {
+                if (isCurrentUserSender) {
+                  transactionDisplay = (
+                    <>
+                      <FaLongArrowAltRight className="inline-block mr-2 text-rose-500" />
+                      You sent {getTransactionTypeDisplay(tx.type).toLowerCase().replace("sent", "").trim()} to{' '}
+                      <strong>{tx.toUser?.name || "Unknown User"}</strong>
+                      {tx.toUser?.profilePicture && (
+                        <img src={tx.toUser.profilePicture} alt={tx.toUser.name} className="inline-block w-6 h-6 rounded-full ml-1" />
+                      )}
+                    </>
+                  );
+                }
+              } else if (tx.type === "donation_received" || tx.type === "upline_upgrade_commission" || tx.type === "fund_transfer_received" || tx.type === "sponsor_commission" || tx.type === "upline_combined_upgrade_commission_and_sponsor_commission") {
+                if (isCurrentUserReceiver) {
+                  transactionDisplay = (
+                    <>
+                      <FaLongArrowAltLeft className="inline-block mr-2 text-emerald-500" />
+                      You received {getTransactionTypeDisplay(tx.type).toLowerCase().replace("received", "").trim()} from{' '}
+                      <strong>{tx.fromUser?.name || "Unknown User"}</strong>
+                      {tx.fromUser?.profilePicture && (
+                        <img src={tx.fromUser.profilePicture} alt={tx.fromUser.name} className="inline-block w-6 h-6 rounded-full ml-1" />
+                      )}
+                    </>
+                  );
+                }
+              } else if (tx.type === "admin_upgrade_revenue" || tx.type === "admin_sponsor_share" || tx.type === "admin_combined_upgrade_revenue_and_sponsor_share") {
+                // These are revenue for the system/admin, usually just say what happened
+                transactionDisplay = (
+                  <>
+                    <FaDollarSign className="inline-block mr-2 text-yellow-500" />
+                    {getTransactionTypeDisplay(tx.type)}{' '}
+                    {tx.fromUser?.name && `from ${tx.fromUser.name}`}
+                    {!tx.fromUser?.name && tx.description && tx.description.includes("from") && (
+                      <span className="italic"> ({tx.description.split("from")[1].trim()})</span>
+                    )}
+                  </>
+                );
+              } else if (tx.type === "deposit") {
+                transactionDisplay = (
+                  <>
+                    <FaLongArrowAltLeft className="inline-block mr-2 text-emerald-500" />
+                    Deposit from system
+                  </>
+                );
+              } else if (tx.type === "withdrawal" || tx.type === "withdrawal_approved_sponser_wallet") {
+                transactionDisplay = (
+                  <>
+                    <FaLongArrowAltRight className="inline-block mr-2 text-rose-500" />
+                    Withdrawal to system
+                  </>
+                );
+              }
+
+              return (
                 <div
-                  className={`font-extrabold text-lg sm:text-xl ${
-                    tx.type?.includes("received") || tx.type === "deposit"
-                      ? "text-emerald-600"
-                      : "text-rose-600"
-                  }`}
+                  key={tx._id}
+                  className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
                 >
-                  ₹{tx.amount?.toFixed(2)}
+                  <div className="flex-1 mb-2 sm:mb-0">
+                    <p className="font-semibold text-gray-800 text-base sm:text-lg">
+                      {transactionDisplay}
+                    </p>
+                    <p className="text-gray-500 text-xs sm:text-sm">
+                      {formatDate(tx.createdAt)}
+                      {tx.status && ` | Status: ${tx.status}`}
+                    </p>
+                    {tx.description && (
+                      <p className="text-gray-600 text-xs italic mt-1">
+                        {tx.description}
+                      </p>
+                    )}
+                  </div>
+                  <div
+                    className={`font-extrabold text-lg sm:text-xl ${
+                      tx.type?.includes("received") || tx.type === "deposit" || (tx.toUser?._id === user._id && !tx.type?.includes("sent"))
+                        ? "text-emerald-600"
+                        : "text-rose-600"
+                    }`}
+                  >
+                    ₹{tx.amount?.toFixed(2)}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
