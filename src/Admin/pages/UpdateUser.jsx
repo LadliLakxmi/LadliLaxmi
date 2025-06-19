@@ -307,6 +307,7 @@ const UpdateUser = () => {
     sponserdBy: '', // This will hold the sponsor ID string from the fetched user
     currentLevel: 0,
     walletBalance: 0,
+    sponserwalletBalance: 0,
     totalWithdrawn: 0,
     accountNumber: '',
     accountName: '',
@@ -353,7 +354,7 @@ const UpdateUser = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/users/by-email?email=${userEmail}`, getAuthHeaders());
       const fetchedUser = response.data; // This now contains referredByEmail, sponserdByEmail, sponserdByName
-
+    console.log("Update response: ",fetchedUser)
       setUserData(fetchedUser); // Store the full user data
       setUserIdToUpdate(fetchedUser._id); // Crucially, store the _id for subsequent update
 
@@ -375,6 +376,7 @@ const UpdateUser = () => {
         currentLevel: fetchedUser.currentLevel || 0,
         walletBalance: fetchedUser.walletBalance || 0,
         totalWithdrawn: fetchedUser.totalWithdrawn || 0,
+        sponserwalletBalance: fetchedUser.sponserwalletBalance || 0,
         // Populate bank details (handle potential null/undefined bankDetails)
         accountNumber: fetchedUser.bankDetails?.accountNumber || '',
         accountName: fetchedUser.bankDetails?.accountName || '',
@@ -396,7 +398,7 @@ const UpdateUser = () => {
       // Reset form data on error
       setFormData({
         name: '', email: '', phone: '', password: '', referralCode: '', referredBy: '', sponserdBy: '',
-        currentLevel: 0, walletBalance: 0, totalWithdrawn: 0,
+        currentLevel: 0, walletBalance: 0, totalWithdrawn: 0,sponserwalletBalance: 0,
         accountNumber: '', accountName: '', bankName: '', ifscCode: '',
         role: 'user', isActive: true,
       });
@@ -444,6 +446,7 @@ const UpdateUser = () => {
       currentLevel: parseInt(formData.currentLevel, 10), // Ensure number type
       walletBalance: parseFloat(formData.walletBalance), // Ensure number type
       totalWithdrawn: parseFloat(formData.totalWithdrawn),
+      sponserwalletBalance: parseFloat(formData.sponserwalletBalance), // Ensure number type
       role: formData.role,
       isActive: formData.isActive,
       // Only include password if it's been typed into
@@ -568,6 +571,10 @@ const UpdateUser = () => {
             <div>
               <label htmlFor="walletBalance" className="block text-sm font-medium text-gray-300 mb-1">Wallet Balance:</label>
               <input type="number" id="walletBalance" name="walletBalance" value={formData.walletBalance} onChange={handleChange} step="0.01" min="0" className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white" />
+            </div>
+            <div>
+              <label htmlFor="sponserwalletBalance" className="block text-sm font-medium text-gray-300 mb-1">Sponser Wallet Balance:</label>
+              <input type="number" id="sponserwalletBalance" name="sponserwalletBalance" value={formData.sponserwalletBalance} onChange={handleChange} step="0.01" min="0" className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white" />
             </div>
             <div>
               <label htmlFor="totalWithdrawn" className="block text-sm font-medium text-gray-300 mb-1">Total Withdrawn:</label>
