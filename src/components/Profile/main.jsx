@@ -13,7 +13,6 @@ import TransferSponsorToMain from "./TransferSponsorToMain";
 
 
 const Main = ({ user,setUser }) => {
-console.log("user main",user)
   return (
     <div className=" flex  flex-col w-full min-h-screen px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 ">
       <Routes>
