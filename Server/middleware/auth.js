@@ -14,10 +14,9 @@ const auth = async (req, res, next) => {
   req.body?.token ||
   req.header("Authorization")?.replace("Bearer ", "");
     // If JWT is missing, return 401 Unauthorized response
-    console.log("beckendd",token)
     if (!token) {
-      return res.status(401).json({ success: false, message: `Token Missing` });
-    }
+    return res.status(401).json({ message: "Not authorized, no token." });
+  }
 
     try {
       // Verifying the JWT using the secret key stored in environment variables
@@ -27,9 +26,12 @@ const auth = async (req, res, next) => {
       req.user = decode;
     } catch (error) {
       // If JWT verification fails, return 401 Unauthorized response
-      return res
-        .status(401)
-        .json({ success: false, message: "token is invalid" });
+      console.error("Token verification error:", error);
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: "Token expired. Please log in again.", expired: true });
+      } else {
+        return res.status(401).json({ message: "Not authorized, token failed.", invalidToken: true });
+      }
     }
 
     // If JWT is valid, move on to the next middleware or request handler
