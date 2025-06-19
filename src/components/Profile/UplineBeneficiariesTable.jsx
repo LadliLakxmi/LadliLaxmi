@@ -21,8 +21,8 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get(
-          `http://localhost:4001/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
-          // `https://ladlilaxmi.onrender.com/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
+          // `http://localhost:4001/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
+          `https://ladlilaxmi.onrender.com/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
