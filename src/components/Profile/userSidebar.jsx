@@ -37,7 +37,7 @@ const UserSidebar = ({ user }) => {
     { to: "/userdashboard/withdraw", label: "Withdraw" },
     ...(user?.currentLevel === 0
       // ? [{ to: "/userdashboard/donatePage", label: "Activate Level 1" }]
-            ? [{ to: `/userdashboard/upgrade/${user.currentLevel + 1}`, label: "Activate Level 1" }]
+            ? [{ to: `/userdashboard/upgrade/${user.currentLevel + 1}`, label: "Activate Account" }]
       : user?.currentLevel < 11
       ? [
           {
@@ -53,7 +53,7 @@ const UserSidebar = ({ user }) => {
     { to: "/userdashboard/donate", label: "Donate Downline" },
   ].map((link) => ({
     ...link,
-    icon: iconMap[link.label.includes("Upgrade") ? "Upgrade" : link.label], // Handle upgrade label generically
+    icon: iconMap[link.label.includes("Upgrade") ? "Upgrade" : "Upgrade"], // Handle upgrade label generically
   }));
 
   return (
