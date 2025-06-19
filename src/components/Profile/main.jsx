@@ -10,7 +10,7 @@ import UpgradePage from "./UpgradePage";
 import DonateDownline from "./DonateDownline"
 import AddFund from "./AddFund";
 import TransferSponsorToMain from "./TransferSponsorToMain";
-
+import UplineBeneficiariesTable from "./UplineBeneficiariesTable";
 
 const Main = ({ user,setUser }) => {
   return (
@@ -64,6 +64,10 @@ const Main = ({ user,setUser }) => {
         <Route
             path={`/upgrade/${user.currentLevel + 1}`}
             element={<UpgradePage user={user} setUser={setUser} matrixChildren={user.matrixChildren} />}
+          />
+          <Route
+            path={"/upline"}
+            element={<UplineBeneficiariesTable currentUser = {user}/>}
           />
         <Route
           path="/transactions"

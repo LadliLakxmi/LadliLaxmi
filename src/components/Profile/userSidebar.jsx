@@ -49,12 +49,13 @@ const UserSidebar = ({ user }) => {
     { to: "/userdashboard/addFund", label: "Add Fund" },
     { to: "/userdashboard/downline", label: "My Downline" },
     { to: "/userdashboard/myteam", label: "My Team" },
+        { to: "/userdashboard/Upline", label: "Help To Upline" },
     { to: "/userdashboard/transactions", label: "Transaction History" },
     { to: "/userdashboard/donate", label: "Donate Downline" },
   ].map((link) => ({
     ...link,
-    icon: iconMap[link.label.includes("Help") ? "Upgrade" : link.label], // Handle upgrade label generically
-  }));
+   icon: iconMap[link.label.includes("Upgrade") || link.label.includes("Upline") ? "Upgrade" : link.label], // Handle upgrade label generically
+}));
 
   return (
     <>

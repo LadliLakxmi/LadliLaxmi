@@ -41,14 +41,14 @@ const profileRoute = require('./routes/ProfileRoute');
 const withdrawRoutes= require('./routes/withdrawRoutes')
 // Import routes
 const walletTransactionRoutes = require('./routes/walletTransactionRoutes');
-// Setting up routes
+const UplineRoutes = require('./routes/UplineRoutes');
 // Mount routes
 app.use('/api/v1/wallet-transactions', walletTransactionRoutes);
 app.use("/api/v1/auth", registrationRoutes);
 app.use("/api/v1/withdraw", withdrawRoutes);
 
 app.use('/api/v1/upgrade', upgradeRoutes);
-
+app.use('/api/v1/upline', UplineRoutes);
 app.use("/api/v1/donations", donationRoutes);
 app.use("/api/v1/profile", profileRoute);
 app.use("/api/v1/admin",adminRoutes );
