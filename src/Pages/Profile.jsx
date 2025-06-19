@@ -22,7 +22,6 @@ const Profile = () => {
           }
         );
         setUser(data.data.profile);
-        console.log(data.data.profile);
       } catch (err) {
         console.error("Failed to fetch profile", err);
         // Optionally, set an error state here to display a message to the user
