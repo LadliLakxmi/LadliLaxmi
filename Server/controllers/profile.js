@@ -138,7 +138,19 @@ const buildMatrixHierarchy = async (userId, visited = new Set(), depth = 0, maxD
 
   const user = await User.findById(userId)
     .populate("matrixChildren", "name email referralCode currentLevel")
-    .populate("walletTransactions")
+     .populate({
+        path: "walletTransactions", // This is the field on the User model that references WalletTransaction documents
+        populate: [ // Use an array for multiple nested populations, or a single object if only one
+            {
+                path: "fromUser", // Populate the 'fromUser' field within each WalletTransaction
+                select: "name email " // Select relevant fields from the User model for 'fromUser'
+            },
+            {
+                path: "toUser", // Populate the 'toUser' field within each WalletTransaction
+                select: "name email " // Select relevant fields from the User model for 'toUser'
+            }
+        ]
+    })
     .lean();
 
   if (!user) return null;
@@ -170,7 +182,19 @@ exports.getProfile = async (req, res) => {
                 path: "donationsReceived", // Populate the donationsReceived array
                 select: "amount status"    // Select only the 'amount' and 'status' fields
             })
-      .populate("walletTransactions")
+      .populate({
+        path: "walletTransactions", // This is the field on the User model that references WalletTransaction documents
+        populate: [ // Use an array for multiple nested populations, or a single object if only one
+            {
+                path: "fromUser", // Populate the 'fromUser' field within each WalletTransaction
+                select: "name email " // Select relevant fields from the User model for 'fromUser'
+            },
+            {
+                path: "toUser", // Populate the 'toUser' field within each WalletTransaction
+                select: "name email " // Select relevant fields from the User model for 'toUser'
+            }
+        ]
+    })
       .lean();
 
     if (!rootUser) {
