@@ -30,7 +30,6 @@ const calculateCumulativeMaxWithdrawal = (currentLevel) => {
 };
 
 const Withdraw = ({ user, fetchUserData }) => {
-  console.log("User data received:", user); // More descriptive console log
   const [bankDetails, setBankDetails] = useState(null);
   const [formData, setFormData] = useState({
     walletType: "", // Initialize as empty string
