@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { ClipboardCopy } from "lucide-react";
 import {
   FaWallet,
-  FaChartLine, // You could potentially use this for totalIncome/Withdrawn as well
   FaUsers,
   FaLevelUpAlt,
   FaHandHoldingUsd,
@@ -11,8 +10,11 @@ import {
   FaHistory,
   FaMoneyBillWave, // New icon for Total Income
   FaDollarSign,
-  FaSitemap // New icon for Total Withdrawn
-} from "react-icons/fa"; // Importing react-icons for better visuals
+  FaSitemap, // New icon for Total Withdrawn
+  FaExchangeAlt, // For general transactions if needed
+  FaLongArrowAltRight, // For 'sent to'
+  FaLongArrowAltLeft, // For 'received from'
+} from "react-icons/fa";
 import axios from 'axios'; // Assuming you use axios for API calls based on previous context
 import UpdateProfileForm from "./UpdateProfileForm";
 import ChangePasswordForm from './ChangePasswordForm'; // Import the new component
