@@ -31,8 +31,6 @@ const Profile = () => {
     if (userId) fetchData();
   }, [userId, token]); // Added token to dependency array for completeness
 
-  console.log("user", user);
-
   // --- Animated Loader ---
   if (!user) {
     return (
