@@ -102,7 +102,6 @@ const Withdraw = ({ user, fetchUserData }) => {
             walletType: walletType,
           },
         });
-        console.log("withdraw summary",res);
         setAlreadyWithdrawn(Number(res.data.alreadyWithdrawn) || 0); // Ensure it's a number
       } catch (err) {
         console.error("Failed to fetch withdrawn amount", err);
