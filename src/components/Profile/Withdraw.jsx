@@ -230,7 +230,6 @@ const Withdraw = ({ user, fetchUserData }) => {
     // Proceed with withdrawal request
     try {
       const payload = { walletType, amount }; // Use the validated amount and walletType
-      console.log(payload)
       await axios.post("https://ladlilaxmi.onrender.com/api/v1/withdraw/request", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
