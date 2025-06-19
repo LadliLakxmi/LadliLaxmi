@@ -53,7 +53,7 @@ const UserSidebar = ({ user }) => {
     { to: "/userdashboard/donate", label: "Donate Downline" },
   ].map((link) => ({
     ...link,
-    icon: iconMap[link.label.includes("Upgrade") ? "Upgrade" : "Upgrade"], // Handle upgrade label generically
+    icon: iconMap[link.label.includes("Help") ? "Upgrade" : link.label], // Handle upgrade label generically
   }));
 
   return (
