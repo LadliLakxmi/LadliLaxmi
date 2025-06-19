@@ -90,7 +90,6 @@ async function findSpecificUpline(starterUserId, hops, session) {
   if (hops === 0) return await User.findById(starterUserId).session(session);
 
   let currentUser = await User.findById(starterUserId).session(session);
-  console.log("currebt user in findSpecificUpline: ",currentUser)
   if (!currentUser) return null;
 
   // Traverse up the referral chain
@@ -99,7 +98,6 @@ async function findSpecificUpline(starterUserId, hops, session) {
     currentUser = await User.findOne({
       referralCode: currentUser.referredBy,
     }).session(session);
-      console.log("current user inside loop findSpecificUpline: ",currentUser)
     if (!currentUser) return null;
   }
   return currentUser;
@@ -207,7 +205,7 @@ exports.initiateUpgrade = async (req, res) => {
       recipientUser = await User.findOne({ role: "Admin" }).session(session);
       if (!recipientUser) {
         await session.abortTransaction();
-        return res.status(500).json({ message: "Company account not found." });
+        return res.status(500).json({ message: "Admin account not found." });
       }
     }
 
