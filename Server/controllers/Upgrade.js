@@ -204,7 +204,7 @@ exports.initiateUpgrade = async (req, res) => {
     if (recipientUser) {
       paymentDestinationType = "upline";
     } else {
-      recipientUser = await User.findOne({ referralCode: "R7079AEU" }).session(session);
+      recipientUser = await User.findOne({ role: "Admin" }).session(session);
       if (!recipientUser) {
         await session.abortTransaction();
         return res.status(500).json({ message: "Company account not found." });
@@ -258,6 +258,7 @@ exports.initiateUpgrade = async (req, res) => {
         type: "upgrade_payment_sent_and_sponsor_share_sent",
         status: "completed",
         toUser: recipientUser._id,
+                fromUser:user._id,
         description: `Combined payment for Level ${level} upgrade and sponsor share`,
         transactionId: combinedTxnId,
         processedAt: new Date(),
@@ -272,6 +273,7 @@ exports.initiateUpgrade = async (req, res) => {
             : "upline_combined_upgrade_commission_and_sponsor_commission",
         status: "completed",
         fromUser: user._id,
+        toUser:recipientUser._id,
         description: `Combined Level ${level} payment and sponsor share from ${user.email}`,
         transactionId: combinedTxnId,
         processedAt: new Date(),
@@ -310,6 +312,7 @@ exports.initiateUpgrade = async (req, res) => {
         type: "upgrade_payment_sent",
         status: "completed",
         toUser: recipientUser._id,
+               fromUser:user._id,
         description: `Upgrade to Level ${level} payment`,
         transactionId: txnId,
         processedAt: new Date(),
@@ -351,7 +354,7 @@ exports.initiateUpgrade = async (req, res) => {
       if (level === 1) { // This block is ONLY if recipientUser and sponsorUser are DIFFERENT
         user.walletBalance -= flow.sponsorShare;
         sponsorUser.walletBalance += flow.sponsorShare;
-
+const txnId = uuidv4(); 
         sponsorTxn = new WalletTransaction({ // Assign to already declared variable
           amount: flow.sponsorShare,
           type:
@@ -360,8 +363,9 @@ exports.initiateUpgrade = async (req, res) => {
               : "sponsor_commission",
           status: "completed",
           fromUser: user._id,
+               toUser:sponsorUser._id,
           description: `Level ${level} sponsor commission`,
-          transactionId: uuidv4(), // New unique transaction ID for sponsor share
+          transactionId: txnId, // New unique transaction ID for sponsor share
           processedAt: new Date(),
         });
         await sponsorTxn.save({ session });
@@ -371,7 +375,18 @@ exports.initiateUpgrade = async (req, res) => {
         // However, if `Donation` specifically tracks the main upgrade payment, then this might not be needed here.
         // Assuming `Donation` is for the main upgrade amount, I've removed this line to avoid confusion.
         // If sponsorShare is also a "donation" in your schema, you'd need a separate Donation entry for it.
-        
+         donation = new Donation({
+        donor: user._id,
+        receiver: sponsorUser._id,
+        amount: flow.sponsorShare,
+        currentLevel: level,
+        status: "completed",
+        transactionId: txnId, // Use the same transaction ID as the upgrade payment
+      });
+      await donation.save({ session });
+      
+      user.donationsSent.push(donation._id);
+      sponsorUser.donationsReceived.push(donation._id);
         await sponsorUser.save({ session }); // Save sponsorUser changes here
       }
     }
