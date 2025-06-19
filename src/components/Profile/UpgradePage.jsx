@@ -71,7 +71,7 @@ const UpgradePage = ({ user, setUser }) => {
 
       toast.success(
         response.data.message ||
-          `Congratulations! You've upgraded to Level ${nextLevel}!`
+          `Congratulations! Donation Sent and You've upgraded to Level ${nextLevel}!`
       );
       setSuccessAnimation(true);
 
@@ -113,16 +113,16 @@ const UpgradePage = ({ user, setUser }) => {
       <div className="bg-gradient-to-br border from-purple-800 to-indigo-900 text-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-md mx-auto relative overflow-hidden">
         
         <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg">
-          Upgrade Your Level
+          Give Help to upper Level
         </h2>
 
         {isAtMaxLevel ? (
           <div className="text-center py-6 md:py-8">
             <p className="text-lg md:text-xl text-green-300 font-semibold mb-3 md:mb-4">
-              🎉 Congratulations! You've reached the Max Level (Level 11)!
+              🎉 Congratulations! You've reached the Max Help Level !
             </p>
             <p className="text-gray-300 text-sm md:text-base">
-              There are no more levels to upgrade. Keep enjoying your earnings!
+              There are no more levels For Help. Keep enjoying your earnings!
             </p>
           </div>
         ) : (
@@ -132,7 +132,7 @@ const UpgradePage = ({ user, setUser }) => {
                 currentLevel === 0 ? <div className="flex justify-between items-center bg-red-700/50 p-3 md:p-4 rounded-lg">
                    <span className="text-base md:text-lg font-medium text-purple-200">
                 <strong>
-                  To Start Earning its Compulsary to Activate Level 1  
+                  To Start Helping its Compulsary to Activate Account for ₹400   
                   </strong>
                 </span>
               </div>: ""
@@ -147,7 +147,7 @@ const UpgradePage = ({ user, setUser }) => {
               </div>
               <div className="flex justify-between items-center bg-indigo-700/50 p-3 md:p-4 rounded-lg">
                 <span className="text-base md:text-lg font-medium text-indigo-200">
-                  Upgrade Cost:
+                  Help Amount:
                 </span>
                 <span className="text-xl md:text-2xl font-bold text-green-300">
                   ₹{upgradeCost}
@@ -192,7 +192,7 @@ const UpgradePage = ({ user, setUser }) => {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Processing Upgrade...
+                Processing Help...
               </button>
             ) : (
               <button
@@ -214,15 +214,15 @@ const UpgradePage = ({ user, setUser }) => {
                   }`}
               >
                 {canUpgrade
-                  ? `Upgrade to Level ${nextLevel}`
-                  : "Cannot Upgrade Now"}
+                  ? `Give Help to Level ${nextLevel}`
+                  : "Cannot give Help Now"}
               </button>
             )}
 
             {successAnimation && (
               <div className="flex items-center justify-center mt-4 md:mt-6 text-green-300 text-lg md:text-xl font-semibold animate-popIn">
                 <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10 mr-2 md:mr-3 animate-pulse" />
-                <span>Upgrade Successful!</span>
+                <span>Sent Successful!</span>
               </div>
             )}
           </div>
