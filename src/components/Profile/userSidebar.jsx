@@ -42,7 +42,7 @@ const UserSidebar = ({ user }) => {
       ? [
           {
             to: `/userdashboard/upgrade/${user.currentLevel + 1}`,
-            label: `Give Help to Level ${user.currentLevel + 1}`,
+            label: `Give Help to Upline ${user.currentLevel + 1}`,
           },
         ]
       : []),
