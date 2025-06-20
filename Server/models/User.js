@@ -66,11 +66,6 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-      sponserwalletBalance:{
-      type: Number,
-      default: 0,
-      min: 0,
-    },
 
     donationsSent: [
       {
@@ -118,17 +113,19 @@ const userSchema = new mongoose.Schema(
       },
     ],
        totalWithdrawn: { type: Number, default: 0 },
-     totalSponserWithdrawn: { type: Number, default: 0 },
 
 
-    bankDetails: {
-      accountNumber: String,
-
-      accountHolder: String,
-
-      bankName: String,
-
-      ifscCode: String,
+     bankDetails: {
+    accountHolder: { type: String },
+    accountNumber: { type: String },
+    ifscCode: { type: String },
+    bankName: { type: String },
+    upiId: { type: String }, // Add UPI ID here
+  },
+    upgradewalletBalance:{
+      type: Number,
+      default: 0,
+      min: 0,
     },
 
     role: {
