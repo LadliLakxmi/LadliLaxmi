@@ -95,21 +95,11 @@ const InfoCard = ({ title, value, color, icon: Icon }) => {
   );
 };
 
-// count all  countAllDescendants
-const countAllDescendants = (user) => {
-  if (!user?.matrixChildren || user.matrixChildren.length === 0) return 0;
-
-  let count = user.matrixChildren.length;
-  for (const child of user.matrixChildren) {
-    count += countAllDescendants(child); // Recursively add children of each child
-  }
-  return count;
-};
 
 // ---
 // DashboardOverview Component (enhanced)
 // ---
-const DashboardOverview = ({ user, setUser }) => {
+const DashboardOverview = ({ user, setUser,countchild }) => {
  
   // console.log(" users -",user)
   const totalChildCount = countAllDescendants(user); // 🧮 Total child count
@@ -281,7 +271,7 @@ const DashboardOverview = ({ user, setUser }) => {
     },
     {
       title: "Total Downline Children", // NEW CARD
-      value: totalChildCount, // This data needs to come from your backend in the user object
+      value: countchild, // This data needs to come from your backend in the user object
       color: "orange", // New color for this card
       icon: FaSitemap, // New icon
     },
