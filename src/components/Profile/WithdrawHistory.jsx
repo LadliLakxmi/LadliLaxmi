@@ -17,6 +17,7 @@ const WithdrawHistory = () => {
           },
         });
         setWithdrawRequests(response.data.requests);
+        // ! setReloadWithdrawHistory(prev => !prev);
       } catch (error) {
         console.error('Error fetching withdrawal history:', error);
         toast.error(error.response?.data?.message || 'Failed to fetch withdrawal history.');

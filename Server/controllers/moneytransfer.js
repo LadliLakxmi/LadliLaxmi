@@ -19,16 +19,16 @@ exports.transferSponsorToMain = async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    // Check if sponsor wallet has sufficient balance
-    if (user.sponserwalletBalance < amount) {
-      return res.status(400).json({ error: "Insufficient sponsor wallet balance." });
+    // Check if  wallet has sufficient balance
+    if (user.walletBalance < amount) {
+      return res.status(400).json({ error: "Insufficient wallet balance." });
     }
 
-    // Deduct from sponsor wallet
-    user.sponserwalletBalance -= amount;
+    // Deduct from  wallet
+    user.walletBalance -= amount;
 
-    // Add to main wallet
-    user.walletBalance += amount;
+    // Add to Upgrade wallet
+    user.upgradewalletBalance += amount;
 
     // Save user update
     await user.save();
@@ -40,7 +40,7 @@ exports.transferSponsorToMain = async (req, res) => {
       status: "completed",
       fromUser: user._id,
       toUser: user._id,
-      description: "Transferred from sponsor wallet to main wallet",
+      description: "Transferred from main wallet to Upgrade wallet",
     });
 
     const transactionIn = new WalletTransaction({
@@ -49,7 +49,7 @@ exports.transferSponsorToMain = async (req, res) => {
       status: "completed",
       fromUser: user._id,
       toUser: user._id,
-      description: "Received in main wallet from sponsor wallet",
+      description: "Received in upgrade wallet from main wallet",
     });
 
     // Save transactions
