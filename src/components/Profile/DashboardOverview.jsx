@@ -100,10 +100,6 @@ const InfoCard = ({ title, value, color, icon: Icon }) => {
 // DashboardOverview Component (enhanced)
 // ---
 const DashboardOverview = ({ user, setUser,countchild }) => {
- 
-  // console.log(" users -",user)
-  const totalChildCount = countAllDescendants(user); // 🧮 Total child count
-  
 
   // User prop is already passed and contains the necessary data.
   // console.log("User data in DashboardOverview:", user); // Keep this for debugging if needed
