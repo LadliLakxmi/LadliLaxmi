@@ -42,7 +42,7 @@ const UserSidebar = ({ user }) => {
       ? [
           {
             to: `/userdashboard/upgrade/${user.currentLevel + 1}`,
-            label: `Give Help to Upline ${user.currentLevel + 1}`,
+            label: `Give Help to Level ${user.currentLevel + 1}`,
           },
         ]
       : []),
@@ -54,7 +54,7 @@ const UserSidebar = ({ user }) => {
     { to: "/userdashboard/donate", label: "Donate Downline" },
   ].map((link) => ({
     ...link,
-   icon: iconMap[link.label.includes("Upgrade") || link.label.includes("Upline") ? "Upgrade" : link.label], // Handle upgrade label generically
+   icon: iconMap[link.label.includes("Level") || link.label.includes("Upline") ? "Upgrade" : link.label], // Handle upgrade label generically
 }));
 
   return (
