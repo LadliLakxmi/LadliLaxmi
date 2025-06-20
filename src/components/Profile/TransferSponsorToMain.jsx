@@ -46,7 +46,7 @@ const TransferSponsorToMain = ({ user }) => {
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-2xl shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center text-purple-700">
-        Sponsor Wallet Transfer
+        Upgrade Wallet Transfer
       </h2>
 
       <div className="mb-6">
