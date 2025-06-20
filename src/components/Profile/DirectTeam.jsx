@@ -79,7 +79,7 @@ const DirectTeam = ({ team }) => {
           </div>
         ) : (
           <div className="bg-white border border-dashed border-gray-300 rounded-xl p-12 text-black text-center text-lg animate-fadeIn shadow-inner-lg mt-8">
-            <p className="mb-4 text-xl font-semibold">No direct referrals found yet.</p>
+            <p className="mb-4 text-xl font-semibold">No direct referrals found yet. Please wait while we are Searching....</p>
             <p className="text-gray-500">Share your referral code to grow your direct team!</p>
             <Users size={40} className="text-gray-300 mx-auto mt-6" />
           </div>

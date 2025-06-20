@@ -133,8 +133,8 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
       icon: FaWallet,
     },
         {
-      title: "Sponser Wallet Balance",
-      value: `₹${(user.sponserwalletBalance ?? 0).toFixed(2)}`,
+      title: "Upgrade Wallet Balance",
+      value: `₹${(user.upgradewalletBalance ?? 0).toFixed(2)}`,
       color: "emerald",
       icon: FaWallet,
     },

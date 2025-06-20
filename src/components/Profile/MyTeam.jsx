@@ -114,7 +114,7 @@ const MyTeam = ({ team }) => {
                     </div>
                 ) : (
                     <div className="bg-white border border-dashed border-gray-300 rounded-xl p-12 text-gray-600 text-center text-lg animate-fadeIn shadow-inner-lg mt-8">
-                        <p className="mb-4 text-xl font-semibold">No team members found yet.</p>
+                        <p className="mb-4 text-xl font-semibold">No team members found yet. Please wait while we are Searching....</p>
                         <p className="text-gray-500">Start referring to build your network and see your team grow!</p>
                         <LayoutGrid size={40} className="text-gray-300 mx-auto mt-6" />
                     </div>

@@ -92,7 +92,7 @@ const Main = ({ user,setUser }) => {
           element={<MyTeam team={team} matrixChildren={user.matrixChildren} />}
         />
         <Route
-          path="/dircetteam"
+          path="/directteam"
           element={<DirectTeam team={team} />}
         />
         <Route

@@ -11,13 +11,6 @@ const withdrawRequestSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-    // --- NEW: Add walletType ---
-    walletType: {
-      type: String,
-      enum: ["main", "sponser"],
-      required: true,
-      default: "main", // Default to 'main' for existing requests or if not specified
-    },
   status: {
     type: String,
     default: "pending",

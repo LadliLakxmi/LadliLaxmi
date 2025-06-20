@@ -36,7 +36,7 @@ const UserSidebar = ({ user }) => {
   const links = [
     { to: "/userdashboard/", label: "Dashboard" },
     { to: "/userdashboard/withdraw", label: "Withdraw" },
-    { to: "/userdashboard/dircetteam", label: "Direct Team" },
+    { to: "/userdashboard/directteam", label: "Direct Team" },
     { to: "/userdashboard/addFund", label: "Add Fund" },
     { to: "/userdashboard/downline", label: "My Downline" },
     { to: "/userdashboard/myteam", label: "My Team" },
