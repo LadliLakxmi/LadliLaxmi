@@ -34,7 +34,7 @@ const Withdraw = ({ user, fetchUserData }) => {
 
   // Get the next upgrade cost (still relevant for display)
   const INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL_FRONTEND = { // Re-add for nextUpgradeCost display
-    1: { nextUpgradeCost: 300 },
+    1: { nextUpgradeCost: 400 },
     2: { nextUpgradeCost: 500 },
     3: { nextUpgradeCost: 1000 },
     4: { nextUpgradeCost: 2000 },
@@ -197,7 +197,7 @@ const Withdraw = ({ user, fetchUserData }) => {
       
       console.log("Withdrawal payload:", payload); // Log the payload for debugging
 
-      await axios.post("https://ladlilaxmi.onrender.com/api/v1/withdraw", payload, { // Endpoint change: /withdraw
+      await axios.post("https://ladlilaxmi.onrender.com/api/v1/withdraw/request", payload, { // Endpoint change: /withdraw
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -357,9 +357,9 @@ const Withdraw = ({ user, fetchUserData }) => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || hasPendingRequest || currentLevel < 1 || !formData.walletType || Number(formData.amount) <= 0 || (formData.walletType === 'main' && (Number(user?.walletBalance) || 0) <= 0) || (formData.walletType === 'sponser' && (Number(user?.sponserwalletBalance) || 0) <= 0)}
+            disabled={isLoading || hasPendingRequest || currentLevel < 1 || Number(formData.amount) <= 0 ||  (Number(user?.walletBalance) || 0) <= 0 }
             className={`w-full flex justify-center items-center py-3 px-6 border border-transparent rounded-xl shadow-lg font-extrabold text-lg transition-all duration-300 ease-in-out transform
-              ${(currentLevel < 1 || isLoading || hasPendingRequest || !formData.walletType || Number(formData.amount) <= 0 || (formData.walletType === 'main' && (Number(user?.walletBalance) || 0) <= 0) || (formData.walletType === 'sponser' && (Number(user?.sponserwalletBalance) || 0) <= 0))
+              ${(currentLevel < 1 || isLoading || hasPendingRequest ||  Number(formData.amount) <= 0 ||  (Number(user?.walletBalance) || 0) <= 0) 
                 ? "bg-gray-600 text-gray-300 opacity-80 cursor-not-allowed"
                 : "bg-gradient-to-r from-yellow-500 to-orange-600 text-purple-900 hover:from-yellow-600 hover:to-orange-700 hover:scale-105 active:scale-95"
               }`}
@@ -381,7 +381,7 @@ const Withdraw = ({ user, fetchUserData }) => {
           </button>
         </form>
 
-        <WithdrawHistory />
+        <WithdrawHistory  />
 
       </div>
     </div>
@@ -487,7 +487,7 @@ export default Withdraw;
 //     const fetchWithdrawn = async () => {
 //       try {
 //         const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/withdraw/summary", {
-//         // const res = await axios.get("http://localhost:4001/api/v1/withdraw/summary", {
+//         // const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/withdraw/summary", {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //           },
