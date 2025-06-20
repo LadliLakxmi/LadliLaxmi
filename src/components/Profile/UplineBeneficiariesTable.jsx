@@ -7,17 +7,18 @@ import { useNavigate } from 'react-router-dom';
 // This map simulates the upgrade cost associated with each level.
 // Your backend should ideally provide this information.
 const UPGRADE_COSTS_BY_LEVEL = {
-    1: 500,  // Example: Level 1 might cost 500
-    2: 1000, // Example: Level 2 might cost 1000
-    3: 2000,
-    4: 4000,
-    5: 8000,
-    6: 16000,
-    7: 32000,
-    8: 64000,
-    9: 128000,
-    10: 256000, // Assuming a max of 10 levels for the table
-    // ... add more levels as needed, or fetch this dynamically
+  1: 400,  
+  2: 500,  // Example: Level 1 might cost 500
+  3: 1000, // Example: Level 2 might cost 1000
+  4: 2000,
+  5: 4000,
+  6: 8000,
+  7: 16000,
+  8: 32000,
+  9: 64000,
+  10:128000,
+  11:256000, // Assuming a max of 10 levels for the table
+  // ... add more levels as needed, or fetch this dynamically
 };
 // -------------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
   const [uplineBeneficiaries, setUplineBeneficiaries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     const fetchUplines = async () => {
       if (!currentUser) {
@@ -39,7 +40,7 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get(
-          // `http://localhost:4001/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
+          // `https://ladlilaxmi.onrender.com/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
           `https://ladlilaxmi.onrender.com/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
           {
             headers: {
@@ -62,17 +63,17 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
   const handlePayClick = (upline) => {
     // Only proceed if upline object is valid (not a placeholder without full data)
     if (upline && upline.name && upline.uplineLevel && upline.upgradeCostAssociated) {
-        alert(`You clicked Pay for ${upline.name} at Upline Level ${upline.uplineLevel} for amount ₹${upline.upgradeCostAssociated}.`);
-        console.log("Pay button clicked for:", upline);
+      alert(`You clicked Pay for ${upline.name} at Upline Level ${upline.uplineLevel} for amount ₹${upline.upgradeCostAssociated}.`);
+      console.log("Pay button clicked for:", upline);
 
-        if (currentUser && currentUser.currentLevel !== undefined) {
-            navigate(`/userdashboard/upgrade/${currentUser.currentLevel + 1}`);
-        } else {
-            console.error("Current user or current level is undefined, cannot navigate to upgrade.");
-            // Optionally, show a user-friendly error message
-        }
+      if (currentUser && currentUser.currentLevel !== undefined) {
+        navigate(`/userdashboard/upgrade/${currentUser.currentLevel + 1}`);
+      } else {
+        console.error("Current user or current level is undefined, cannot navigate to upgrade.");
+        // Optionally, show a user-friendly error message
+      }
     } else {
-        console.warn("Attempted to click Pay on an incomplete upline object (likely a placeholder).");
+      console.warn("Attempted to click Pay on an incomplete upline object (likely a placeholder).");
     }
   };
 
@@ -133,8 +134,8 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
               {uplineBeneficiaries.map((upline) => {
                 // Determine if this is the specific upline for the current user's next level
                 const isNextLevelUpline = currentUser &&
-                                          upline.uplineLevel === (currentUser.currentLevel + 1) &&
-                                          upline.upgradeCostAssociated;
+                  upline.uplineLevel === (currentUser.currentLevel + 1) &&
+                  upline.upgradeCostAssociated;
 
                 return (
                   <tr key={upline._id} className="hover:bg-gray-50">
@@ -147,16 +148,15 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
                     <td className="py-4 px-6 text-base text-gray-800">
                       <button
                         onClick={() => handlePayClick(upline)}
-                        className={`font-bold py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-opacity-75 ${
-                          isNextLevelUpline
+                        className={`font-bold py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-opacity-75 ${isNextLevelUpline
                             ? 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-400'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        }`}
+                          }`}
                         disabled={!isNextLevelUpline} // Correctly enable/disable for actual uplines
                       >
-                        { isNextLevelUpline
-                            ? 'Pay'
-                            : 'Wait'}
+                        {isNextLevelUpline
+                          ? 'Pay'
+                          : 'Wait'}
                       </button>
                     </td>
                   </tr>
@@ -170,16 +170,16 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
 
                 // Check if this placeholder level is the user's *next* upgrade level
                 const isPlaceholderNextLevelUpline = currentUser &&
-                                                     currentPlaceholderLevel === (currentUser.currentLevel + 1) &&
-                                                     placeholderHelpAmount; // Ensure there's an associated cost
+                  currentPlaceholderLevel === (currentUser.currentLevel + 1) &&
+                  placeholderHelpAmount; // Ensure there's an associated cost
 
                 // Construct a partial upline object for handlePayClick for placeholder rows
                 // This allows the handlePayClick to function similarly, but with placeholder data.
                 const placeholderUplineData = {
-                    name: placeholderName,
-                    uplineLevel: currentPlaceholderLevel,
-                    upgradeCostAssociated: placeholderHelpAmount,
-                    // Add other properties if needed for the alert/console log, e.g., email: placeholderEmail
+                  name: placeholderName,
+                  uplineLevel: currentPlaceholderLevel,
+                  upgradeCostAssociated: placeholderHelpAmount,
+                  // Add other properties if needed for the alert/console log, e.g., email: placeholderEmail
                 };
 
 
@@ -187,10 +187,10 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
                   <tr key={`empty-${currentPlaceholderLevel}`} className="hover:bg-gray-50">
                     <td className="py-4 px-6 text-base text-gray-500 italic">{currentPlaceholderLevel}</td>
                     <td className="py-4 px-6 text-base text-gray-500 italic">
-                        {placeholderName}
+                      {placeholderName}
                     </td>
                     <td className="py-4 px-6 text-base text-gray-500 italic">
-                        {placeholderEmail}
+                      {placeholderEmail}
                     </td>
                     <td className="py-4 px-6 text-base text-gray-500 italic">
                       {placeholderHelpAmount ? `₹${placeholderHelpAmount}` : 'N/A'}
@@ -199,16 +199,15 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
                       <button
                         // Apply the same logic as real uplines, but for the placeholder level
                         onClick={() => handlePayClick(placeholderUplineData)}
-                        className={`font-bold py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-opacity-75 ${
-                          isPlaceholderNextLevelUpline
+                        className={`font-bold py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-opacity-75 ${isPlaceholderNextLevelUpline
                             ? 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-400'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        }`}
+                          }`}
                         disabled={!isPlaceholderNextLevelUpline} // Enable/disable based on next level
                       >
-                        { isPlaceholderNextLevelUpline
-                            ? 'Pay'
-                            : 'Wait'}
+                        {isPlaceholderNextLevelUpline
+                          ? 'Pay'
+                          : 'Wait'}
                       </button>
                     </td>
                   </tr>
@@ -247,7 +246,7 @@ export default UplineBeneficiariesTable;
 //       try {
 //         const token = localStorage.getItem('token');
 //         const response = await axios.get(
-//           // `http://localhost:4001/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
+//           // `https://ladlilaxmi.onrender.com/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
 //           `https://ladlilaxmi.onrender.com/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
 //           {
 //             headers: {
@@ -304,7 +303,7 @@ export default UplineBeneficiariesTable;
 //   return (
 //     <div className="p-8 mt-10 md:mt-0 bg-white rounded-lg shadow-lg max-w-6xl mx-auto">
 //       <h2 className="text-4xl font-extrabold text-gray-800 mb-8 pb-4 border-b-4 border-purple-500">
-//         Upline Help Beneficiaries 
+//         Upline Help Beneficiaries
 //       </h2>
 
 //       {uplineBeneficiaries.length === 0 ? (

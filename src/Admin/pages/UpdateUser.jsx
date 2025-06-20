@@ -19,7 +19,7 @@
 //     blockedForUpgrade: 0,
 //     totalWithdrawn: 0,
 //     accountNumber: '',
-//     accountName: '',
+//     accountHolder: '',
 //     bankName: '',
 //     ifscCode: '',
 //     role: 'user',
@@ -28,7 +28,7 @@
 //   const [message, setMessage] = useState('');
 //   const [error, setError] = useState('');
 
-//   const API_BASE_URL = 'http://localhost:4001/api/v1/admin'; // Adjust if different
+//   const API_BASE_URL = 'https://ladlilaxmi.onrender.com/api/v1/admin'; // Adjust if different
 
 //   // Helper for authenticated requests
 //   const getAuthHeaders = () => {
@@ -72,7 +72,7 @@
 //         totalWithdrawn: fetchedUser.totalWithdrawn || 0,
 //         // Populate bank details (handle potential null/undefined bankDetails)
 //         accountNumber: fetchedUser.bankDetails?.accountNumber || '',
-//         accountName: fetchedUser.bankDetails?.accountName || '',
+//         accountHolder: fetchedUser.bankDetails?.accountHolder || '',
 //         bankName: fetchedUser.bankDetails?.bankName || '',
 //         ifscCode: fetchedUser.bankDetails?.ifscCode || '',
 //         role: fetchedUser.role || 'user',
@@ -88,7 +88,7 @@
 //       setFormData({
 //         name: '', email: '', phone: '', password: '', referralCode: '', referredBy: '', sponserdBy: '',
 //         currentLevel: 0, walletBalance: 0, blockedForUpgrade: 0, totalWithdrawn: 0,
-//         accountNumber: '', accountName: '', bankName: '', ifscCode: '',
+//         accountNumber: '', accountHolder: '', bankName: '', ifscCode: '',
 //         role: 'user', isActive: true,
 //       });
 //     }
@@ -143,7 +143,7 @@
 //       // Send bank details as a complete object
 //       bankDetails: {
 //         accountNumber: formData.accountNumber,
-//         accountName: formData.accountName,
+//         accountHolder: formData.accountHolder,
 //         bankName: formData.bankName,
 //         ifscCode: formData.ifscCode,
 //       },
@@ -251,7 +251,7 @@
 //                 </div>
 //                 <div>
 //                   <label>Account Name:</label>
-//                   <input type="text" name="bankDetails.accountName" value={formData.accountName} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+//                   <input type="text" name="bankDetails.accountHolder" value={formData.accountHolder} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
 //                 </div>
 //                 <div>
 //                   <label>Bank Name:</label>
@@ -310,7 +310,7 @@ const UpdateUser = () => {
     sponserwalletBalance: 0,
     totalWithdrawn: 0,
     accountNumber: '',
-    accountName: '',
+    accountHolder: '',
     bankName: '',
     ifscCode: '',
     role: 'user',
@@ -379,7 +379,7 @@ const UpdateUser = () => {
         sponserwalletBalance: fetchedUser.sponserwalletBalance || 0,
         // Populate bank details (handle potential null/undefined bankDetails)
         accountNumber: fetchedUser.bankDetails?.accountNumber || '',
-        accountName: fetchedUser.bankDetails?.accountName || '',
+        accountHolder: fetchedUser.bankDetails?.accountHolder || '',
         bankName: fetchedUser.bankDetails?.bankName || '',
         ifscCode: fetchedUser.bankDetails?.ifscCode || '',
         role: fetchedUser.role || 'user',
@@ -399,7 +399,7 @@ const UpdateUser = () => {
       setFormData({
         name: '', email: '', phone: '', password: '', referralCode: '', referredBy: '', sponserdBy: '',
         currentLevel: 0, walletBalance: 0, totalWithdrawn: 0,sponserwalletBalance: 0,
-        accountNumber: '', accountName: '', bankName: '', ifscCode: '',
+        accountNumber: '', accountHolder: '', bankName: '', ifscCode: '',
         role: 'user', isActive: true,
       });
     }
@@ -454,7 +454,7 @@ const UpdateUser = () => {
       // Send bank details as a complete object
       bankDetails: {
         accountNumber: formData.accountNumber,
-        accountName: formData.accountName,
+        accountHolder: formData.accountHolder,
         bankName: formData.bankName,
         ifscCode: formData.ifscCode,
       },
@@ -582,27 +582,56 @@ const UpdateUser = () => {
             </div>
 
             {/* Bank Details */}
-            <div className="col-span-1 md:col-span-2 border-t pt-4 mt-4 border-gray-700"> {/* Darker border */}
-              <h4 className="text-lg font-semibold mb-4 text-gray-100">Bank Details</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div>
-                  <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-300 mb-1">Account Number:</label>
-                  <input type="text" id="accountNumber" name="bankDetails.accountNumber" value={formData.accountNumber} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
-                </div>
-                <div>
-                  <label htmlFor="accountName" className="block text-sm font-medium text-gray-300 mb-1">Account Name:</label>
-                  <input type="text" id="accountName" name="bankDetails.accountName" value={formData.accountName} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
-                </div>
-                <div>
-                  <label htmlFor="bankName" className="block text-sm font-medium text-gray-300 mb-1">Bank Name:</label>
-                  <input type="text" id="bankName" name="bankDetails.bankName" value={formData.bankName} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
-                </div>
-                <div>
-                  <label htmlFor="ifscCode" className="block text-sm font-medium text-gray-300 mb-1">IFSC Code:</label>
-                  <input type="text" id="ifscCode" name="bankDetails.ifscCode" value={formData.ifscCode} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
-                </div>
-              </div>
-            </div>
+            {/* Bank Details */}
+<div className="col-span-1 md:col-span-2 border-t pt-4 mt-4 border-gray-700">
+  <h4 className="text-lg font-semibold mb-4 text-gray-100">Bank Details</h4>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+    <div>
+      <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-300 mb-1">Account Number:</label>
+      <input 
+        type="text" 
+        id="accountNumber" 
+        name="accountNumber" 
+        value={formData.accountNumber} 
+        onChange={handleChange} 
+        className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" 
+      />
+    </div>
+    <div>
+      <label htmlFor="accountHolder" className="block text-sm font-medium text-gray-300 mb-1">Account Name:</label>
+      <input 
+        type="text" 
+        id="accountHolder" 
+        name="accountHolder"  
+        value={formData.accountHolder} 
+        onChange={handleChange} 
+        className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" 
+      />
+    </div>
+    <div>
+      <label htmlFor="bankName" className="block text-sm font-medium text-gray-300 mb-1">Bank Name:</label>
+      <input 
+        type="text" 
+        id="bankName" 
+        name="bankName" 
+        value={formData.bankName} 
+        onChange={handleChange} 
+        className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" 
+      />
+    </div>
+    <div>
+      <label htmlFor="ifscCode" className="block text-sm font-medium text-gray-300 mb-1">IFSC Code:</label>
+      <input 
+        type="text" 
+        id="ifscCode" 
+        name="ifscCode" 
+        value={formData.ifscCode} 
+        onChange={handleChange} 
+        className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" 
+      />
+    </div>
+  </div>
+</div>
 
             {/* Role & Active Status */}
             <div>

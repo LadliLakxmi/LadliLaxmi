@@ -161,8 +161,9 @@ exports.updateBankDetails = async (req, res) => {
   try {
     // Assuming req.user.id is set by your 'protect' middleware
     const userId = req.user.id;
-    const { accountHolder, accountNumber, ifscCode, bankName, phoneNumber } =
+    const { accountHolder, accountNumber, ifscCode, bankName,upiId } =
       req.body;
+      console.log("bank detail",req.body)
 
     // Find the user and update their bankDetails
     const user = await User.findById(userId);
@@ -177,8 +178,8 @@ exports.updateBankDetails = async (req, res) => {
       accountNumber,
       ifscCode,
       bankName,
+      upiId
     };
-    user.phone = phoneNumber;
     await user.save(); // Save the updated user document
 
     res.status(200).json({

@@ -86,17 +86,17 @@ const userSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
-  panCard: {
-        type: String,
-        trim: true,
-        uppercase: true, // PAN cards are typically uppercase
-        unique: true, // A PAN card should be unique per user
-        sparse: true, // Allows null/undefined for users who haven't added it yet
-        match: [
-          /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, // Basic Indian PAN card format regex
-          "Please enter a valid Indian PAN card number (e.g., ABCDE1234F)",
-        ],
-      },
+    panCard: {
+      type: String,
+      trim: true,
+      uppercase: true, // PAN cards are typically uppercase
+      unique: true, // A PAN card should be unique per user
+      sparse: true, // Allows null/undefined for users who haven't added it yet
+      match: [
+        /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, // Basic Indian PAN card format regex
+        "Please enter a valid Indian PAN card number (e.g., ABCDE1234F)",
+      ],
+    },
 
     walletTransactions: [
       {
@@ -112,17 +112,17 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-       totalWithdrawn: { type: Number, default: 0 },
+    totalWithdrawn: { type: Number, default: 0 },
 
 
-     bankDetails: {
-    accountHolder: { type: String },
-    accountNumber: { type: String },
-    ifscCode: { type: String },
-    bankName: { type: String },
-    upiId: { type: String }, // Add UPI ID here
-  },
-    upgradewalletBalance:{
+    bankDetails: {
+      accountHolder: { type: String },
+      accountNumber: { type: String },
+      ifscCode: { type: String },
+      bankName: { type: String },
+      upiId: { type: String }, // Add UPI ID here
+    },
+    upgradewalletBalance: {
       type: Number,
       default: 0,
       min: 0,
