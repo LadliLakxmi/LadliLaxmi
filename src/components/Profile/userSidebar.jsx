@@ -29,29 +29,31 @@ const UserSidebar = ({ user }) => {
     "My Downline": <FaUsers className="inline-block mr-3 text-orange-400" />,
     "My Team": <FaHandshake className="inline-block mr-3 text-pink-400" />,
     "Transaction History": <FaHistory className="inline-block mr-3 text-teal-400" />,
+    "Direct Team": <FaHandshake className="inline-block mr-3 text-pink-400" />,
     "Donate Downline": <FaGift className="inline-block mr-3 text-red-400" />,
   };
 
   const links = [
     { to: "/userdashboard/", label: "Dashboard" },
     { to: "/userdashboard/withdraw", label: "Withdraw" },
-    ...(user?.currentLevel === 0
-      // ? [{ to: "/userdashboard/donatePage", label: "Activate Level 1" }]
-            ? [{ to: `/userdashboard/upgrade/${user.currentLevel + 1}`, label: "Activate Account" }]
-      : user?.currentLevel < 11
-      ? [
-          {
-            to: `/userdashboard/upgrade/${user.currentLevel + 1}`,
-            label: `Give Help to Level ${user.currentLevel + 1}`,
-          },
-        ]
-      : []),
+    { to: "/userdashboard/dircetteam", label: "Direct Team" },
     { to: "/userdashboard/addFund", label: "Add Fund" },
     { to: "/userdashboard/downline", label: "My Downline" },
     { to: "/userdashboard/myteam", label: "My Team" },
-        { to: "/userdashboard/Upline", label: "Help To Upline" },
+    { to: "/userdashboard/Upline", label: "Help To Upline" },
     { to: "/userdashboard/transactions", label: "Transaction History" },
     { to: "/userdashboard/donate", label: "Donate Downline" },
+    // ...(user?.currentLevel === 0
+    //   // ? [{ to: "/userdashboard/donatePage", label: "Activate Level 1" }]
+    //         ? [{ to: `/userdashboard/upgrade/${user.currentLevel + 1}`, label: "Activate Account" }]
+    //   : user?.currentLevel < 11
+    //   ? [
+    //       {
+    //         to: `/userdashboard/upgrade/${user.currentLevel + 1}`,
+    //         label: `Give Help to Level ${user.currentLevel + 1}`,
+    //       },
+    //     ]
+    //   : []),
   ].map((link) => ({
     ...link,
    icon: iconMap[link.label.includes("Level") || link.label.includes("Upline") ? "Upgrade" : link.label], // Handle upgrade label generically

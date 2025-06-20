@@ -12,7 +12,7 @@ import DonateDownline from "./DonateDownline"
 import AddFund from "./AddFund";
 import TransferSponsorToMain from "./TransferSponsorToMain";
 import UplineBeneficiariesTable from "./UplineBeneficiariesTable";
-
+import DirectTeam from "./DirectTeam";
 
 const countAllDescendantsBFS = (team) => {
   if (!team || !team.matrixChildren || team.matrixChildren.length === 0) {
@@ -91,17 +91,10 @@ const Main = ({ user,setUser }) => {
           path="/myteam"
           element={<MyTeam team={team} matrixChildren={user.matrixChildren} />}
         />
-{/*         {user.currentLevel === 0 ? (
-          <Route
-            path="/donatePage"
-            element={<DonatePage user={user} matrixChildren={user.matrixChildren} />}
-          />
-        ) : (
-          <Route
-            path={`/upgrade/${user.currentLevel + 1}`}
-            element={<UpgradePage user={user} matrixChildren={user.matrixChildren} />}
-          />
-        )} */}
+        <Route
+          path="/dircetteam"
+          element={<DirectTeam team={team} />}
+        />
         <Route
             path={`/upgrade/${user.currentLevel + 1}`}
             element={<UpgradePage user={user} setUser={setUser} matrixChildren={user.matrixChildren} />}
