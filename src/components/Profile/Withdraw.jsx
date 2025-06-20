@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify';
 import { IndianRupee, Wallet, Banknote, Landmark, ArrowUpCircle } from 'lucide-react';
 import WithdrawHistory from "./WithdrawHistory";
-
+import { useNavigate } from "react-router-dom";
 // Define INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL as the *individual* limit for each level,
 // and we will sum them up dynamically.
 const INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL = {
@@ -30,6 +30,7 @@ const calculateCumulativeMaxWithdrawal = (currentLevel) => {
 };
 
 const Withdraw = ({ user, fetchUserData }) => {
+    const navigate = useNavigate();
   const [bankDetails, setBankDetails] = useState(null);
   const [formData, setFormData] = useState({
     walletType: "", // Initialize as empty string
@@ -389,7 +390,7 @@ const Withdraw = ({ user, fetchUserData }) => {
             >
               <option value="" disabled>Select a wallet</option>
               <option value="main">Main Wallet</option>
-              <option value="sponser">sponser Wallet</option> {/* Ensure 'sponser' matches your backend expectation */}
+              <option value="sponser">Sponser Wallet</option> {/* Ensure 'sponser' matches your backend expectation */}
             </select>
           </div>
 

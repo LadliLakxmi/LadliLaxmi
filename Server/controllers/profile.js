@@ -299,7 +299,7 @@ exports.getTeam = async (req, res) => {
     const userId = req.params.id;
 
     const rootUser = await User.findById(userId)
-      .populate("directReferrals", "name email")
+      .populate("directReferrals", "name email phone referralCode currentLevel")
       .populate("matrixChildren", "name email referralCode currentLevel")
       .lean();
 
@@ -316,6 +316,7 @@ exports.getTeam = async (req, res) => {
     const Team = {
       ...hierarchyRoot2, // This contains the nested matrixChildren structure
       email: rootUser.email,
+      directReferrals: rootUser.directReferrals,
       phone: rootUser.phone,
       referralCode: rootUser.referralCode,
       // ... any other top-level fields you explicitly need for the main profile card
