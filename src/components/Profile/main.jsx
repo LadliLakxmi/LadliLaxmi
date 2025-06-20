@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import DashboardOverview from "./DashboardOverview";
 import DonatePage from "./Activation";
+import axios from 'axios'; 
 import TransactionHistory from "./TransactionHistory";
 import MyTeam from "./MyTeam";
 import Withdraw from "./Withdraw";
@@ -12,28 +13,68 @@ import AddFund from "./AddFund";
 import TransferSponsorToMain from "./TransferSponsorToMain";
 import UplineBeneficiariesTable from "./UplineBeneficiariesTable";
 
+
+const countAllDescendantsBFS = (team) => {
+  if (!team || !team.matrixChildren || team.matrixChildren.length === 0) {
+    return 0;
+  }
+
+  let count = 0;
+  const queue = [...team.matrixChildren]; // Start with direct children
+
+  while (queue.length > 0) {
+    const current = queue.shift(); // Get the first node from the queue
+    count++; // Count this descendant
+
+    // Add its direct children to the end of the queue
+    if (current.matrixChildren && current.matrixChildren.length > 0) {
+      for (const child of current.matrixChildren) {
+        queue.push(child);
+      }
+    }
+  }
+  return count;
+};
+
 const Main = ({ user,setUser }) => {
+
+  const [team, setTeam] = useState(null);
+    const token = localStorage.getItem("token");
+      useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const data = await axios.get(
+            // Using localhost for development, ensure it's correct for your setup
+  
+            `http://localhost:4001/api/v1/profile/get-team/${user._id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setTeam(data.data.Team);
+          console.log("Team data: ",data.data.Team);
+        } catch (err) {
+          console.error("Failed to fetch Team", err);
+          // Optionally, set an error state here to display a message to the user
+        }
+      };
+      if (user._id) fetchData();
+    }, [user._id,token]); // Added token to dependency array for completeness
+     
+    const totalChildCount = countAllDescendantsBFS(team); // 🧮 Total child count
+    
+  
+
+
   return (
     <div className=" flex  flex-col w-full min-h-screen px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 ">
       <Routes>
-        {/* <Route
-          path="/"
-          element={
-            <div className="flex flex-col items-center justify-center text-center text-white px-4 py-10 sm:py-16">
-              <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
-                Hii, Welcome Back
-              </h1>
-              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-amber-400 font-bold mt-2">
-                {user.name}
-              </h2>
-              <p className="text-xl sm:text-2xl mt-6">
-                Check Out your Dashboard
-              </p>
-              <h3 className="text-4xl sm:text-5xl mt-4">👈</h3>
-            </div>
-          }
-        /> */}
-        <Route path="/" element={<DashboardOverview user={user} setUser={setUser} walletTransactions={user.walletTransactions}/>} />
+        
+  
+          
+        <Route path="/" element={<DashboardOverview countchild={totalChildCount} user={user} setUser={setUser} walletTransactions={user.walletTransactions}/>} />
         <Route path="/withdraw" element={<Withdraw user={user} />} />
         <Route
           path="/moneyTransfer"
@@ -48,7 +89,7 @@ const Main = ({ user,setUser }) => {
         />
         <Route
           path="/myteam"
-          element={<MyTeam team={user} matrixChildren={user.matrixChildren} />}
+          element={<MyTeam team={team} matrixChildren={user.matrixChildren} />}
         />
 {/*         {user.currentLevel === 0 ? (
           <Route
