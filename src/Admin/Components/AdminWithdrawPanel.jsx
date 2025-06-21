@@ -109,15 +109,14 @@ const AdminWithdrawPanel = () => {
                     </span>
                   </td>
                  <td className="py-3 px-6 text-left">
-                    {/* Safely display bank details */}
-                    {req ? (
+                    {/* The corrected section for bank details */}
+                    {req.user?.bankDetails ? (
                       <>
-                        <p>Holder: {req.user?.name || 'N/A'}</p>
-                        <p>Acc: {req.user?.bankDetails.accountNumber || 'N/A'}</p>
-                        <p>IFSC: {req.user?.bankDetails.ifscCode || 'N/A'}</p>
-                        <p>Bank: {req.user?.bankDetails.bankName || 'N/A'}</p>
-                               <p>Wallet Type: {req.walletType || 'N/A'} Wallet</p>
-                        {req.user?.phone && <p>Phone: {req.user?.phone}</p>}
+                        <p>Holder: {req.user.bankDetails.AccountHolder || 'N/A'}</p>
+                        <p>Acc: {req.user.bankDetails.accountNumber || 'N/A'}</p>
+                        <p>IFSC: {req.user.bankDetails.ifscCode || 'N/A'}</p>
+                        <p>Bank: {req.user.bankDetails.bankName || 'N/A'}</p>
+                        <p>UpiId: {req.user.bankDetails.upiId || 'N/A'}</p>
                       </>
                     ) : (
                       'Not provided'
