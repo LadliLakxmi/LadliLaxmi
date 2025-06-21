@@ -6,7 +6,7 @@ const AllFunds = () => {
 
   const fetchTransactions = async () => {
   try {
-    const res = await axios.get("http://localhost:4001/api/v1/transactions");
+    const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/transactions");
     const sorted = res.data.transactions.sort((a, b) => {
       // Priority: pending > approved
       if (a.status === "pending" && b.status !== "pending") return -1;
@@ -25,7 +25,7 @@ const AllFunds = () => {
 
   const updateStatus = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:4001/api/v1/transaction/${id}/status`, { status: newStatus });
+      await axios.put(`https://ladlilaxmi.onrender.com/api/v1/transaction/${id}/status`, { status: newStatus });
       fetchTransactions(); // Refresh list
     } catch (err) {
       console.error("Error updating status", err);
