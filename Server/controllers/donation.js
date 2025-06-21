@@ -388,3 +388,30 @@ exports.transferFundsToDownline = async (req, res) => {
     });
   }
 };
+
+const jwt = require('jsonwebtoken'); // यदि आप टोकन सत्यापन का उपयोग कर रहे हैं
+
+
+exports.getUserByReferralCode = async (req, res) => {
+  try {
+    const { referralCode } = req.params; // Get referral code from URL parameters
+console.log("backend:",referralCode)
+    if (!referralCode) {
+      return res.status(400).json({ success: false, message: "Referral code is required." });
+    }
+
+    // Case-insensitive search: Use new RegExp with 'i' flag
+    const user = await User.findOne({ referralCode: new RegExp(`^${referralCode}$`, 'i') }).select('name email referralCode'); // Only select necessary fields
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "No user found with this referral code." });
+    }
+
+    return res.status(200).json({ success: true, user: { name: user.name, referralCode: user.referralCode, email: user.email } });
+  } catch (error) {
+    console.error("Error fetching user by referral code:", error);
+    return res.status(500).json({ success: false, message: "Server error. Please try again." });
+  }
+};
+
+
