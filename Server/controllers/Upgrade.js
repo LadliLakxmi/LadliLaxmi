@@ -183,7 +183,7 @@ exports.initiateUpgrade = async (req, res) => {
       user.referredBy = slotUser.referralCode; // Set the actual matrix upline
       slotUser.matrixChildren.push(user._id);
       await slotUser.save({ session });
-      // user.save({ session }); // Will be saved at the end of the transaction
+      user.save({ session }); // Will be saved at the end of the transaction
 
       // Add new user to the directReferrals of the original sponsor (whoever invited them)
       if (sponsorDuringRegistration) {
