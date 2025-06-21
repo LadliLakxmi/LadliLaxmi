@@ -17,7 +17,7 @@ const UserTransactionForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:4001/api/v1/transaction", formData);
+      await axios.post("https://ladlilaxmi.onrender.com/api/v1/transaction", formData);
       alert("Transaction Submitted Successfully");
       setFormData({
         name: "",
