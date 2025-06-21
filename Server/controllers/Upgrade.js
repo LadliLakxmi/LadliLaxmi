@@ -387,7 +387,7 @@ exports.initiateUpgrade = async (req, res) => {
 
       // Handle sponsor payment (level 1 only) if different from recipient
       if (level === 1) { // This block is ONLY if recipientUser and sponsorUser are DIFFERENT
-        user.walletBalance -= flow.sponsorShare;
+        user.upgradewalletBalance -= flow.sponsorShare;
         sponsorUser.walletBalance += flow.sponsorShare;
            const txnId = uuidv4(); 
         sponsorTxn = new WalletTransaction({ // Assign to already declared variable

@@ -1,8 +1,11 @@
 import React from "react";
 import QRcode from "../../assets/QRcode.jpg";
+import UserTransactionForm from "./UserTransactionForm";
 
 const AddFund = () => {
   return (
+    <>
+  
     <section className="container mx-auto p-4 md:p-8">
       <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-100">
         Add Funds to Your Wallet
@@ -50,6 +53,8 @@ const AddFund = () => {
         </div>
       </div>
     </section>
+    <UserTransactionForm/>
+      </>
   );
 };
 

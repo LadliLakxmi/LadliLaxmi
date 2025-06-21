@@ -13,7 +13,7 @@
 //     password: '', // New password (empty by default)
 //     referralCode: '',
 //     referredBy: '',
-//     sponserdBy: '',
+//     upgradedBy: '',
 //     currentLevel: 0,
 //     walletBalance: 0,
 //     blockedForUpgrade: 0,
@@ -65,7 +65,7 @@
 //         password: '', // Always clear password field on fetch for security
 //         referralCode: fetchedUser.referralCode || '',
 //         referredBy: fetchedUser.referredBy || '',
-//         sponserdBy: fetchedUser.sponserdBy || '',
+//         upgradedBy: fetchedUser.upgradedBy || '',
 //         currentLevel: fetchedUser.currentLevel || 0,
 //         walletBalance: fetchedUser.walletBalance || 0,
 //         blockedForUpgrade: fetchedUser.blockedForUpgrade || 0,
@@ -86,7 +86,7 @@
 //       setUserIdToUpdate('');
 //       // Reset form data on error
 //       setFormData({
-//         name: '', email: '', phone: '', password: '', referralCode: '', referredBy: '', sponserdBy: '',
+//         name: '', email: '', phone: '', password: '', referralCode: '', referredBy: '', upgradedBy: '',
 //         currentLevel: 0, walletBalance: 0, blockedForUpgrade: 0, totalWithdrawn: 0,
 //         accountNumber: '', accountHolder: '', bankName: '', ifscCode: '',
 //         role: 'user', isActive: true,
@@ -149,7 +149,7 @@
 //       },
 //       referralCode: formData.referralCode,
 //       referredBy: formData.referredBy,
-//       sponserdBy: formData.sponserdBy,
+//       upgradedBy: formData.upgradedBy,
 //     };
 
 //     try {
@@ -220,7 +220,7 @@
 //             </div>
 //             <div>
 //               <label>Sponsored By:</label>
-//               <input type="text" name="sponserdBy" value={formData.sponserdBy} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+//               <input type="text" name="upgradedBy" value={formData.upgradedBy} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
 //             </div>
 
 //             {/* Financial/Level Info */}
@@ -304,10 +304,10 @@ const UpdateUser = () => {
     password: '', // New password (empty by default)
     referralCode: '',
     referredBy: '', // This will hold the referral code string from the fetched user
-    sponserdBy: '', // This will hold the sponsor ID string from the fetched user
+    upgradedBy: '', // This will hold the sponsor ID string from the fetched user
     currentLevel: 0,
     walletBalance: 0,
-    sponserwalletBalance: 0,
+    upgradewalletBalance: 0,
     totalWithdrawn: 0,
     accountNumber: '',
     accountHolder: '',
@@ -317,10 +317,10 @@ const UpdateUser = () => {
     isActive: true,
   });
 
-  // NEW STATE for displaying referredBy and sponserdBy emails/names
+  // NEW STATE for displaying referredBy and upgradedBy emails/names
   const [referredByEmailDisplay, setReferredByEmailDisplay] = useState('');
-  const [sponserdByEmailDisplay, setSponserdByEmailDisplay] = useState('');
-  const [sponserdByNameDisplay, setSponserdByNameDisplay] = useState(''); // Optionally display sponsor name
+  const [upgradedByEmailDisplay, setupgradedByEmailDisplay] = useState('');
+  const [upgradedByNameDisplay, setupgradedByNameDisplay] = useState(''); // Optionally display sponsor name
 
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -345,23 +345,23 @@ const UpdateUser = () => {
       setUserIdToUpdate('');
       // Clear display fields if no email
       setReferredByEmailDisplay('');
-      setSponserdByEmailDisplay('');
-      setSponserdByNameDisplay('');
+      setupgradedByEmailDisplay('');
+      setupgradedByNameDisplay('');
       return;
     }
     setError('');
     setMessage('');
     try {
       const response = await axios.get(`${API_BASE_URL}/users/by-email?email=${userEmail}`, getAuthHeaders());
-      const fetchedUser = response.data; // This now contains referredByEmail, sponserdByEmail, sponserdByName
+      const fetchedUser = response.data; // This now contains referredByEmail, upgradedByEmail, upgradedByName
     console.log("Update response: ",fetchedUser)
       setUserData(fetchedUser); // Store the full user data
       setUserIdToUpdate(fetchedUser._id); // Crucially, store the _id for subsequent update
 
       // Set the display states from the new fields returned by the backend
       setReferredByEmailDisplay(fetchedUser.referredByEmail || 'N/A');
-      setSponserdByEmailDisplay(fetchedUser.sponserdByEmail || 'N/A');
-      setSponserdByNameDisplay(fetchedUser.sponserdByName || 'N/A');
+      setupgradedByEmailDisplay(fetchedUser.upgradedByEmail || 'N/A');
+      setupgradedByNameDisplay(fetchedUser.upgradedByName || 'N/A');
 
 
       // Populate form data with fetched user details
@@ -372,11 +372,11 @@ const UpdateUser = () => {
         password: '', // Always clear password field on fetch for security
         referralCode: fetchedUser.referralCode || '',
         referredBy: fetchedUser.referredBy || '', // This is the original referral code string for update
-        sponserdBy: fetchedUser.sponserdBy || '', // This is the original sponsor ID string for update
+        upgradedBy: fetchedUser.upgradedBy || '', // This is the original sponsor ID string for update
         currentLevel: fetchedUser.currentLevel || 0,
         walletBalance: fetchedUser.walletBalance || 0,
         totalWithdrawn: fetchedUser.totalWithdrawn || 0,
-        sponserwalletBalance: fetchedUser.sponserwalletBalance || 0,
+        upgradewalletBalance: fetchedUser.upgradewalletBalance || 0,
         // Populate bank details (handle potential null/undefined bankDetails)
         accountNumber: fetchedUser.bankDetails?.accountNumber || '',
         accountHolder: fetchedUser.bankDetails?.accountHolder || '',
@@ -393,12 +393,12 @@ const UpdateUser = () => {
       setUserIdToUpdate('');
       // Reset display fields on error
       setReferredByEmailDisplay('');
-      setSponserdByEmailDisplay('');
-      setSponserdByNameDisplay('');
+      setupgradedByEmailDisplay('');
+      setupgradedByNameDisplay('');
       // Reset form data on error
       setFormData({
-        name: '', email: '', phone: '', password: '', referralCode: '', referredBy: '', sponserdBy: '',
-        currentLevel: 0, walletBalance: 0, totalWithdrawn: 0,sponserwalletBalance: 0,
+        name: '', email: '', phone: '', password: '', referralCode: '', referredBy: '', upgradedBy: '',
+        currentLevel: 0, walletBalance: 0, totalWithdrawn: 0,upgradewalletBalance: 0,
         accountNumber: '', accountHolder: '', bankName: '', ifscCode: '',
         role: 'user', isActive: true,
       });
@@ -446,7 +446,7 @@ const UpdateUser = () => {
       currentLevel: parseInt(formData.currentLevel, 10), // Ensure number type
       walletBalance: parseFloat(formData.walletBalance), // Ensure number type
       totalWithdrawn: parseFloat(formData.totalWithdrawn),
-      sponserwalletBalance: parseFloat(formData.sponserwalletBalance), // Ensure number type
+      upgradewalletBalance: parseFloat(formData.upgradewalletBalance), // Ensure number type
       role: formData.role,
       isActive: formData.isActive,
       // Only include password if it's been typed into
@@ -460,7 +460,7 @@ const UpdateUser = () => {
       },
       referralCode: formData.referralCode,
       referredBy: formData.referredBy, // Send referral code string as is for update
-      sponserdBy: formData.sponserdBy, // Send sponsor ID string as is for update
+      upgradedBy: formData.upgradedBy, // Send sponsor ID string as is for update
     };
 
     try {
@@ -541,25 +541,25 @@ const UpdateUser = () => {
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Sponsored By (Email):</label>
               <p className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200">
-                {sponserdByEmailDisplay}
+                {upgradedByEmailDisplay}
               </p>
             </div>
             {/* Display Sponsored By Name (fetched from backend) */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Sponsored By (Name):</label>
               <p className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200">
-                {sponserdByNameDisplay}
+                {upgradedByNameDisplay}
               </p>
             </div>
-            {/* Keep the original 'referredBy' and 'sponserdBy' inputs hidden for submission logic
+            {/* Keep the original 'referredBy' and 'upgradedBy' inputs hidden for submission logic
                 if you don't want the admin to directly edit the ID/code, only view the emails */}
             <div className="hidden">
               <label htmlFor="referredBy" className="block text-sm font-medium text-gray-300 mb-1">Original Referred By:</label>
               <input type="text" id="referredBy" name="referredBy" value={formData.referredBy} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
             </div>
             <div className="hidden">
-              <label htmlFor="sponserdBy" className="block text-sm font-medium text-gray-300 mb-1">Original Sponsored By:</label>
-              <input type="text" id="sponserdBy" name="sponserdBy" value={formData.sponserdBy} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
+              <label htmlFor="upgradedBy" className="block text-sm font-medium text-gray-300 mb-1">Original Sponsored By:</label>
+              <input type="text" id="upgradedBy" name="upgradedBy" value={formData.upgradedBy} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
             </div>
 
 
@@ -573,8 +573,8 @@ const UpdateUser = () => {
               <input type="number" id="walletBalance" name="walletBalance" value={formData.walletBalance} onChange={handleChange} step="0.01" min="0" className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white" />
             </div>
             <div>
-              <label htmlFor="sponserwalletBalance" className="block text-sm font-medium text-gray-300 mb-1">Sponser Wallet Balance:</label>
-              <input type="number" id="sponserwalletBalance" name="sponserwalletBalance" value={formData.sponserwalletBalance} onChange={handleChange} step="0.01" min="0" className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white" />
+              <label htmlFor="upgradewalletBalance" className="block text-sm font-medium text-gray-300 mb-1">upgrade Wallet Balance:</label>
+              <input type="number" id="upgradewalletBalance" name="upgradewalletBalance" value={formData.upgradewalletBalance} onChange={handleChange} step="0.01" min="0" className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white" />
             </div>
             <div>
               <label htmlFor="totalWithdrawn" className="block text-sm font-medium text-gray-300 mb-1">Total Withdrawn:</label>
