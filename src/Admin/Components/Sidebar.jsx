@@ -17,8 +17,11 @@ const Sidebar = () => {
         <NavLink to="/Admindashboard/users" className={linkClass}>
           Users
         </NavLink>
+        <NavLink to="/Admindashboard/funds" className={linkClass}>
+          All Funds
+        </NavLink>
         <NavLink to="/Admindashboard/payments" className={linkClass}>
-          Payments
+         withdraw Rquests
         </NavLink>
          <NavLink to="/Admindashboard/update" className={linkClass}>
           Update Users
