@@ -150,7 +150,6 @@ const UpdateUser = () => {
       upgradewalletBalance: parseFloat(formData.upgradewalletBalance),
       role: formData.role,
       isActive: formData.isActive,
-      ...(formData.password && { password: formData.password }),
       // Send bank details as a complete object, including upiId
       bankDetails: {
         accountNumber: formData.accountNumber,
@@ -163,7 +162,9 @@ const UpdateUser = () => {
       referredBy: formData.referredBy,
       sponserdBy: formData.sponserdBy,
     };
-
+if(formData.password){
+  updatePayload.password = formData.password;
+}
     try {
       const response = await axios.put(`${API_BASE_URL}/users/${userIdToUpdate}`, updatePayload, getAuthHeaders());
       console.log("update response", response)
