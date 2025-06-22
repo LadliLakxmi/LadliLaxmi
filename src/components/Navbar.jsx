@@ -174,7 +174,8 @@ const Navbar = ({ role }) => {
                 >
                   Dashboard
                 </span>
-              ) : (
+              ) : (<>
+                {user?(<Logout />):("")}             
                 <button
                   className="text-lg w-full text-left hover:text-amber-600"
                   onClick={() => {
@@ -182,18 +183,19 @@ const Navbar = ({ role }) => {
                     setIsOpen(false);
                   }}
                 >
-                  {user ? (<>
+                  {user ? (
                     <div className="flex items-center space-x-2">
                       <FaUserTie className="w-5 h-5" />
                       <span>Profile</span>
 
                     </div>
-                    <Logout />
-                  </>
+                    
+                  
                   ) : (
                     "Register / Login"
                   )}
                 </button>
+                </>
               )}
             </li>
           </ul>
