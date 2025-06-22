@@ -84,6 +84,7 @@ const AdminWithdrawPanel = () => {
               <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                 <th className="py-3 px-6 text-left border-b border-gray-200">User Email</th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Amount</th>
+                <th className="py-3 px-6 text-left border-b border-gray-200">Final Amount (-10%)</th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Status</th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Bank Details</th>
                 <th className="py-3 px-6 text-center border-b border-gray-200">Actions</th>
@@ -98,6 +99,9 @@ const AdminWithdrawPanel = () => {
                   </td>
                   <td className="py-3 px-6 text-left">
                     ₹{req.amount?.toFixed(2) || '0.00'} {/* Safely display amount */}
+                  </td>
+                  <td className="py-3 px-6 text-left">
+                    ₹{req.amount?.toFixed(2)*0.9 || '0.00'} {/* Safely display amount */}
                   </td>
                   <td className="py-3 px-6 text-left">
                     <span className={`py-1 px-3 rounded-full text-xs font-bold ${
