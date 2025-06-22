@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { useToken } from "../hooks/usetoken";
 import { FaUserTie, FaBars, FaTimes } from "react-icons/fa";
 import Logout from "../components/Auth/Logout"
-import Logo from "../assets/Logo.jpeg";
+import Logo from "../assets/Logo.png";
 const Navbar = ({ role }) => {
   const navigate = useNavigate();
   const token = useToken();
