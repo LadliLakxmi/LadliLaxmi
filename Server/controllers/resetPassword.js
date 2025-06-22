@@ -67,24 +67,5 @@ exports.resetPassword = async (req, res) => {
     if (!(userDetails.resetPasswordExpires > Date.now())) {
       return res.status(403).json({
         success: false,
-        message: `Token is Expired, Please Regenerate Your Token`,
-      })
-    }
-    const encryptedPassword = await bcrypt.hash(password, 10)
-    await User.findOneAndUpdate(
-      { token: token },
-      { password: encryptedPassword },
-      { new: true }
-    )
-    res.json({
-      success: true,
-      message: `Password Reset Successful`,
-    })
-  } catch (error) {
-    return res.json({
-      error: error.message,
-      success: false,
-      message: `Some Error in Updating the Password`,
-    })
-  }
-}
+
+        

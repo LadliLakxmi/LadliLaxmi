@@ -1,6 +1,8 @@
-const User = require('../models/User');
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 const WithdrawRequest = require('../models/WithdrawRequest')
-
 // 1. Get all users (excluding password, with donations populated)
 exports.getAllUsers = async (req, res) => {
   try {
@@ -149,13 +151,34 @@ exports.updateUserByAdmin = async (req, res) => {
     // If bankDetails is sent as a whole object, it will typically replace the existing one.
     // For specific sub-document updates, you might need $set: { 'bankDetails.accountNumber': 'newVal' }
     // but sending the whole bankDetails object from frontend works if it's complete.
+
+    //  // Handle bankDetails separately
+    // if (updateData.bankDetails) {
+    //   await User.findByIdAndUpdate(
+    //     id,
+    //     { $set: { bankDetails: updateData.bankDetails } },
+    //     { new: true, runValidators: true }
+    //   );
+    //   delete updateData.bankDetails;
+    // }
+
+    // const updatedUser = await User.findByIdAndUpdate(
+    //   id,
+    //   updateData,
+    //   { new: true, runValidators: true }
+    // ).select('-password');
+
+    // res.status(200).json({
+    //   success: true,
+    //   user: updatedUser
+    // });
     const user = await User.findByIdAndUpdate(id, updates, { new: true, runValidators: true }).select('-password');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ message: 'User updated successfully', user });
+    res.json({ success:true , message: 'User updated successfully', user });
   } catch (err) {
     console.error("Error updating user:", err);
     if (err.name === 'ValidationError') {

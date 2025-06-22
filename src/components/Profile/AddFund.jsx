@@ -26,6 +26,10 @@ const AddFund = () => {
           <p className="text-lg text-gray-400 mt-1">for Level 1 Activation or more as you want</p>
         </div>
 
+    <UserTransactionForm/>
+        
+      </div>
+    </section>
         {/* Instructions Section */}
         <div className="flex flex-col text-lg md:text-xl gap-4 p-4 text-gray-300">
           <h2 className="text-red-400 text-2xl md:text-3xl font-bold mb-2">Instructions:</h2>
@@ -44,16 +48,13 @@ const AddFund = () => {
           </div>
 
           <p className="text-amber-300 font-medium leading-relaxed">
-            Kindly include your: <strong className="text-white">Full Name</strong>, <strong className="text-white">Email ID</strong>, and <strong className="text-white">Referral Code</strong> along with the screenshot.
+            Kindly include your: <strong className="text-white">Full Name</strong>, <strong className="text-white">Email ID</strong>, and <strong className="text-white">Referral Code</strong>,and <strong className="text-white">UTR no.</strong> along with the screenshot.
           </p>
 
           <p className="text-gray-400 leading-relaxed">
             Please note that fund additions typically take <strong className="text-white">up to 24 hours</strong> to reflect in your wallet. We appreciate your patience!
           </p>
         </div>
-      </div>
-    </section>
-    <UserTransactionForm/>
       </>
   );
 };
