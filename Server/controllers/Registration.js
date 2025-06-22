@@ -73,6 +73,7 @@ exports.register = async (req, res) => {
         });
       }
     }
+    
    
 
     const hashed = await bcrypt.hash(password, 10);
@@ -95,9 +96,8 @@ exports.register = async (req, res) => {
     });
 
     await newUser.save(); // Save the new user first to get their _id
- if (sponser) {
-      sponser.directReferrals.push(newUser._id);
-    }
+      sponser?.directReferrals.push(newUser._id);
+    
     res.status(201).json({
       success: true,
       _id: newUser._id,
