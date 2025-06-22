@@ -27,7 +27,7 @@ const Withdraw = ({ user, fetchUserData }) => {
   const token = localStorage.getItem("token");
 
   const currentLevel = Number(user?.currentLevel) || 0;
- const directmembers = Number(user?.directReferrals)|| 0;
+ const directmembers = (user?.directReferrals).length || 0;
   // --- Removed all limit-related calculations ---
   // maxAllowedForCurrentLevelCumulative, alreadyWithdrawn, remainingLimitForLevel, finalWithdrawalCap
   // These concepts are no longer applied at the backend for main wallet withdrawals.
