@@ -80,7 +80,7 @@ exports.register = async (req, res) => {
     // This will be set by the schema's default function, but ensure _id is available first
     // For now, let's keep the simple unique code generation here, or rely on schema default
     const newReferralCode =
-      "R" +
+      "L" +
       Date.now().toString().slice(-4) +
       Math.random().toString(36).substring(2, 5).toUpperCase(); // More unique
 
