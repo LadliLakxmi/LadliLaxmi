@@ -1,5 +1,5 @@
 import React from "react";
-import QRcode from "../../assets/QRcode.jpg";
+import QRcode from "../../assets/QR_Code.jpg";
 import UserTransactionForm from "./UserTransactionForm";
 
 const AddFund = () => {
