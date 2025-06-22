@@ -10,7 +10,7 @@ import { LEVELS_CONFIG_FRONTEND } from "../../config/levelsConfigFrontend";
 
 // Placeholder for your Razorpay logo
 import rzpLogo from "../../assets/Logo.jpeg";
-import QRcode from "../../assets/QRcode.jpg";
+import QRcode from "../../assets/QR_Code.jpg";
 
 // function loadScript(src) {
 //   return new Promise((resolve) => {
