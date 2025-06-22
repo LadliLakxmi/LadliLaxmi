@@ -177,7 +177,7 @@ const Navbar = ({ role }) => {
               ) : (<>
                 {user?(<Logout />):("")}             
                 <button
-                  className="text-lg w-full text-left hover:text-amber-600"
+                  className="text-lg mt-2 w-full text-left hover:text-amber-600"
                   onClick={() => {
                     navigate(user ? "/userdashboard" : "/account");
                     setIsOpen(false);
