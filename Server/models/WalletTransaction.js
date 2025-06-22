@@ -23,6 +23,7 @@ const walletTransactionSchema = new mongoose.Schema(
         "admin_combined_upgrade_revenue_and_sponsor_share",
         "upgrade_payment_sent_and_sponsor_share_sent",
                 "withdrawal_approved_sponser_wallet",
+        "withdrawal_approved"
       ],
       required: true,
     },
