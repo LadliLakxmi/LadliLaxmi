@@ -186,10 +186,10 @@ exports.initiateUpgrade = async (req, res) => {
       user.save({ session }); // Will be saved at the end of the transaction
 
       // Add new user to the directReferrals of the original sponsor (whoever invited them)
-      if (sponsorDuringRegistration) {
-        sponsorDuringRegistration.directReferrals.push(user._id);
-        await sponsorDuringRegistration.save({ session });
-      }
+       if (sponsorDuringRegistration && !sponsorDuringRegistration.directReferrals.includes(user._id)) {
+      sponser.directReferrals.push(newUser._id);
+      await sponsorDuringRegistration.save({ session });
+    }
       actualUplineReferralCode = slotUser.referralCode; // This will be the direct matrix upline
     }
 
