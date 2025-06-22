@@ -27,7 +27,7 @@ const Withdraw = ({ user, fetchUserData }) => {
   const token = localStorage.getItem("token");
 
   const currentLevel = Number(user?.currentLevel) || 0;
-
+ const directmembers = Number(user?.directReferrals)|| 0;
   // --- Removed all limit-related calculations ---
   // maxAllowedForCurrentLevelCumulative, alreadyWithdrawn, remainingLimitForLevel, finalWithdrawalCap
   // These concepts are no longer applied at the backend for main wallet withdrawals.
@@ -266,8 +266,8 @@ const Withdraw = ({ user, fetchUserData }) => {
               <IndianRupee className="inline-block mr-1" size={20}/> You must activate to Level 1 to withdraw funds.
             </p>
           ) : (
-            <p className="text-sm text-yellow-100 font-medium text-center mt-3">
-              Withdraw your available wallet balance .
+            <p className="text-lg text-red-300 font-medium text-center mt-3">
+              You can Withdraw Only when You have 2 Active direct/Sponser members . 
             </p>
           )}
 
@@ -353,13 +353,16 @@ const Withdraw = ({ user, fetchUserData }) => {
               className="mt-1 block w-full text-white placeholder-green-200 px-4 py-3 border border-green-600 rounded-lg shadow-inner bg-green-900/60 focus:outline-none focus:ring-yellow-400 focus:border-yellow-400 text-lg no-spinner"
             />
           </div>
+                <div class="p-4 bg-blue-50 rounded-lg shadow-md text-blue-800 text-lg font-semibold">
+  You will get after 10% deduction: ₹{Number(formData.amount) * 0.9}
+</div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || hasPendingRequest || currentLevel < 1 || Number(formData.amount) <= 0 ||  (Number(user?.walletBalance) || 0) <= 0 }
+            disabled={isLoading || hasPendingRequest || currentLevel < 1 || Number(formData.amount) <= 0 ||  (Number(user?.walletBalance) || 0) <= 0 || directmembers < 2 }
             className={`w-full flex justify-center items-center py-3 px-6 border border-transparent rounded-xl shadow-lg font-extrabold text-lg transition-all duration-300 ease-in-out transform
-              ${(currentLevel < 1 || isLoading || hasPendingRequest ||  Number(formData.amount) <= 0 ||  (Number(user?.walletBalance) || 0) <= 0) 
+              ${(currentLevel < 1 || isLoading || hasPendingRequest ||  Number(formData.amount) <= 0 ||  (Number(user?.walletBalance) || 0) <= 0 || directmembers < 2) 
                 ? "bg-gray-600 text-gray-300 opacity-80 cursor-not-allowed"
                 : "bg-gradient-to-r from-yellow-500 to-orange-600 text-purple-900 hover:from-yellow-600 hover:to-orange-700 hover:scale-105 active:scale-95"
               }`}
@@ -374,6 +377,9 @@ const Withdraw = ({ user, fetchUserData }) => {
                 <ArrowUpCircle size={24} /> Pending Request
               </span>
             ) : (
+              directmembers < 2 ? <span className="flex items-center gap-2">
+                <Banknote size={24} /> Add 2 Direct members First
+              </span>:
               <span className="flex items-center gap-2">
                 <Banknote size={24} /> Submit Withdraw Request
               </span>
