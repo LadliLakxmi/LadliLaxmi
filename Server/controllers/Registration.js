@@ -96,7 +96,8 @@ exports.register = async (req, res) => {
     });
 
     await newUser.save(); // Save the new user first to get their _id
-      sponser?.directReferrals.push(newUser._id);
+    sponser?.directReferrals.push(newUser._id);
+    await sponser.save();
     
     res.status(201).json({
       success: true,
