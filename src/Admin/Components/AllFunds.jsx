@@ -69,12 +69,20 @@ const AllFunds = () => {
               <td className={`border p-1 ${tx.status === "approved" ? "text-green-600" : "text-yellow-600"}`}>{tx.status}</td>
               <td className="border p-1">
                 {tx.status === "pending" && (
-                  <button
-                    onClick={() => updateStatus(tx._id, "approved")}
-                    className="bg-green-500 text-white px-3 py-1 rounded"
-                  >
-                    Approve
-                  </button>
+                  <div className="flex justify-center space-x-2">
+                        <button
+                          onClick={() => updateStatus(tx._id, "approved")}
+                          className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded-md transition duration-200"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => updateStatus(tx._id, "rejected")}
+                          className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-md transition duration-200"
+                        >
+                          Reject
+                        </button>
+                      </div>
                 )}
               </td>
             </tr>

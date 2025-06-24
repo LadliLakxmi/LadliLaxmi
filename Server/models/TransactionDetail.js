@@ -24,8 +24,8 @@ const TransactionDetailSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "approved"],
       default: "pending",
+      enum: ["pending", "approved", "rejected"],
     },
   },
   { timestamps: true } // ✅ This enables createdAt and updatedAt
