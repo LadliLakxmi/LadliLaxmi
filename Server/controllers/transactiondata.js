@@ -9,6 +9,12 @@ exports.transactiondetails = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+     // --- NEW: Prevent duplicate UTRno ---
+    const existingTransaction = await TransactionDetail.findOne({ UTRno });
+    if (existingTransaction) {
+      return res.status(409).json({ message: "A transaction with this UTR number already exists." });
+    }
+
     const newTransaction = new TransactionDetail({
       name,
       email,
@@ -37,7 +43,6 @@ exports.transactiondetails = async (req, res) => {
 exports.getAllTransactions = async (req, res) => {
   try {
     const transactions = await TransactionDetail.find().sort({ createdAt: -1 });
-console.log(transactions)
     return res.status(200).json({
       message: "Fetched all transactions",
       transactions,

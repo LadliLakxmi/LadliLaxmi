@@ -3,6 +3,7 @@ import axios from "axios";
 
 const AllFunds = () => {
   const [transactions, setTransactions] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(""); // For displaying API errors
 
   const fetchTransactions = async () => {
   try {
@@ -18,7 +19,7 @@ const AllFunds = () => {
 
     setTransactions(sorted);
   } catch (err) {
-    console.error("Error fetching transactions", err);
+          setErrorMessage("Failed to fetch transactions. Please try again.");
   }
 };
 
@@ -28,7 +29,7 @@ const AllFunds = () => {
       await axios.put(`https://ladlilaxmi.onrender.com/api/v1/transaction/${id}/status`, { status: newStatus });
       fetchTransactions(); // Refresh list
     } catch (err) {
-      console.error("Error updating status", err);
+ setErrorMessage("Failed to update transaction status. Please try again.");
     }
   };
 
@@ -39,6 +40,12 @@ const AllFunds = () => {
   return (
     <div className="p-4  max-w-5xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">All incoming Funds </h2>
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline"> {errorMessage}</span>
+        </div>
+      )}
       <table className="w-full table-auto border border-gray-300">
         <thead className="bg-gray-200 text-black">
           <tr>
