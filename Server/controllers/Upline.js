@@ -33,7 +33,6 @@ exports.getUplineBeneficiaries = async (req, res) => {
       const referrerUser = await User.findOne({ referralCode: currentReferrerId })
         .select('name email currentLevel referredBy') // Select 'referredBy' to continue traversal
         .lean(); // Use .lean() for performance
-      console.log("Reffer: ", referrerUser);
 
       if (!referrerUser) {
         console.warn(`Referrer with ID ${currentReferrerId} not found or chain broken for user ${userId}.`);

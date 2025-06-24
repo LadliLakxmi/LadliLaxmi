@@ -9,7 +9,6 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.find().select('-password').populate('donationsSent donationsReceived');
     res.json(users);
   } catch (err) {
-    console.error("Error fetching users:", err);
     res.status(500).json({ error: 'Error fetching users' });
   }
 };
@@ -20,7 +19,6 @@ exports.getUserCount = async (req, res) => {
     const count = await User.countDocuments();
     res.json({ totalUsers: count });
   } catch (err) {
-    console.error("Error counting users:", err);
     res.status(500).json({ error: 'Error counting users' });
   }
 };
@@ -34,7 +32,6 @@ exports.deleteUser = async (req, res) => {
     }
     res.json({ message: 'User deleted successfully' });
   } catch (err) {
-    console.error("Error deleting user:", err);
     res.status(500).json({ error: 'Error deleting user' });
   }
 };
@@ -48,7 +45,6 @@ exports.withdrawals = async (req, res) => {
 
     res.status(200).json(requests);
   } catch (err) {
-    console.error("Withdraw fetch error:", err);
     res.status(500).json({ message: "Failed to fetch" });
   }
 };

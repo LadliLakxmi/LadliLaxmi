@@ -11,7 +11,6 @@ exports.WithdrawRequest = async (req, res) => {
   try {
     const userId = req.user.id;
     const { amount, bankDetails } = req.body;
-    console.log("Withdraw request body:", req.body);
 
     // 🔒 Validate amount
     if (!amount || typeof amount !== "number" || amount <= 0) {
@@ -135,7 +134,6 @@ exports.updateWithdrawStatus = async (req, res) => {
       await session.abortTransaction();
       return res.status(404).json({ message: "Withdraw request not found" });
     }
-    console.log("Update request data: ", request);
 
     if (request.status !== "pending") {
       await session.abortTransaction();
