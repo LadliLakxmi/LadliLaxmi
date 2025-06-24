@@ -183,7 +183,7 @@ exports.initiateUpgrade = async (req, res) => {
       user.referredBy = slotUser.referralCode; // Set the actual matrix upline
       slotUser.matrixChildren.push(user._id);
       await slotUser.save({ session });
-      user.save({ session }); // Will be saved at the end of the transaction
+      await user.save({ session }); // Will be saved at the end of the transaction
 
       // Add new user to the directReferrals of the original sponsor (whoever invited them)
        if (sponsorDuringRegistration && !sponsorDuringRegistration.directReferrals.includes(user._id)) {
@@ -248,7 +248,6 @@ exports.initiateUpgrade = async (req, res) => {
       sponsorUser &&
       recipientUser._id.equals(sponsorUser._id)
     ) {
-      console.log("sponsorUser.walletBalance: ", recipientUser.walletBalance);
       const combinedAmount = flow.amount + flow.sponsorShare;
 
       // Deduct combined amount from user's wallet
@@ -265,7 +264,9 @@ exports.initiateUpgrade = async (req, res) => {
         );
       } else {
         // Otherwise, add to upgrade wallet
-        recipientUser.upgradewalletBalance += combinedAmount;
+        recipientUser.upgradewalletBalance += flow.amount;
+        recipientUser.walletBalance += flow.sponsorShare;
+   
         console.log(
           `Recipient ${recipientUser.email} (Combined) - Condition not met. Added ${combinedAmount} to upgrade wallet. Current upgrade balance: ${recipientUser.upgradewalletBalance}`
         );
