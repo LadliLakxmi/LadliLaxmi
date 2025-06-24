@@ -325,7 +325,7 @@ exports.initiateUpgrade = async (req, res) => {
       if (
         recipientUser.upgradewalletBalance >=
           recipientNextUpgradeCost &&
-        recipientNextUpgradeCost > 0 && recipientUser.currentLevel >= user.currentLevel
+        recipientNextUpgradeCost > 0 && recipientUser.currentLevel > user.currentLevel
       ) {
         // If condition fulfilled, add current flow.amount directly to main wallet
         recipientUser.walletBalance += flow.amount;
