@@ -6,8 +6,6 @@ exports.transferSponsorToMain = async (req, res) => {
   try {
     const { amount } = req.body;
     const userId = req.params.userId; // <-- Get userId from URL
-    console.log("Amount: ",amount);
-    console.log("AID: ",userId);
     // Validate input
     if (!userId || !amount || isNaN(amount) || amount <= 0) {
       return res.status(400).json({ error: "Invalid userId or amount." });

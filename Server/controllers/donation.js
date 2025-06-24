@@ -17,7 +17,6 @@ const userId = req.user.id; // ✅ token se mila hua user ID
 
   try {
     // Validate input
-    console.log(`Initiating payment for userId: ${userId}, Level: ${currentLevel}`);
     if (!userId || currentLevel === undefined || currentLevel === null || currentLevel <= 0) {
       return res.status(400).json({ message: "Missing or invalid required fields: userId or currentLevel" });
     }
@@ -75,13 +74,11 @@ const userId = req.user.id; // ✅ token se mila hua user ID
     };
 
     const order = await razorpayinstance.orders.create(options);
-    console.log("Razorpay order created:", order);
     res.status(200).json({
       success: true,
       order,
     });
   } catch (err) {
-    console.error("Razorpay order creation error:", err);
     res.status(500).json({
       success: false,
       message: "Failed to create Razorpay order",
@@ -198,7 +195,6 @@ exports.verifyPayment = async (req, res) => {
         // Idempotency check: prevent double processing
         const existingDonation = await Donation.findOne({ paymentId: razorpay_payment_id }).session(session);
         if (existingDonation) {
-            console.log(`Donation with paymentId ${razorpay_payment_id} already processed. Skipping.`);
             await session.commitTransaction();
             session.endSession();
             const updatedDonor = await User.findById(userId).select("-password -walletTransactions");
@@ -287,7 +283,6 @@ exports.verifyPayment = async (req, res) => {
         });
     } catch (error) {
         await session.abortTransaction(); // Rollback on error
-        console.error("Database transaction failed during payment verification:", error);
         return res.status(500).json({ success: false, message: "Payment processing failed.", error: error.message });
     } finally {
         session.endSession(); // End the session
@@ -395,7 +390,6 @@ const jwt = require('jsonwebtoken'); // यदि आप टोकन सत्�
 exports.getUserByReferralCode = async (req, res) => {
   try {
     const { referralCode } = req.params; // Get referral code from URL parameters
-console.log("backend:",referralCode)
     if (!referralCode) {
       return res.status(400).json({ success: false, message: "Referral code is required." });
     }

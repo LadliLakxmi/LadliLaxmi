@@ -163,7 +163,6 @@ exports.updateBankDetails = async (req, res) => {
     const userId = req.user.id;
     const { accountHolder, accountNumber, ifscCode, bankName,upiId } =
       req.body;
-      console.log("bank detail",req.body)
 
     // Find the user and update their bankDetails
     const user = await User.findById(userId);

@@ -329,15 +329,9 @@ exports.initiateUpgrade = async (req, res) => {
       ) {
         // If condition fulfilled, add current flow.amount directly to main wallet
         recipientUser.walletBalance += flow.amount;
-        console.log(
-          `Recipient ${recipientUser.email} - Condition met. Added ${flow.amount} directly to main wallet.`
-        );
       } else {
         // Otherwise, add to upgrade wallet
         recipientUser.upgradewalletBalance += flow.amount;
-        console.log(
-          `Recipient ${recipientUser.email} - Condition not met. Added ${flow.amount} to upgrade wallet. Current upgrade balance: ${recipientUser.upgradewalletBalance}`
-        );
       }
 
       // Create separate transaction records for upgrade payment

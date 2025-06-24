@@ -24,8 +24,7 @@ exports.resetPasswordToken = async (req, res) => {
     )
     console.log("DETAILS", updatedDetails)
 
-    // const url = `https://ladlilaxmi.onrender.com/update-password/${token}`
-    const url = `https://studynotion-edtech-project.vercel.app/update-password/${token}`
+    const url = `https://ladlilaxmi.onrender.com/update-password/${token}`
 
     await mailSender(
       email,
@@ -47,25 +46,5 @@ exports.resetPasswordToken = async (req, res) => {
   }
 }
 
-exports.resetPassword = async (req, res) => {
-  try {
-    const { password, confirmPassword, token } = req.body
-
-    if (confirmPassword !== password) {
-      return res.json({
-        success: false,
-        message: "Password and Confirm Password Does not Match",
-      })
-    }
-    const userDetails = await User.findOne({ token: token })
-    if (!userDetails) {
-      return res.json({
-        success: false,
-        message: "Token is Invalid",
-      })
-    }
-    if (!(userDetails.resetPasswordExpires > Date.now())) {
-      return res.status(403).json({
-        success: false,
 
         
