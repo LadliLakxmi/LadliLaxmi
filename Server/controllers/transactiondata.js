@@ -62,8 +62,8 @@ exports.updateTransactionStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!["pending", "approved"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status value" });
+    if (![ "pending","approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
     }
 
     const updated = await TransactionDetail.findByIdAndUpdate(
