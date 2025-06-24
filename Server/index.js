@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "*", // Update with your frontend URL for production
+    origin: "https://www.ladlilakshmi.com", // Update with your frontend URL for production
     credentials: true,
   })
 );
