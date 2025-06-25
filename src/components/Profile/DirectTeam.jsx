@@ -22,6 +22,12 @@ const DirectTeam = ({ team }) => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-purple-50">
                 <tr>
+                  {/* New: Serial Number Header */}
+                  <th scope="col" className="px-6 py-4 text-center text-sm font-semibold text-purple-800 uppercase tracking-wider rounded-tl-xl">
+                    <div className="flex items-center justify-center gap-2">
+                      <Table2 size={18} /> S.No.
+                    </div>
+                  </th>
                   <th scope="col" className="px-6 py-4 text-center text-sm font-semibold text-purple-800 uppercase tracking-wider rounded-tl-xl">
                     <div className="flex items-center justify-center gap-2">
                       <User size={18} /> Name
@@ -55,6 +61,10 @@ const DirectTeam = ({ team }) => {
                     key={member._id || index} // Use _id as key, fallback to index
                     className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-purple-50 transition-colors duration-200 ease-in-out`}
                   >
+                    {/* New: Serial Number Data Cell */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-center">
+                      {index + 1}
+                    </td>
                     <td className="px-6  py-4 whitespace-nowrap text-sm font-bold text-black text-center">
                       {member.name}
                     </td>
