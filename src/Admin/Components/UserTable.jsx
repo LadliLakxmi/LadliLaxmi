@@ -13,7 +13,7 @@ export default function UserTable({ users }) {
             <th className="py-2 px-4 text-left">Referral Code</th>
             <th className="py-2 px-4 text-left">Level</th> {/* Changed from Status to Level */}
             <th className="py-2 px-4 text-left">Wallet Balance</th>
-            <th className="py-2 px-4 text-left">Wallet Balance</th>
+            <th className="py-2 px-4 text-left">Upgrade Wallet Balance</th>
             {/* Removed Blocked Balance */}
             <th className="py-2 px-4 text-left">Upline</th>
           </tr>

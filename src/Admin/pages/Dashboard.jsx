@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import StatsCharts from "../Components/StatsCharts";
 
+// Helper function to format numbers into "Cr" (Crore)
+const formatNumberToCr = (num) => {
+  if (num >= 10000000) { // 1 Crore = 10,000,000
+    return `${(num / 10000000).toFixed(0)} Cr`;
+  }
+  return num.toLocaleString(); // For numbers less than a crore, just format normally
+};
+
 const StatCard = ({ title, value }) => (
   <div className="bg-white rounded-xl shadow p-4">
     <h2 className="text-black text-sm">{title}</h2>
@@ -16,7 +24,7 @@ const Dashboard = () => {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const token = localStorage.getItem("token"); // ✅ define token here
+        const token = localStorage.getItem("token");
         const res = await axios.get(
           "https://ladlilaxmi.onrender.com/api/v1/admin/getallusercount",
           {
@@ -27,11 +35,12 @@ const Dashboard = () => {
         );
         const { totalUsers } = res.data;
 
+        // Directly assign numbers here. Formatting will be handled in rendering.
         const data = {
           totalUsers,
-          totalHelpGiven: 85,
-          totalHelpReceived: 92,
-          totalWithdraws: 48,
+          totalHelpGiven: 11000000000, // Example: 1100 crore (11,00,00,00,000)
+          totalHelpReceived: 920000000, // Example: 92 crore (92,00,00,000)
+          totalWithdraws: 480000000, // Example: 48 crore (48,00,00,000)
         };
 
         setStats(data);
@@ -47,7 +56,13 @@ const Dashboard = () => {
     label: key
       .replace(/([A-Z])/g, " $1")
       .replace(/^./, (str) => str.toUpperCase()),
-    value: value,
+    // Format values for charts if they are numbers and represent monetary values
+    value:
+      typeof value === "number" &&
+      (key.toLowerCase().includes("help") ||
+        key.toLowerCase().includes("withdraw"))
+        ? parseFloat((value / 10000000).toFixed(2)) // Convert to crore for chart display (e.g., 1100 Cr becomes 1100)
+        : value,
   }));
 
   return (
@@ -66,7 +81,7 @@ const Dashboard = () => {
               typeof value === "number" &&
               (key.toLowerCase().includes("help") ||
                 key.toLowerCase().includes("withdraw"))
-                ? `₹${value.toLocaleString()}`
+                ? `₹${formatNumberToCr(value)}` // Use the helper function here
                 : value
             }
           />
