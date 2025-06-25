@@ -41,7 +41,9 @@ exports.withdrawals = async (req, res) => {
     const requests = await WithdrawRequest.find().populate({
       path: 'user',
       select: 'name email walletBalance bankDetails totalWithdrawn phone' ,
-    }).exec();
+    })
+    .sort({ createdAt: -1 })
+    .exec();
 
     res.status(200).json(requests);
   } catch (err) {
