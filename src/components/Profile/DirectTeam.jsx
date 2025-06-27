@@ -6,7 +6,7 @@ const DirectTeam = ({ team }) => {
   const directMembers = team?.directReferrals || [];
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className="w-full min-h-screen bg-gray-50  mt-10 md:mt-0 p-4 sm:p-6 lg:p-8">
       {/* Optional: A header card specific to Direct Team if needed,
           but usually, this component would be nested under a main dashboard.
           For now, I'll just add a table header. */}

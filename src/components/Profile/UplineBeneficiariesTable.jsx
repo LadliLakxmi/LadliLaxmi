@@ -129,7 +129,7 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
     const rowsToRender = 11; // Total number of rows to display
 
     return (
-        <div className="p-8 mt-10 md:mt-0 bg-white rounded-lg shadow-lg max-w-6xl mx-auto">
+        <div className="p-1 md:p-8 mt-10 md:mt-0 bg-white rounded-lg shadow-lg w-full overflow-x-auto">
             <h2 className="text-4xl font-extrabold text-gray-800 mb-8 pb-4 border-b-4 border-purple-500">
                 Upline Help Beneficiaries
             </h2>
@@ -140,7 +140,7 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
                 </p>
             )}
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto w-full">
                 <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                     <thead className="bg-gray-100">
                         <tr>

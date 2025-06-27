@@ -38,7 +38,7 @@ const AllFunds = () => {
   }, []);
 
   return (
-    <div className="p-4  max-w-5xl mx-auto">
+    <div className="p-4  w-full overflow-x-auto">
       <h2 className="text-2xl font-bold mb-4">All incoming Funds </h2>
       {errorMessage && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
