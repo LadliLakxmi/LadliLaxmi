@@ -33,7 +33,7 @@ const Users = () => {
   }, []);
 
   return (
-    <div className="p-4 max-w-full">
+    <div className="p-0 md:p-4 max-w-full">
       <h2 className="text-xl font-bold mb-4 text-white bg-[#141628] p-2 rounded-md shadow-md">
         All Users
       </h2>

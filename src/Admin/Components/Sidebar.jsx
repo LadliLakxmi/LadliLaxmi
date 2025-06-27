@@ -8,8 +8,8 @@ const Sidebar = () => {
     }`;
 
   return (
-    <div className="w-64 md:w-50 bg-gray-800 text-white h-screen p-4">
-      <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
+    <div className="w-30 md:w-50 bg-gray-800 text-white h-screen p-0 md:p-4">
+      <h2 className="text-2xl font-bold mb-6 p-2 md:p-6">Admin Panel</h2>
       <nav className="flex flex-col space-y-2">
         <NavLink to="/Admindashboard/dashboard" className={linkClass}>
           Dashboard
@@ -31,7 +31,7 @@ const Sidebar = () => {
           Reports
         </NavLink>
       </nav>
-       <div className="mt-6 border-t border-gray-700 pt-4">
+       <div className="mt-6 border-t border-gray-700 p-4">
           <Logout />
         </div>
     </div>
