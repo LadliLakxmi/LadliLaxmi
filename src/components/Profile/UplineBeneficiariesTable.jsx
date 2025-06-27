@@ -123,10 +123,10 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
         : null;
 
     // Placeholder values for name/email in empty rows
-    const placeholderName = lastActualUpline ? lastActualUpline.name : 'N/A';
-    const placeholderEmail = lastActualUpline ? lastActualUpline.email : 'N/A';
+    const placeholderName = lastActualUpline ? lastActualUpline.name : ' Hii Welenter ';
+    const placeholderEmail = lastActualUpline ? lastActualUpline.email : 'Welcome to LadliLaksmi';
 
-    const rowsToRender = 10; // Total number of rows to display
+    const rowsToRender = 11; // Total number of rows to display
 
     return (
         <div className="p-8 mt-10 md:mt-0 bg-white rounded-lg shadow-lg max-w-6xl mx-auto">
@@ -136,7 +136,7 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
 
             {uplineBeneficiaries.length === 0 && currentUser && currentUser.currentLevel === 0 && (
                 <p className="text-xl text-gray-600 italic text-center py-10">
-                    You are at Level 0. Your upline beneficiaries will appear as you Activate Level 1.
+             Welcome!!! Your upline beneficiaries will appear as you Activate Your Account by Paying ₹100.
                 </p>
             )}
 
