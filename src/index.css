@@ -14,6 +14,12 @@
   }
 }
 
+/* In your main CSS file */
+html, body, #root {
+  height: 100%;
+  overflow-x: hidden; /* Prevents double scrollbars */
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -27,4 +33,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensures the content area takes remaining space */
+.flex-1 {
+  flex: 1 1 0%;
+  min-width: 0; /* Important for flex containers with overflow */
 }

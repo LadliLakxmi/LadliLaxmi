@@ -1,36 +1,55 @@
 import React from "react"; // Only React is needed, useState is not used in this snippet
 
 export default function UserTable({ users }) {
+    // Defensive check: Render a message if users is not an array or is empty.
+  if (!Array.isArray(users) || users.length === 0) {
+    return (
+      <div className="text-white text-center p-4 bg-[#141628] rounded shadow-md">
+        No user data available or data is still loading.
+      </div>
+    );
+  }
   return (
-    <div className="overflow-x-auto">
-      <table className="table-auto w-full bg-[#141628] rounded shadow text-white">
-        <thead className="bg-gray-700">
+    // This container has `overflow-x-auto` which creates the horizontal scrollbar.
+    // It is given `w-full` to occupy the available space.
+    // This is the key element that contains the scroll.
+    <div className="w-full rounded-md shadow-md overflow-x-auto">
+      
+      {/* The table inside has `min-w-full` to ensure it can expand beyond its container's width.
+          This is what causes the overflow and triggers the scrollbar on the parent div. */}
+      <table className="min-w-full bg-[#141628] text-white">
+        <thead className="bg-gray-700 sticky ">
           <tr>
-            <th className="py-2 px-4 text-left">S.No.</th> {/* Added Sequence Number */}
-            <th className="py-2 px-4 text-left">Name</th>
-            <th className="py-2 px-4 text-left">Email</th>
-            <th className="py-2 px-4 text-left">Phone</th> {/* Added Phone Number */}
-            <th className="py-2 px-4 text-left">Referral Code</th>
-            <th className="py-2 px-4 text-left">Level</th> {/* Changed from Status to Level */}
-            <th className="py-2 px-4 text-left">Wallet Balance</th>
-            <th className="py-2 px-4 text-left">Upgrade Wallet Balance</th>
-            {/* Removed Blocked Balance */}
-            <th className="py-2 px-4 text-left">Upline</th>
+            {/* Using `whitespace-nowrap` on headers to prevent text from wrapping,
+                which makes the columns wider and forces a scroll */}
+            <th className="py-2 px-4 text-left whitespace-nowrap">S.No.</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Name</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Email</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Phone</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Referral Code</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Level</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Wallet Balance</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Upgrade Wallet Balance</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Total Income</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Total Withdrawn</th>
+            <th className="py-2 px-4 text-left whitespace-nowrap">Upline</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={user._id} className="border-t hover:bg-gray-800">
-              <td className="py-2 px-4">{index + 1}</td> {/* Display Sequence Number */}
-              <td className="py-2 px-4">{user?.name || "N/A"}</td>
-              <td className="py-2 px-4">{user?.email || "N/A"}</td>
-              <td className="py-2 px-4">{user?.phone || "N/A"}</td> {/* Display User Phone */}
-              <td className="py-2 px-4">{user?.referralCode || "N/A"}</td>
-              <td className="py-2 px-4">L {user?.currentLevel || 0}</td> {/* Display User Level with "L" prefix */}
-              <td className="py-2 px-4">₹{user?.walletBalance?.toFixed(2) || "0.00"}</td> {/* Added .toFixed(2) for currency formatting */}
-              <td className="py-2 px-4">₹{user?.upgradewalletBalance?.toFixed(2) || "0.00"}</td> {/* Added .toFixed(2) for currency formatting */}
-              {/* Removed Blocked Balance row data */}
-              <td className="py-2 px-4">{user?.referredBy || "N/A"}</td>
+            <tr key={user._id} className="border-t border-gray-600 hover:bg-gray-800">
+              {/* Using `whitespace-nowrap` on data cells as well */}
+              <td className="py-2 px-4 whitespace-nowrap">{index + 1}</td>
+              <td className="py-2 px-4 whitespace-nowrap">{user?.name || "N/A"}</td>
+              <td className="py-2 px-4 whitespace-nowrap">{user?.email || "N/A"}</td>
+              <td className="py-2 px-4 whitespace-nowrap">{user?.phone || "N/A"}</td>
+              <td className="py-2 px-4 whitespace-nowrap">{user?.referralCode || "N/A"}</td>
+              <td className="py-2 px-4 whitespace-nowrap">L {user?.currentLevel || 0}</td>
+              <td className="py-2 px-4 whitespace-nowrap">₹{user?.walletBalance?.toFixed(2) || "0.00"}</td>
+              <td className="py-2 px-4 whitespace-nowrap">₹{user?.upgradewalletBalance?.toFixed(2) || "0.00"}</td>
+              <td className="py-2 px-4 whitespace-nowrap">₹{user?.totalIncome?.toFixed(2) || "0.00"}</td>
+              <td className="py-2 px-4 whitespace-nowrap">₹{user?.totalWithdrawn?.toFixed(2) || "0.00"}</td>
+              <td className="py-2 px-4 whitespace-nowrap">{user?.referredBy || "N/A"}</td>
             </tr>
           ))}
         </tbody>

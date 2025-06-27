@@ -12,7 +12,7 @@ import AllFunds from "./Components/AllFunds";
 
 function AdminLayout({ children }) {
   return (
-    <div className="flex">
+    <div className="flex overflow-hidden">
       <Sidebar />
       <div className="flex-1 p-4 min-h-screen">{children}</div>
     </div>

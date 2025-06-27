@@ -6,9 +6,46 @@ const WithdrawRequest = require('../models/WithdrawRequest')
 // 1. Get all users (excluding password, with donations populated)
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password').populate('donationsSent donationsReceived');
-    res.json(users);
+    // 1. Fetch all users from the database, populating their received donations
+    //    The .select('-password') part ensures that sensitive password hashes are not sent to the client.
+    const users = await User.find().select('-password').populate('donationsReceived');
+
+    // 2. Map over the fetched users to calculate the total income for each one
+    const usersWithIncome = users.map(user => {
+      let totalIncome = 0;
+
+      // 3. Check if the user has received any donations
+      if (user.donationsReceived && user.donationsReceived.length > 0) {
+        // 4. Use the reduce method to sum up the amounts of all completed donations
+        totalIncome = user.donationsReceived.reduce((sum, donation) => {
+          // You can adjust the status check here based on your logic (e.g., "completed", "paid", etc.)
+          // The `!donation.status` check assumes that donations without a status are also considered complete.
+          if (donation.status === "completed" || !donation.status) {
+            return sum + donation.amount;
+          }
+          return sum; // If the donation is not completed, don't add its amount to the sum
+        }, 0);
+      }
+
+      // 5. Convert the Mongoose document to a plain JavaScript object
+      //    Then, add the calculated totalIncome property to it.
+      const userObject = user.toObject(); 
+      userObject.totalIncome = totalIncome;
+
+      // 6. Return the new object for the `usersWithIncome` array
+      return userObject;
+    });
+    
+    // 7. Log the result to the console for debugging
+    // console.log(usersWithIncome);
+
+    // 8. Send the final array of user objects with their total income as a JSON response
+    res.json({ users: usersWithIncome });
   } catch (err) {
+    // 9. Log the error to the server console for debugging
+    console.error('Error fetching users and calculating income:', err);
+    
+    // 10. Send a 500 status code with an error message to the client
     res.status(500).json({ error: 'Error fetching users' });
   }
 };
