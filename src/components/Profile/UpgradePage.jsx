@@ -85,8 +85,8 @@ const UpgradePage = ({ user, setUser }) => {
       // Navigate after a delay
       setTimeout(() => {
         setSuccessAnimation(false);
-        navigate("/");
-      }, 2000);
+        navigate("/userdashboard");
+      }, 1000);
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
