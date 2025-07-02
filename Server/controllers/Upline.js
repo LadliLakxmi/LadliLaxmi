@@ -26,7 +26,7 @@ exports.getUplineBeneficiaries = async (req, res) => {
 
     let currentReferrerId = currentUser.referredBy; // Get the ID of the direct referrer
     let uplinesFound = [];
-    let levelsToTraverse = 10; // Fixed to 10 levels
+    let levelsToTraverse = 11; // Fixed to 10 levels
     let currentLevelInChain = 1; // Represents the position in the upline chain (1st upline, 2nd upline, etc.)
 
     while (currentReferrerId && levelsToTraverse > 0) {
