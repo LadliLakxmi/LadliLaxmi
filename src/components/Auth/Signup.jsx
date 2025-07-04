@@ -321,7 +321,7 @@ const Signup = () => {
             onChange={handleChange}
             className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-amber-500 transition duration-300"
             value={formData.referredBy} // Controlled component: value is driven by state
-            readOnly={!!formData.referredBy} // Make it read-only if pre-filled
+            // readOnly={!!formData.referredBy} // Make it read-only if pre-filled
           />
 
           {/* Error Message */}
