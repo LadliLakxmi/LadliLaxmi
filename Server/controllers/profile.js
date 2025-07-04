@@ -37,6 +37,7 @@ const buildMatrixHierarchy = async (
   visited.add(userId.toString());
 
   const user = await User.findById(userId)
+    .populate("directReferrals", "name email currentLevel")
     .populate("matrixChildren", "name email referralCode currentLevel")
     .populate({
       path: "walletTransactions", // This is the field on the User model that references WalletTransaction documents
@@ -81,6 +82,7 @@ exports.getProfile = async (req, res) => {
     const userId = req.params.id;
 
     const rootUser = await User.findById(userId)
+      .populate("directReferrals", "name email currentLevel")
       .populate("directReferrals", "name email")
       .populate("matrixChildren", "name email referralCode currentLevel")
       .populate("donationsSent")
