@@ -41,10 +41,15 @@ const AddFund = () => {
           <div className="bg-gray-900 p-4 rounded-xl text-center md:text-left">
             <p className="text-xl md:text-2xl font-semibold text-white">
               WhatsApp:{" "}
-              <a href="https://wa.me/917820009103" className="text-green-500 hover:underline">
-                +91 78200 09103
+              <a href="https://wa.me/919627642571" className="text-green-500 hover:underline">
+                +91 9627642571
               </a>
+              
             </p>
+            <p className="text-green-500 hover:underline">
+              Call us at: +91 78200 09103
+            </p>
+              
           </div>
 
           <p className="text-amber-300 font-medium leading-relaxed">
