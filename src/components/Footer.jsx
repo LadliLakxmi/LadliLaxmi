@@ -34,7 +34,7 @@ const Footer = () => {
                 <div className="flex flex-col items-center lg:items-start text-center lg:text-left ">
                     <h4 className="text-lg sm:text-xl font-semibold mb-3">Connect With Us</h4>
                     <div className="space-y-2 mb-4 w-full max-w-sm">
-                        <ContactItem icon="phone" text="+91 7820009103" />
+                        <ContactItem icon="phone" text="+91 9627642571" />
                         <ContactItem icon="mail" text="ladlilaxmi22@gmail.com" />
                         <ContactItem icon="map-pin" text="H.No.28 Gali no 2 Sonda Road Devnagar Modinagar Ghaziabad Uttar Pradesh 201204" />
                     </div>
