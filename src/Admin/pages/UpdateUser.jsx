@@ -64,7 +64,6 @@ const UpdateUser = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/users/by-email?email=${userEmail}`, getAuthHeaders());
       const fetchedUser = response.data;
-      console.log("Update response: ", fetchedUser)
       setUserData(fetchedUser); // Store the full user data
       setUserIdToUpdate(fetchedUser._id); // Crucially, store the _id for subsequent update
 
@@ -167,7 +166,6 @@ if(formData.password){
 }
     try {
       const response = await axios.put(`${API_BASE_URL}/users/${userIdToUpdate}`, updatePayload, getAuthHeaders());
-      console.log("update response", response)
       setMessage(response.data.message || 'User updated successfully!');
       // Optionally re-fetch user details to show immediate updates
       // handleFetchUserByEmail(); // commented out as per previous interaction, but useful for refresh

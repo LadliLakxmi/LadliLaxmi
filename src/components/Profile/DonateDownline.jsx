@@ -28,7 +28,6 @@ const DonateDownline = ({ user, fetchUserData }) => { // Added fetchUserData if 
   // useCallback memoizes the function to prevent unnecessary re-renders
   const verifyReferralCode = useCallback(
     async (code) => {
-      console.log("code:",code)
       setReferralCodeError(""); // Clear previous errors
       setDownlineUserName(""); // Clear previous name
       

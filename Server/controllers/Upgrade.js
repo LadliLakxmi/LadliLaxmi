@@ -90,7 +90,6 @@ async function findSpecificUpline(starterUserId, hops, session) {
   if (hops === 0) return await User.findById(starterUserId).session(session);
 
   let currentUser = await User.findById(starterUserId).session(session);
-  console.log("currebt user in findSpecificUpline: ",currentUser)
   if (!currentUser) return null;
 
   // Traverse up the referral chain
@@ -99,7 +98,6 @@ async function findSpecificUpline(starterUserId, hops, session) {
     currentUser = await User.findOne({
       referralCode: currentUser.referredBy,
     }).session(session);
-      console.log("current user inside loop findSpecificUpline: ",currentUser)
     if (!currentUser) return null;
   }
   return currentUser;
@@ -196,7 +194,6 @@ exports.initiateUpgrade = async (req, res) => {
     // Find recipient for upgrade payment
     const hopsRequired = level; // Corrected hops calculation
     let recipientUser = await findSpecificUpline(userId, hopsRequired, session);
-    console.log("recepient user: ",recipientUser)
     let paymentDestinationType = "admin";
 
     if (recipientUser) {
@@ -259,17 +256,10 @@ exports.initiateUpgrade = async (req, res) => {
       ) {
         // If condition fulfilled, add current combinedAmount directly to main wallet
         recipientUser.walletBalance += combinedAmount;
-        console.log(
-          `Recipient ${recipientUser.email} (Combined) - Condition met. Added ${combinedAmount} directly to main wallet.`
-        );
       } else {
         // Otherwise, add to upgrade wallet
         recipientUser.upgradewalletBalance += flow.amount;
         recipientUser.walletBalance += flow.sponsorShare;
-   
-        console.log(
-          `Recipient ${recipientUser.email} (Combined) - Condition not met. Added ${combinedAmount} to upgrade wallet. Current upgrade balance: ${recipientUser.upgradewalletBalance}`
-        );
       }
       // Create a single wallet transaction for the shared recipient/sponsor
       combinedTxnId = uuidv4();

@@ -69,7 +69,6 @@ let role=""
       // console.log(decodedToken)
       role=decodedToken.role
       email = decodedToken.email; // Assuming your JWT has an 'email' field
-      console.log(role)
     } catch (error) {
       console.error("Invalid token or decoding error:", error);
       // If the token is invalid, it might be corrupted or expired.

@@ -54,7 +54,6 @@ const Main = ({ user,setUser }) => {
             }
           );
           setTeam(data.data.Team);
-          console.log("Team data: ",data.data.Team);
         } catch (err) {
           console.error("Failed to fetch Team", err);
           // Optionally, set an error state here to display a message to the user

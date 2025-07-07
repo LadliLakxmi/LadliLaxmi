@@ -20,7 +20,6 @@ const AdminWithdrawPanel = () => {
           },
         }
       );
-      console.log(res.data);
       setRequests(res.data);
       toast.success("Withdrawal requests loaded successfully!"); // Show success toast
     } catch (err) {

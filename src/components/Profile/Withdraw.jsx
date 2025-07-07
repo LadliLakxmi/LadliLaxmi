@@ -229,9 +229,6 @@ const Withdraw = ({ user, fetchUserData }) => {
             }
           : undefined, // If bankDetails are already saved, no need to send them again
       };
-
-      console.log("Withdrawal payload:", payload); // Log the payload for debugging
-
       await axios.post(
         "https://ladlilaxmi.onrender.com/api/v1/withdraw/request",
         payload,
