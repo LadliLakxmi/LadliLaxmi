@@ -132,7 +132,7 @@ const TransactionHistory = ({ user, walletTransactions }) => {
                     <td className="py-4 px-6 text-base text-gray-800">{formatDate(tx.createdAt)}</td>
                     <td className="py-4 px-6 text-base text-gray-800">{getTransactionTypeDisplay(tx.type)}</td>
                     <td className={`py-4 px-6 text-base font-semibold ${
-                      tx.type?.includes('commission') || tx.type === 'deposit' || isCurrentUserReceiver ? 'text-green-600' : 'text-red-600'
+                      tx.type?.includes('commission')||tx.type?.includes('received') || tx.type === 'deposit' || isCurrentUserReceiver ? 'text-green-600' : 'text-red-600'
                     }`}>
                       ₹{tx.amount?.toFixed(2)}
                     </td>
