@@ -47,7 +47,7 @@ const Main = ({ user,setUser }) => {
           const data = await axios.get(
             // Using localhost for development, ensure it's correct for your setup
   
-            `https://ladlilaxmi.onrender.com/api/v1/profile/get-team/${user._id}`,
+            `https://ladlilakshmi.onrender.com/api/v1/profile/get-team/${user._id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

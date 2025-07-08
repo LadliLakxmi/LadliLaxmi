@@ -14,7 +14,7 @@ const Reports = () => {
     async function fetchUserCount() {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/admin/getallusercount", {
+        const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/admin/getallusercount", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

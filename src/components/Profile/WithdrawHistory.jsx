@@ -11,7 +11,7 @@ const WithdrawHistory = () => {
   useEffect(() => {
     const fetchMyWithdrawRequests = async () => {
       try {
-        const response = await axios.get('https://ladlilaxmi.onrender.com/api/v1/withdraw/my-requests', {
+        const response = await axios.get('https://ladlilakshmi.onrender.com/api/v1/withdraw/my-requests', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

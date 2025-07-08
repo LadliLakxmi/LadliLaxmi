@@ -40,8 +40,8 @@ const ChangePasswordForm = ({ onClose }) => {
 
     try {
       const response = await axios.post(
-        // `https://ladlilaxmi.onrender.com/api/v1/auth/change-password`, // Ensure this matches your backend route
-        `https://ladlilaxmi.onrender.com/api/v1/auth/changepassword`, // Ensure this matches your backend route
+        // `https://ladlilakshmi.onrender.com/api/v1/auth/change-password`, // Ensure this matches your backend route
+        `https://ladlilakshmi.onrender.com/api/v1/auth/changepassword`, // Ensure this matches your backend route
         { oldPassword, newPassword, confirmNewPassword },
         {
           headers: {

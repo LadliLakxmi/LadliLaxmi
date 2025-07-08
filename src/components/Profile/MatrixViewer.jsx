@@ -48,7 +48,7 @@ const MatrixViewer = () => {
             try {
                 // Using the userIdFromUrl obtained from useParams
                 const response = await axios.get(
-                    `https://ladlilaxmi.onrender.com/api/v1/profile/getprofile/${userIdFromUrl}`, // Use userIdFromUrl here
+                    `https://ladlilakshmi.onrender.com/api/v1/profile/getprofile/${userIdFromUrl}`, // Use userIdFromUrl here
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

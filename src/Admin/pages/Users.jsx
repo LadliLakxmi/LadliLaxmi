@@ -8,7 +8,7 @@ const Users = () => {
   const fetchUsers = async () => {
   try {
     const token = localStorage.getItem("token"); // ✅ define token here
-    const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/admin/getalluser", {
+    const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/admin/getalluser", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

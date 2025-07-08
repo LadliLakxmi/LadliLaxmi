@@ -14,7 +14,7 @@ const Profile = () => {
       try {
         const data = await axios.get(
           // Using localhost for development, ensure it's correct for your setup
-          `https://ladlilaxmi.onrender.com/api/v1/profile/getprofile/${userId}`,
+          `https://ladlilakshmi.onrender.com/api/v1/profile/getprofile/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

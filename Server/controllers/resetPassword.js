@@ -24,7 +24,7 @@ exports.resetPasswordToken = async (req, res) => {
     )
     console.log("DETAILS", updatedDetails)
 
-    const url = `https://ladlilaxmi.onrender.com/update-password/${token}`
+    const url = `https://ladlilakshmi.onrender.com/update-password/${token}`
 
     await mailSender(
       email,

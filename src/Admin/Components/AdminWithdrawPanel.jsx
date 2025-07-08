@@ -13,7 +13,7 @@ const AdminWithdrawPanel = () => {
     setLoading(true); // Set loading to true when fetching starts
     try {
       const res = await axios.get(
-        "https://ladlilaxmi.onrender.com/api/v1/admin/withdrawals",
+        "https://ladlilakshmi.onrender.com/api/v1/admin/withdrawals",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ const AdminWithdrawPanel = () => {
   const updateStatus = async (id, status) => {
     try {
       await axios.patch(
-        `https://ladlilaxmi.onrender.com/api/v1/withdraw/update/${id}`,
+        `https://ladlilakshmi.onrender.com/api/v1/withdraw/update/${id}`,
         { status },
         {
           headers: { Authorization: `Bearer ${token}` },

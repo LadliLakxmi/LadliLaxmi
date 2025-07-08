@@ -32,7 +32,7 @@
 //     try {
 //       // Call the backend login API
 //       const response = await axios.post(
-//         "https://ladlilaxmi.onrender.com/api/v1/auth/login", // Changed to match common user login endpoint
+//         "https://ladlilakshmi.onrender.com/api/v1/auth/login", // Changed to match common user login endpoint
 //         {
 //           email: formData.email,
 //           password: formData.password,
@@ -191,7 +191,7 @@ const Login = () => {
     try {
       // Call the backend login API
       const response = await axios.post(
-        "https://ladlilaxmi.onrender.com/api/v1/auth/login",
+        "https://ladlilakshmi.onrender.com/api/v1/auth/login",
         {
           // --- Key change here: send 'identifier' instead of 'email' ---
           identifier: formData.identifier,

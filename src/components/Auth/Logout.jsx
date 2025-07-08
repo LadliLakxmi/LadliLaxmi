@@ -8,7 +8,7 @@ const Logout = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("https://ladlilaxmi.onrender.com/api/v1/auth/logout", {
+      const response = await fetch("https://ladlilakshmi.onrender.com/api/v1/auth/logout", {
         method: "POST", // Or POST
         headers: { "Content-Type": "application/json" },
         withCredentials: true,

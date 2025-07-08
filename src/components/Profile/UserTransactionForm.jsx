@@ -28,7 +28,7 @@ const UserTransactionForm = () => {
       // For now, we will simulate by fetching all transactions and checking locally.
       // In a real application, you should create a specific backend endpoint
       // like GET /api/v1/transactions/check-utr?utr=YOUR_UTR_NO
-      const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/transactions");
+      const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/transactions");
       const transactions = res.data.transactions;
       const foundDuplicate = transactions.some(tx => tx.UTRno === utr);
 
@@ -76,7 +76,7 @@ const UserTransactionForm = () => {
       return;
     }
     try {
-      await axios.post("https://ladlilaxmi.onrender.com/api/v1/transaction", formData);
+      await axios.post("https://ladlilakshmi.onrender.com/api/v1/transaction", formData);
       alert("Transaction Submitted Successfully");
       setFormData({
         name: "",

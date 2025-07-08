@@ -24,7 +24,7 @@ const TransferSponsorToMain = ({ user }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `https://ladlilaxmi.onrender.com/api/v1/wallet-transactions/transferToMain/${userId}`,
+        `https://ladlilakshmi.onrender.com/api/v1/wallet-transactions/transferToMain/${userId}`,
         {
           amount: Number(amount),
         }

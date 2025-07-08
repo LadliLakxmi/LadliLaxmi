@@ -43,7 +43,7 @@ const UplineBeneficiariesTable = ({ currentUser }) => {
                     // Assuming your backend endpoint for fetching uplines by user ID
                     // Make sure this endpoint actually returns the 'uplineLevel' and 'upgradeCostAssociated'
                     // for each beneficiary, which is crucial for the logic below.
-                    `https://ladlilaxmi.onrender.com/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
+                    `https://ladlilakshmi.onrender.com/api/v1/upline/users/${currentUser._id}/upline-beneficiaries`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

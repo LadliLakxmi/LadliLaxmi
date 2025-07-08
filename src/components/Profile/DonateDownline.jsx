@@ -40,7 +40,7 @@ const DonateDownline = ({ user, fetchUserData }) => { // Added fetchUserData if 
       setIsVerifyingReferral(true);
       try {
         const response = await axios.get(
-          `https://ladlilaxmi.onrender.com/api/v1/donations/get-user-by-referral/${code}`, // New backend endpoint
+          `https://ladlilakshmi.onrender.com/api/v1/donations/get-user-by-referral/${code}`, // New backend endpoint
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -135,7 +135,7 @@ const DonateDownline = ({ user, fetchUserData }) => { // Added fetchUserData if 
 
     try {
       const response = await axios.post(
-        "https://ladlilaxmi.onrender.com/api/v1/donations/transfer-to-downline", // Your backend endpoint
+        "https://ladlilakshmi.onrender.com/api/v1/donations/transfer-to-downline", // Your backend endpoint
         { recipientReferralCode, amount: transferAmount },
         {
           headers: {

@@ -87,7 +87,7 @@ const Withdraw = ({ user, fetchUserData }) => {
     const fetchWithdrawalStatus = async () => {
       try {
         const res = await axios.get(
-          "https://ladlilaxmi.onrender.com/api/v1/withdraw/my-requests",
+          "https://ladlilakshmi.onrender.com/api/v1/withdraw/my-requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -174,7 +174,7 @@ const Withdraw = ({ user, fetchUserData }) => {
 
       try {
         await axios.put(
-          "https://ladlilaxmi.onrender.com/api/v1/profile/bank-details",
+          "https://ladlilakshmi.onrender.com/api/v1/profile/bank-details",
           {
             accountHolder: formData.accountHolder,
             accountNumber: formData.accountNumber,
@@ -230,7 +230,7 @@ const Withdraw = ({ user, fetchUserData }) => {
           : undefined, // If bankDetails are already saved, no need to send them again
       };
       await axios.post(
-        "https://ladlilaxmi.onrender.com/api/v1/withdraw/request",
+        "https://ladlilakshmi.onrender.com/api/v1/withdraw/request",
         payload,
         {
           // Endpoint change: /withdraw
@@ -618,8 +618,8 @@ export default Withdraw;
 
 //     const fetchWithdrawn = async () => {
 //       try {
-//         const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/withdraw/summary", {
-//         // const res = await axios.get("https://ladlilaxmi.onrender.com/api/v1/withdraw/summary", {
+//         const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/withdraw/summary", {
+//         // const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/withdraw/summary", {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //           },
@@ -717,7 +717,7 @@ export default Withdraw;
 //       }
 
 //       try {
-//         await axios.put("https://ladlilaxmi.onrender.com/api/v1/profile/bank-details", {
+//         await axios.put("https://ladlilakshmi.onrender.com/api/v1/profile/bank-details", {
 //           accountHolder: formData.accountHolder,
 //           accountNumber: formData.accountNumber,
 //           ifscCode: formData.ifscCode,
@@ -753,7 +753,7 @@ export default Withdraw;
 //     // Proceed with withdrawal request
 //     try {
 //       const payload = { walletType, amount }; // Use the validated amount and walletType
-//       await axios.post("https://ladlilaxmi.onrender.com/api/v1/withdraw/request", payload, {
+//       await axios.post("https://ladlilakshmi.onrender.com/api/v1/withdraw/request", payload, {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
 //         },

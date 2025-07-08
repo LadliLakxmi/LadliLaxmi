@@ -74,7 +74,7 @@ const Signup = () => {
 
     try {
       const signupResponse = await axios.post(
-        "https://ladlilaxmi.onrender.com/api/v1/auth/register",
+        "https://ladlilakshmi.onrender.com/api/v1/auth/register",
         {
           email: formData.email,
           password: formData.password,
