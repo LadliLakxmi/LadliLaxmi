@@ -13,6 +13,7 @@ import AddFund from "./AddFund";
 import TransferSponsorToMain from "./TransferSponsorToMain";
 import UplineBeneficiariesTable from "./UplineBeneficiariesTable";
 import DirectTeam from "./DirectTeam";
+import MatrixViewer from "./MatrixViewer";
 
 const countAllDescendantsBFS = (team) => {
   if (!team || !team.matrixChildren || team.matrixChildren.length === 0) {
@@ -102,6 +103,10 @@ const Main = ({ user,setUser }) => {
             path={"/upline"}
             element={<UplineBeneficiariesTable currentUser = {user}/>}
           />
+          <Route
+          path="/downline-child-matrix/:id"
+          element={<MatrixViewer />}
+        />
         <Route
           path="/transactions"
           element={<TransactionHistory walletTransactions={user.walletTransactions} />}
