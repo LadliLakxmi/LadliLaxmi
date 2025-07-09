@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const dotenv = require('dotenv');
 const helmet = require('helmet'); // Import helmet
 const cors = require('cors'); // For cross-origin requests
+const startServer = require('./keep_alive'); // Import the new keep_alive module
 
 dotenv.config(); // Load environment variables
 // Setting up port number
@@ -69,7 +70,7 @@ app.get("/test", (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ success: false, message: "Something went wrong!" });
+  res.status(500).json({ success: false, message: "Something went wrong! Please Try Again...." });
 });
 
 // Listening to the server
@@ -78,6 +79,7 @@ app.listen(PORT, () => {
 });
 
 
-
+// Start the server using the imported module
+startServer(app, PORT);
 
 
