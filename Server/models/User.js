@@ -133,6 +133,14 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "Admin"],
       default: "user",
     },
+    otp: {
+      type: String,
+      select: false, // Don't return OTP in queries by default
+    },
+    otpExpires: {
+      type: Date,
+      select: false,
+    },
 
     isActive: {
       type: Boolean,
