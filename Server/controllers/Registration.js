@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { generateOtp, sendOtpEmail } = require("../utils/mailSender");
 require("dotenv").config();
 
 // Ensure process.env.JWT_SECRET is set in your .env file
