@@ -149,6 +149,11 @@ const userSchema = new mongoose.Schema(
     token: {
       type: String,
     },
+    levelPaymentsReceived: {
+      type: Map,
+      of: Number,
+      default: {},
+    },
 
     lastLogin: Date,
   },
