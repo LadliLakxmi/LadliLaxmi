@@ -305,7 +305,7 @@ exports.initiateUpgrade = async (req, res) => {
       user.upgradewalletBalance -= flow.amount;
       
        // --- NEW LOGIC: Route main upgrade payment based on count for recipient ---
-      if (recipientPaymentsForThisLevel < 2) {
+      if (recipientPaymentsForThisLevel < 2 && !recipientUser.currentLevel > user.currentLevel) {
           recipientUser.upgradewalletBalance += flow.amount;
       } else {
           recipientUser.walletBalance += flow.amount;
