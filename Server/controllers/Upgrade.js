@@ -7,11 +7,12 @@ const { findMatrixSlot } = require("../utils/matrix");
 
 const LEVEL_FLOW = {
   1: {
-    amount: 300,
+    amount: 300, //level 1 update krne par upline ko jane wala amount
     uplineIncome: 600,
     upgradeCost: 500,
     sponsorShare: 100,
     netIncome: 100,
+    
   },
   2: {
     amount: 500,
@@ -162,11 +163,9 @@ exports.initiateUpgrade = async (req, res) => {
         // here chnage admin with company referral code
         if (!sponsorDuringRegistration) {
           await session.abortTransaction();
-          return res
-            .status(500)
-            .json({
-              message: "Company account not found for matrix placement.",
-            });
+          return res.status(500).json({
+            message: "Company account not found for matrix placement.",
+          });
         }
       }
 
@@ -223,11 +222,9 @@ exports.initiateUpgrade = async (req, res) => {
         );
         if (!sponsorUser) {
           await session.abortTransaction();
-          return res
-            .status(500)
-            .json({
-              message: "Company account not found for sponsor payment.",
-            });
+          return res.status(500).json({
+            message: "Company account not found for sponsor payment.",
+          });
         }
       }
     }
@@ -256,8 +253,8 @@ exports.initiateUpgrade = async (req, res) => {
         recipientUser.upgradewalletBalance += flow.amount;
         recipientUser.walletBalance += flow.sponsorShare;
       } else {
-        recipientUser.upgradewalletBalance += (flow.amount-100);
-        recipientUser.walletBalance += (flow.sponsorShare+100);
+        recipientUser.upgradewalletBalance += flow.amount - 100;
+        recipientUser.walletBalance += flow.sponsorShare + 100;
       }
       // Increment the count for this level for the recipient
       recipientUser.levelPaymentsReceived.set(
@@ -425,6 +422,26 @@ exports.initiateUpgrade = async (req, res) => {
     // The walletTransactions pushes are now handled inside the if/else blocks for clarity and correctness.
     // If you need to push sponsorTxn._id here, ensure sponsorTxn is defined for all paths.
     // For now, it's only pushed within the level === 1 block where it's created.
+    const paymentsReceivedForThisLevel = user.levelPaymentsReceived.get(level.toString()) || 0;
+
+    if (paymentsReceivedForThisLevel > 2) {
+      // Calculate the number of excess payments
+      const excessPaymentsCount = paymentsReceivedForThisLevel - 2;
+
+      // Calculate the amount to transfer to main wallet.
+      // Assuming each payment for this level was 'flow.amount'.
+      const amountToTransfer = excessPaymentsCount * flow.amount;
+
+      // Ensure the upgradeWalletBalance has enough funds (it should, as these were stored there)
+      if (user.upgradewalletBalance >= amountToTransfer) {
+        user.upgradewalletBalance -= amountToTransfer; // Deduct from upgrade wallet
+        user.walletBalance += amountToTransfer; // Add to main wallet
+      } else {
+        console.warn(
+          `Insufficient funds in upgrade wallet for transfer for user ${user.email} (Level ${level}). Expected: ${amountToTransfer}, Actual: ${user.upgradewalletBalance}`
+        );
+      }
+    }
 
     // Save all changes
     await user.save({ session });
