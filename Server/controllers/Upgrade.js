@@ -252,11 +252,12 @@ exports.initiateUpgrade = async (req, res) => {
       // Deduct combined amount from user's wallet
       user.upgradewalletBalance -= combinedAmount;
 
-      if (recipientPaymentsForThisLevel < 2) {
-        recipientUser.upgradewalletBalance += combinedAmount;
-      } else {
+      if (recipientPaymentsForThisLevel < 1) {
         recipientUser.upgradewalletBalance += flow.amount;
         recipientUser.walletBalance += flow.sponsorShare;
+      } else {
+        recipientUser.upgradewalletBalance += (flow.amount-100);
+        recipientUser.walletBalance += (flow.sponsorShare+100);
       }
       // Increment the count for this level for the recipient
       recipientUser.levelPaymentsReceived.set(
