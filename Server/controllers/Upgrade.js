@@ -158,7 +158,7 @@ exports.initiateUpgrade = async (req, res) => {
       ) {
         // Fallback to admin if sponsor not found (e.g., initial admin placement)
         sponsorDuringRegistration = await User.findOne({
-          referralCode: "R7079AEU",
+          referralCode: "R1403ITX",
         }).session(session);
         // here chnage admin with company referral code
         if (!sponsorDuringRegistration) {
