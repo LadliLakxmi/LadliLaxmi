@@ -217,7 +217,7 @@ exports.initiateUpgrade = async (req, res) => {
         referralCode: user.sponserdBy,
       }).session(session);
       if (!sponsorUser) {
-        sponsorUser = await User.findOne({ referralCode: "R7079AEU" }).session(
+        sponsorUser = await User.findOne({ referralCode: "R1403ITX" }).session(
           session
         );
         if (!sponsorUser) {
