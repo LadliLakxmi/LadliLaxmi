@@ -94,9 +94,9 @@ const AdminWithdrawPanel = () => {
                 <tr key={req._id} className="border-b border-gray-200 hover:bg-gray-50">
                   {/* The critical fix: Safely access req.user.email */}
                   <td className="py-3 px-6 text-left whitespace-nowrap">
-                    {req.user?.email || 'N/A'} {/* Use optional chaining and a fallback */}
+                    Name: {req.user?.name || 'N/A'} {/* Use optional chaining and a fallback */}
                     <br/>
-                    {req.user?.name || 'N/A'} {/* Use optional chaining and a fallback */}
+                    Email: {req.user?.email || 'N/A'} {/* Use optional chaining and a fallback */}
                   </td>
                   <td className="py-3 px-6 text-left">
                     ₹{req.amount?.toFixed(2) || '0.00'} {/* Safely display amount */}
