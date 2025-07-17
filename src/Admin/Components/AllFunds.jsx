@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+  function formatCreationDate(dateString) {
+  if (!dateString) {
+    return "N/A";
+  }
+  const date = new Date(dateString);
+  // Using 'en-IN' locale for a common Indian date format (e.g., "25 January 2024")
+  return date.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
 const AllFunds = () => {
   const [transactions, setTransactions] = useState([]);
   const [errorMessage, setErrorMessage] = useState(""); // For displaying API errors
@@ -67,7 +80,7 @@ const AllFunds = () => {
               <td className="border p-1">{tx.Referalcode}</td>
               <td className="border p-1">{tx.amount}</td>
               <td className="border p-1">{tx.UTRno}</td>
-              <td className="border p-1">{tx.createdAt}</td>
+              <td className="border p-1">{formatCreationDate(tx.createdAt)}</td>
               <td className={`border p-1 ${tx.status === "approved" ? "text-green-600" : "text-yellow-600"}`}>{tx.status}</td>
               <td className="border p-1">
                 {tx.status === "pending" && (

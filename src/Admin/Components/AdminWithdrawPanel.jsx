@@ -2,7 +2,18 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
 import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS for styling
-
+  function formatCreationDate(dateString) {
+  if (!dateString) {
+    return "N/A";
+  }
+  const date = new Date(dateString);
+  // Using 'en-IN' locale for a common Indian date format (e.g., "25 January 2024")
+  return date.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
 const AdminWithdrawPanel = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true); // State to manage loading status
@@ -70,18 +81,7 @@ const AdminWithdrawPanel = () => {
     );
   }
 
-  function formatCreationDate(dateString) {
-  if (!dateString) {
-    return "N/A";
-  }
-  const date = new Date(dateString);
-  // Using 'en-IN' locale for a common Indian date format (e.g., "25 January 2024")
-  return date.toLocaleDateString('en-IN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-}
+
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
