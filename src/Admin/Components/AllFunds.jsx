@@ -54,6 +54,7 @@ const AllFunds = () => {
             <th className="border px-2">Referral Code</th>
             <th className="border px-2">Amount</th>
             <th className="border px-2">UTR No</th>
+            <th className="border px-2">Date</th>
             <th className="border px-2">Status</th>
             <th className="border px-2">Action</th>
           </tr>
@@ -66,6 +67,7 @@ const AllFunds = () => {
               <td className="border p-1">{tx.Referalcode}</td>
               <td className="border p-1">{tx.amount}</td>
               <td className="border p-1">{tx.UTRno}</td>
+              <td className="border p-1">{tx.createdAt}</td>
               <td className={`border p-1 ${tx.status === "approved" ? "text-green-600" : "text-yellow-600"}`}>{tx.status}</td>
               <td className="border p-1">
                 {tx.status === "pending" && (

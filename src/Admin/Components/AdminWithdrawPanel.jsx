@@ -70,6 +70,19 @@ const AdminWithdrawPanel = () => {
     );
   }
 
+  function formatCreationDate(dateString) {
+  if (!dateString) {
+    return "N/A";
+  }
+  const date = new Date(dateString);
+  // Using 'en-IN' locale for a common Indian date format (e.g., "25 January 2024")
+  return date.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Admin Withdraw Requests</h2>
@@ -85,6 +98,7 @@ const AdminWithdrawPanel = () => {
                 <th className="py-3 px-6 text-left border-b border-gray-200">Amount</th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Final Amount (-10%)</th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Status</th>
+                <th className="py-3 px-6 text-left border-b border-gray-200">Date</th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Bank Details</th>
                 <th className="py-3 px-6 text-center border-b border-gray-200">Actions</th>
               </tr>
@@ -96,7 +110,7 @@ const AdminWithdrawPanel = () => {
                   <td className="py-3 px-6 text-left whitespace-nowrap">
                     Name: {req.user?.name || 'N/A'} {/* Use optional chaining and a fallback */}
                     <br/>
-                    Email: {req.user?.email || 'N/A'} {/* Use optional chaining and a fallback */}
+                    Email: {req.user?.email || 'N/A'} 
                   </td>
                   <td className="py-3 px-6 text-left">
                     ₹{req.amount?.toFixed(2) || '0.00'} {/* Safely display amount */}
@@ -112,6 +126,9 @@ const AdminWithdrawPanel = () => {
                     }`}>
                       {req.status}
                     </span>
+                  </td>
+                  <td className="py-3 px-6 text-left">
+                    {formatCreationDate(user?.createdAt)} {/* Safely display Date */}
                   </td>
                  <td className="py-3 px-6 text-left">
                     {/* The corrected section for bank details */}
