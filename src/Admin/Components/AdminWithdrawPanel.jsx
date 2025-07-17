@@ -81,7 +81,7 @@ const AdminWithdrawPanel = () => {
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">
             <thead>
               <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                <th className="py-3 px-6 text-left border-b border-gray-200">User Email</th>
+                <th className="py-3 px-6 text-left border-b border-gray-200">User </th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Amount</th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Final Amount (-10%)</th>
                 <th className="py-3 px-6 text-left border-b border-gray-200">Status</th>
@@ -95,6 +95,8 @@ const AdminWithdrawPanel = () => {
                   {/* The critical fix: Safely access req.user.email */}
                   <td className="py-3 px-6 text-left whitespace-nowrap">
                     {req.user?.email || 'N/A'} {/* Use optional chaining and a fallback */}
+                    <br/>
+                    {req.user?.name || 'N/A'} {/* Use optional chaining and a fallback */}
                   </td>
                   <td className="py-3 px-6 text-left">
                     ₹{req.amount?.toFixed(2) || '0.00'} {/* Safely display amount */}
