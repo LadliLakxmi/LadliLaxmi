@@ -104,7 +104,7 @@ exports.updateTransactionStatus = async (req, res) => {
       }
 
       // Credit the wallet
-      user.walletBalance += transaction.amount;
+      user.upgradewalletBalance += transaction.amount;
 
       // Create Wallet Transaction
       const walletTxn = new WalletTransaction({

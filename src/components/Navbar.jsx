@@ -22,10 +22,10 @@ const Navbar = ({ role }) => {
   }
 
   // Set the home path based on role
-  const homePath = role === "Admin" ? "/Admindashboard/dashboard" : "home";
+  // const homePath = role === "Admin" ? "/Admindashboard/dashboard" : "home";
 
   const navItem = [
-    { link: "HOME", path: homePath },
+    { link: "HOME", path: "home" },
     { link: "ABOUT", path: "about" },
     { link: "OUR MISSIONS", path: "missions" },
     { link: "SERVICES", path: "services" },
