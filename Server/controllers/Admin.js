@@ -3,6 +3,9 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const WithdrawRequest = require('../models/WithdrawRequest')
+const WalletTransaction = require('../models/WalletTransaction');
+
+
 // 1. Get all users (excluding password, with donations populated)
 exports.getAllUsers = async (req, res) => {
   try {
@@ -223,4 +226,23 @@ exports.updateUserByAdmin = async (req, res) => {
   }
 };
 
+// 6. Get all wallet transactions with user details
+exports.getAllWalletTransactions = async (req, res) => {
+  try {
+    const transactions = await WalletTransaction.find()
+      .populate('fromUser', 'name email') // Populate the 'fromUser' field with 'name' and 'email'
+      .populate('toUser', 'name email')   // Populate the 'toUser' field with 'name' and 'email'
+      .sort({ createdAt: -1 })            // Sort by creation date, newest first
+      .exec();
 
+    // Check if any transactions were found
+    if (!transactions || transactions.length === 0) {
+      return res.status(404).json({ message: 'No wallet transactions found.' });
+    }
+
+    res.status(200).json(transactions);
+  } catch (err) {
+    console.error('Error fetching wallet transactions:', err);
+    res.status(500).json({ error: 'Error fetching wallet transactions.' });
+  }
+};

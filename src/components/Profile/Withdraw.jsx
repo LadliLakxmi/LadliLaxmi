@@ -49,7 +49,8 @@ const Withdraw = ({ user, fetchUserData }) => {
     8: { nextUpgradeCost: 32000 },
     9: { nextUpgradeCost: 64000 },
     10: { nextUpgradeCost: 128000 },
-    11: { nextUpgradeCost: 0 },
+    11: { nextUpgradeCost: 256000 },
+    12: { nextUpgradeCost: 0 },
   };
   const nextLevelToUpgrade = currentLevel + 1;
   const nextUpgradeCost =

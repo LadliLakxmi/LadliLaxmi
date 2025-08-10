@@ -36,9 +36,6 @@ exports.WithdrawRequest = async (req, res) => {
         .json({ message: "Please upgrade your account to Level 1 before withdrawing." });
     }
 
-    // Removed all cumulative withdrawal limit checks from here
-    // Removed checks like currentAlreadyWithdrawn + amount > maxAllowedCumulative
-
     if (amount > availableBalance) {
       await session.abortTransaction();
       return res
@@ -91,17 +88,21 @@ exports.WithdrawRequest = async (req, res) => {
       });
     }
 
-    // 📝 Create withdraw request
-    const withdrawRequest = new WithdrawRequest({
-      user: userId,
-      amount,
-      status: "pending",
-      createdAt: new Date(),
-    });
-
-    await withdrawRequest.save({ session });
-
-    await session.commitTransaction();
+     // Deduct balance from the main wallet
+      user.walletBalance -= amount;
+      
+      // 📝 Create withdraw request
+      const withdrawRequest = new WithdrawRequest({
+        user: userId,
+        amount,
+        status: "pending",
+        createdAt: new Date(),
+      });
+      
+      await withdrawRequest.save({ session });
+      
+      await user.save({ session })
+      await session.commitTransaction();
 
     return res.status(200).json({
       message: "Withdraw request submitted successfully. It will be processed shortly.",
@@ -143,7 +144,7 @@ exports.updateWithdrawStatus = async (req, res) => {
     const user = request.user;
 
     if (status === "approved") {
-      let currentBalance = user.walletBalance;
+      // let currentBalance = user.walletBalance;
       let totalWithdrawnField = "totalWithdrawn";
       let transactionType = "withdrawal_approved";
 
@@ -156,21 +157,6 @@ exports.updateWithdrawStatus = async (req, res) => {
             message: "User must be Level 1 or higher to approve this withdrawal.",
           });
       }
-
-      // Removed all cumulative withdrawal limit checks from here
-      // Removed checks like request.amount > remainingLimit
-
-      if (request.amount > currentBalance) {
-        await session.abortTransaction();
-        return res
-          .status(400)
-          .json({
-            message: `Insufficient available balance in user's wallet to approve this request.`,
-          });
-      }
-
-      // Deduct balance from the main wallet
-      user.walletBalance -= request.amount;
 
       // Update total withdrawn
       user[totalWithdrawnField] += request.amount;
@@ -193,7 +179,9 @@ exports.updateWithdrawStatus = async (req, res) => {
 
       await user.save({ session });
     } else if (status === "rejected") {
-      // If rejected, do nothing to the balance, just update status
+      // If rejected, return the balance and update status
+      user.walletBalance += request.amount;
+      await user.save({ session });
     }
 
     request.status = status;

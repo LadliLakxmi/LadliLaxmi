@@ -79,7 +79,7 @@ const UpgradePage = ({ user, setUser }) => {
       setUser((prevUser) => ({
         ...prevUser,
         currentLevel: nextLevel,
-        walletBalance: prevUser.upgradewalletBalance - upgradeCost,
+        upgradewalletBalance: prevUser.upgradewalletBalance - upgradeCost,
       }));
 
       // Navigate after a delay

@@ -337,6 +337,7 @@ exports.transferFundsToDownline = async (req, res) => {
       amount: -amount, // Negative as it's an expense
       type: "fund_transfer_sent",
       status: "completed",
+      fromUser: sender._id,
       toUser: recipient._id,
       description: `Funds transferred to downline user ${recipient.name || recipient.email} (${recipient.referralCode})`,
       transactionId: transactionId,
@@ -351,6 +352,7 @@ exports.transferFundsToDownline = async (req, res) => {
       type: "fund_transfer_received",
       status: "completed",
       fromUser: sender._id,
+      toUser: recipient._id,
       description: `Funds received from upline user ${sender.name || sender.email} (${sender.referralCode})`,
       transactionId: transactionId,
       processedAt: new Date(),

@@ -51,7 +51,28 @@ const Hero = () => {
 
         
         {role ? (
-          <p>You are already logged in. Go to your profile.</p>
+          <div className='flex flex-col items-center space-y-4'>
+            <p>You are already logged in. Go to your profile.</p>
+            <div className='flex items-center space-x-4 mb-4'>
+
+            <button
+              onClick={() => navigate( "/userdashboard" )}
+              className="px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              >
+              PROFILE
+            </button>
+            {
+              role === "Admin" && (
+                <button
+                onClick={() => navigate("/Admindashboard/dashboard")}
+                className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  ADMIN DASHBOARD
+                </button>
+              )
+            }
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <button

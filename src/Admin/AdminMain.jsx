@@ -1,14 +1,14 @@
 // App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Users from './pages/Users';
-import Payments from './pages/Payments';
-import Reports from './pages/Reports';
-import Sidebar from './Components/Sidebar';
-import UpdateUser from './pages/UpdateUser'
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Users from "./pages/Users";
+import Payments from "./pages/Payments";
+import Reports from "./pages/Reports";
+import Sidebar from "./Components/Sidebar";
+import UpdateUser from "./pages/UpdateUser";
 import AllFunds from "./Components/AllFunds";
-
+import WalletTransactionsTable from "./pages/WalletTransactionsTable";
 
 function AdminLayout({ children }) {
   return (
@@ -19,32 +19,79 @@ function AdminLayout({ children }) {
   );
 }
 
-const AdminMain = () =>  {
+const AdminMain = () => {
   const isAdmin = true; // Replace with real auth logic
 
   return (
-    
-      <Routes>
+    <Routes>
+      {/* <Route path="/" element={<AdminLayout />} /> */}
+      {/* <Route path="/admin/login" element={<Login />} /> */}
 
-        {/* <Route path="/" element={<AdminLayout />} /> */}
-        {/* <Route path="/admin/login" element={<Login />} /> */}
+      {isAdmin ? (
+        <>
+          <Route
+            path="/dashboard"
+            element={
+              <AdminLayout>
+                <Dashboard />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <AdminLayout>
+                <Users />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/funds"
+            element={
+              <AdminLayout>
+                <AllFunds />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/payments"
+            element={
+              <AdminLayout>
+                <Payments />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/update"
+            element={
+              <AdminLayout>
+                <UpdateUser />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/wallet-transactions"
+            element={
+              <AdminLayout>
+                <WalletTransactionsTable />
+              </AdminLayout>
+            }
+          />
 
-        {isAdmin ? (
-          <>
-            <Route path="/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
-            <Route path="/users" element={<AdminLayout><Users /></AdminLayout>} />
-            <Route path="/funds" element={<AdminLayout><AllFunds /></AdminLayout>} />
-            <Route path="/payments" element={<AdminLayout><Payments /></AdminLayout>} />
-                      <Route path="/update" element={<AdminLayout><UpdateUser /></AdminLayout>} />
-        
-            <Route path="/reports" element={<AdminLayout><Reports /></AdminLayout>} />
-          </>
-        ) : (
-          <Route path="*" element={<Navigate to="/login" />} />
-        )}
-      </Routes>
-    
+          <Route
+            path="/reports"
+            element={
+              <AdminLayout>
+                <Reports />
+              </AdminLayout>
+            }
+          />
+        </>
+      ) : (
+        <Route path="*" element={<Navigate to="/login" />} />
+      )}
+    </Routes>
   );
-}
+};
 
-export default AdminMain
+export default AdminMain;

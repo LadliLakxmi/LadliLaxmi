@@ -17,6 +17,9 @@ const Sidebar = () => {
         <NavLink to="/Admindashboard/users" className={linkClass}>
           Users
         </NavLink>
+        <NavLink to="/Admindashboard/wallet-transactions" className={linkClass}>
+          Wallet Transactions
+        </NavLink>
         <NavLink to="/Admindashboard/funds" className={linkClass}>
           All Funds
         </NavLink>

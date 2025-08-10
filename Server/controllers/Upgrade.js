@@ -286,6 +286,7 @@ exports.initiateUpgrade = async (req, res) => {
             : "upline_combined_upgrade_commission_and_sponsor_commission",
         status: "completed",
         fromUser: user._id,
+        toUser: recipientUser._id,
         description: `Combined Level ${level} payment and sponsor share from ${user.email}`,
         transactionId: combinedTxnId,
         processedAt: new Date(),
