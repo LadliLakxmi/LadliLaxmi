@@ -184,20 +184,37 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
 
   return (
     <div className="p-4 sm:p-6 lg:p-10 bg-gradient-to-br mt-8 md:mt-2 from-gray-50 to-gray-200 rounded-3xl shadow-2xl w-full max-w-7xl mx-auto border border-gray-100">
-      {/* Welcome Section */}
-      <div className="mb-8 text-center">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-800 mb-2 drop-shadow-md">
-          Welcome, {user.name?.split(" ")[0] || "User"}!
-        </h2>
-        <p className="text-gray-700 text-md sm:text-lg font-medium">
-          Email: {user.email}
-        </p>
-        <p className="text-gray-700 text-md sm:text-lg font-medium">
-          Phone: {user.phone}
-        </p>
-        <p className="text-gray-700 text-md sm:text-lg mb-4 font-medium">
-          PanCard: {user?.panCard}
-        </p>
+         <div className="mb-6 bg-gradient-to-r from-orange-100 via-amber-100 to-yellow-50 border-l-4 border-orange-500 p-4 rounded-xl shadow-lg">
+  <p className="text-orange-800 text-base sm:text-lg font-semibold text-center">
+    <span className="inline-block mb-1 text-xl">
+      <strong>🌟 Good News!</strong>
+    </span>
+    <br />
+    <span>
+      At the end of each month, only ₹20 will be contributed from your wallet to help those in need through our trusted NGO.
+      <br />
+      <span className="text-amber-800 font-bold">
+        Your kindness creates hope and real opportunities for others.
+      </span>
+      <span className="inline-block mt-2 text-2xl">🙏💛</span>
+    </span>
+  </p>
+</div>
+
+{/* Welcome Section */}
+<div className="mb-8 text-center">
+  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-800 mb-2 drop-shadow-md">
+    Welcome, {user.name?.split(" ")[0] || "User"}!
+  </h2>
+
+  <div className="flex flex-wrap justify-center gap-2 md:gap-8 text-gray-700 text-md sm:text-lg font-medium">
+    <div>Email: {user.email}</div>
+    <div>Phone: {user.phone}</div>
+    <div>PanCard: {user?.panCard}</div>
+  </div>
+
+  <div className="flex gap-4 items-center justify-center mt-6">
+    {/* Your other content */}
       <div className="flex gap-4 items-center justify-center">
         {/* --- NEW: Update Profile Button --- */}
         <button
@@ -214,7 +231,8 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
                 <Key size={20} className="mr-2" /> Change Password
             </button>
       </div>
-      </div>
+  </div>
+</div>
 
 
       {/* Referral Link Section */}
