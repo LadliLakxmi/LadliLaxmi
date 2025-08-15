@@ -184,22 +184,6 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
 
   return (
     <div className="p-4 sm:p-6 lg:p-10 bg-gradient-to-br mt-8 md:mt-2 from-gray-50 to-gray-200 rounded-3xl shadow-2xl w-full max-w-7xl mx-auto border border-gray-100">
-         <div className="mb-6 bg-gradient-to-r from-orange-100 via-amber-100 to-yellow-50 border-l-4 border-orange-500 p-4 rounded-xl shadow-lg">
-  <p className="text-orange-800 text-base sm:text-lg font-semibold text-center">
-    <span className="inline-block mb-1 text-xl">
-      <strong>🌟 Good News!</strong>
-    </span>
-    <br />
-    <span>
-      At the end of each month, only ₹20 will be contributed from your wallet to help those in need through our trusted NGO.
-      <br />
-      <span className="text-amber-800 font-bold">
-        Your kindness creates hope and real opportunities for others.
-      </span>
-      <span className="inline-block mt-2 text-2xl">🙏💛</span>
-    </span>
-  </p>
-</div>
 
 {/* Welcome Section */}
 <div className="mb-8 text-center">
