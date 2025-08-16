@@ -26,7 +26,7 @@ const AddFund = () => {
         <div className="bg-gray-300 shadow-lg p-6">
           <div className="flex flex-col items-center ">
             <img
-              className="w-64 h-64 md:w-[70%] md:h-[60%] rounded-2xl border border-gray-300"
+              className="w-64 h-80 md:w-[70%] md:h-[60%] rounded-2xl border border-gray-300"
               src={QRcode}
               alt="QR Code for Payment"
             />
