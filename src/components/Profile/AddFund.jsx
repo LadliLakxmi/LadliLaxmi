@@ -23,13 +23,10 @@ const AddFund = () => {
 
       <div className="grid lg:grid-cols-2 gap-10">
         {/* Left Side - QR & Form */}
-        <div className="bg-gray-300 rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
-            Scan & Pay
-          </h2>
-          <div className="flex flex-col items-center">
+        <div className="bg-gray-300 shadow-lg p-6">
+          <div className="flex flex-col items-center ">
             <img
-              className="w-64 h-64 md:w-72 md:h-72 object-contain rounded-lg border border-gray-300"
+              className="w-64 h-64 md:w-[70%] md:h-[60%] rounded-2xl border border-gray-300"
               src={QRcode}
               alt="QR Code for Payment"
             />
