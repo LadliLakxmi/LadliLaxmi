@@ -11,6 +11,7 @@ const DonateDownline = ({ user, fetchUserData }) => { // Added fetchUserData if 
   const [downlineUserName, setDownlineUserName] = useState(""); // State for downline user's name
   const [isVerifyingReferral, setIsVerifyingReferral] = useState(false); // State for verification loading
   const [referralCodeError, setReferralCodeError] = useState(""); // New state for specific referral code errors
+const [isValidUser, setIsValidUser] = useState(true); // State to track if referral code is valid
 
   const token = localStorage.getItem("token"); // Get token from localStorage
 
@@ -119,6 +120,17 @@ const DonateDownline = ({ user, fetchUserData }) => { // Added fetchUserData if 
       setIsLoading(false);
       return;
     }
+
+    const activeDirectMembers = user?.directReferrals?.filter((ref) => Number(ref.currentLevel) >= 1).length || 0;
+
+        if (activeDirectMembers < 2) {
+          toast.error(
+            "You need at least 2 direct members who have activated to Level 1 or higher to withdraw."
+          );
+          setIsValidUser(false);
+          setIsLoading(false);
+          return;
+        }
 
     // Basic client-side check against user's wallet balance
     if (user && user.walletBalance < transferAmount) {
@@ -263,9 +275,7 @@ const DonateDownline = ({ user, fetchUserData }) => { // Added fetchUserData if 
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-            ) : (
-              "Transfer Funds"
-            )}
+            ) :( isValidUser ? "Transfer Funds" : "You need at least 2 direct members who have activated to Level 1 or higher to withdraw.")}
           </button>
         </form>
 

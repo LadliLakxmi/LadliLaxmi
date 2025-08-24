@@ -325,6 +325,19 @@ exports.transferFundsToDownline = async (req, res) => {
       return res.status(400).json({ message: "Insufficient wallet balance to transfer." });
     }
 
+     // Check karo direct referrals mein kitne level 1 ya zyada wale hain
+    const validReferralCount = await User.countDocuments({
+      _id: { $in: sender.directReferrals },
+      currentLevel: { $gte: 1 },
+    }).session(session);
+
+    if (validReferralCount < 2) {
+      await session.abortTransaction();
+      return res.status(403).json({
+        message: "Transfer not allowed: You must have at least 2 direct referrals with level 1 or above to transfer funds to downline."
+      });
+    }
+
     // 6. Update Balances
     sender.walletBalance -= amount;
     recipient.walletBalance += amount;
