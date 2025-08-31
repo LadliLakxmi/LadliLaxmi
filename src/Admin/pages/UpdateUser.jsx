@@ -420,6 +420,22 @@ if(formData.password){
             </div>
           </div>
 
+          {/* <button
+            type="submit"
+            className="mt-8 px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition duration-200 ease-in-out shadow-md"
+          >
+            Update User
+          </button> */}
+        </form>
+      )}
+
+      {error && <p className="text-red-400">{error}</p>}
+      {message && <p className="text-green-400">{message}</p>}
+{/* Show either update form or OTP form based on state */}
+
+      {!otpRequired && userData && (
+        <form onSubmit={handleSubmit} className="border border-blue-600 p-6 rounded-lg shadow-lg bg-gray-800">
+          {/* ...existing update form fields unchanged... */}
           <button
             type="submit"
             className="mt-8 px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition duration-200 ease-in-out shadow-md"
@@ -427,6 +443,34 @@ if(formData.password){
             Update User
           </button>
         </form>
+      )}
+      {otpRequired && (
+        <div className="border border-yellow-500 p-6 rounded-lg shadow-lg bg-gray-800 max-w-md mx-auto">
+          <h3 className="text-xl font-semibold mb-4 text-yellow-400">OTP Verification Required</h3>
+          <p className="mb-4 text-gray-300">
+            An OTP has been sent to your registered admin email. Please enter it below to confirm the update.
+          </p>
+          <form onSubmit={handleOtpSubmit} className="flex flex-col space-y-4">
+            <input
+              type="text"
+              name="otp"
+              value={otpCode}
+              onChange={handleOtpChange}
+              placeholder="Enter OTP"
+              maxLength={6}
+              required
+              className="p-3 border border-yellow-400 rounded-lg bg-gray-700 text-white"
+            />
+            {otpError && <p className="text-red-500">{otpError}</p>}
+            <button
+              type="submit"
+              disabled={otpLoading}
+              className="p-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-yellow-300 transition"
+            >
+              {otpLoading ? 'Verifying OTP...' : 'Verify OTP'}
+            </button>
+          </form>
+        </div>
       )}
     </div>
   );
