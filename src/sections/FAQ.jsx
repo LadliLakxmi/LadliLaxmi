@@ -20,16 +20,8 @@ const FAQ = () => {
             answer: "To receive rewards, you will need to complete specific levels within the Trust's programs."
         },
         {
-            question: "What is the minimum and maximum financial help one can receive?",
-            answer: "You can receive financial assistance starting from a minimum of ₹100, or multiples such as ₹100×2, ₹100×3, and so on, from the help provided by the Trust."
-        },
-        {
             question: "What happens to the money received from the Trust?",
             answer: "From the help received from the Trust, ₹20 will be deducted from your wallet every month and deposited into a 'helping wallet'."
-        },
-        {
-            question: "Can you explain the crowdfunding model?",
-            answer: "The crowdfunding model involves a structure where, for example, 'YOU' bring in 2 direct members. These direct members then expand the network further, creating a cascading structure of 'AUTO' placements (3 AUTO, 4 AUTO, 5 AUTO, 6 AUTO, etc.), which contributes to the collective fund."
         }
     ];
 

@@ -1,6 +1,8 @@
 // ===== UpdateUser.js =====
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom"; // Add
+
 
 const UpdateUser = () => {
   const [userEmail, setUserEmail] = useState(''); // Input for fetching user by email
@@ -26,6 +28,16 @@ const UpdateUser = () => {
     role: 'user',
     isActive: true,
   });
+    const [otpRequired, setOtpRequired] = useState(false);
+  const [otpError, setOtpError] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [pendingUpdatePayload, setPendingUpdatePayload] = useState(null);
+  const [pendingTargetUserId, setPendingTargetUserId] = useState('');
+  const [adminUserId, setAdminUserId] = useState('');
+
+  const navigate = useNavigate(); // Add
+
 
   // NEW STATE for displaying referredBy and upgradedBy emails/names
   const [referredByEmailDisplay, setReferredByEmailDisplay] = useState('');
@@ -132,6 +144,7 @@ const UpdateUser = () => {
     e.preventDefault();
     setError('');
     setMessage('');
+    setOtpError('');
 
     if (!userIdToUpdate) {
       setError('Please fetch a user by email before attempting to update.');
@@ -166,6 +179,21 @@ if(formData.password){
 }
     try {
       const response = await axios.put(`${API_BASE_URL}/users/${userIdToUpdate}`, updatePayload, getAuthHeaders());
+      if (response.data.requiresOtpVerification) {
+        // OTP verification required
+        setOtpRequired(true);
+
+        // Save necessary info for OTP verification step
+        setPendingUpdatePayload(updatePayload);
+        setPendingTargetUserId(userIdToUpdate);
+        setAdminUserId(response.data.adminUserId || ''); // From backend response
+
+        setMessage(response.data.message || 'OTP sent. Please verify to complete update.');
+      } else {
+        setMessage(response.data.message || 'User updated successfully!');
+        // Clear any OTP mode
+        setOtpRequired(false);
+      }
       setMessage(response.data.message || 'User updated successfully!');
       // Optionally re-fetch user details to show immediate updates
       // handleFetchUserByEmail(); // commented out as per previous interaction, but useful for refresh
@@ -174,6 +202,48 @@ if(formData.password){
       setError(err.response?.data?.error || err.response?.data?.message || 'Failed to update user.');
     }
   };
+
+   // OTP-related handlers
+  const handleOtpChange = (e) => {
+    setOtpCode(e.target.value);
+  };
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
+    setOtpError('');
+    setOtpLoading(true);
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/users/verify-otp`,
+        {
+          adminUserId,
+          otp: otpCode,
+          targetUserId: pendingTargetUserId,
+          updatePayload: pendingUpdatePayload,
+        },
+        getAuthHeaders()
+      );
+
+      setMessage(response.data.message || 'User updated successfully after OTP verification.');
+      setOtpRequired(false);
+      setOtpCode('');
+      setPendingUpdatePayload(null);
+      setPendingTargetUserId('');
+      setAdminUserId('');
+
+      // Refresh user data to reflect update
+      handleFetchUserByEmail();
+    } catch (err) {
+      setOtpError(
+        err.response?.data?.message || 'OTP verification failed. Please try again.'
+      );
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+
 
   return (
     <div className="p-5 max-w-4xl mx-auto font-sans bg-gray-900 text-white min-h-screen">

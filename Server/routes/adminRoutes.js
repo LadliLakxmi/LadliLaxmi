@@ -9,6 +9,7 @@ const {
   getUserByEmail,
   updateUserByAdmin,
   getAllWalletTransactions,
+  verifyAdminUpdateOtp
 } = require("../controllers/Admin");
 const router = express.Router();
 // Get total user count
@@ -22,6 +23,7 @@ router.get("/users/by-email", auth, isAdmin, getUserByEmail);
 
 // EXISTING ROUTE: To update user by ID (frontend will provide ID after fetching by email)
 router.put("/users/:id", auth, isAdmin, updateUserByAdmin);
+router.post('/users/verify-otp', auth , isAdmin , verifyAdminUpdateOtp);
 
 // Delete user by ID
 router.delete("/deleteUser/:id", auth, isAdmin, deleteUser);

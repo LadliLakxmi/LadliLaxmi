@@ -1,50 +1,71 @@
-const User = require("../models/User")
-const mailSender = require("../utils/mailSender")
-const bcrypt = require("bcrypt")
-const crypto = require("crypto")
-exports.resetPasswordToken = async (req, res) => {
-  try {
-    const email = req.body.email
-    const user = await User.findOne({ email: email })
-    if (!user) {
-      return res.json({
-        success: false,
-        message: `This Email: ${email} is not Registered With Us Enter a Valid Email `,
-      })
-    }
-    const token = crypto.randomBytes(20).toString("hex")
+const bcrypt = require('bcryptjs');
+const User = require('../models/User');
+const { generateOtp, sendOtpEmail } = require('../utils/mailSender');
 
-    const updatedDetails = await User.findOneAndUpdate(
-      { email: email },
-      {
-        token: token,
-        resetPasswordExpires: Date.now() + 3600000,
-      },
-      { new: true }
-    )
-    console.log("DETAILS", updatedDetails)
-
-    const url = `https://ladlilakshmi.onrender.com/update-password/${token}`
-
-    await mailSender(
-      email,
-      "Password Reset",
-      `Your Link for email verification is ${url}. Please click this url to reset your password.`
-    )
-
-    res.json({
-      success: true,
-      message:
-        "Email Sent Successfully, Please Check Your Email to Continue Further",
-    })
-  } catch (error) {
-    return res.json({
-      error: error.message,
-      success: false,
-      message: `Some Error in Sending the Reset Message`,
-    })
+exports.forgotPassword = async (req, res) => {
+  const { identifier } = req.body; // email or phone
+  if (!identifier) {
+    return res.status(400).json({ success: false, message: "Identifier is required." });
   }
-}
+
+  try {
+    const user = identifier.includes('@')
+      ? await User.findOne({ email: identifier.toLowerCase() })
+      : await User.findOne({ phone: identifier });
+
+    if (!user) return res.status(404).json({ success: false, message: "User not found." });
+    if (!user.email) return res.status(400).json({ success: false, message: "No email registered for reset." });
+
+    const plainOtp = generateOtp();
+    const hashedOtp = await bcrypt.hash(plainOtp, 10);
+    const otpExpires = new Date(Date.now() + (parseInt(process.env.OTP_EXPIRY_MINUTES) || 5) * 60 * 1000);
+
+    user.otp = hashedOtp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    await sendOtpEmail(user.email, plainOtp);
+
+    res.status(200).json({ success: true, message: "OTP sent to your email." });
+  } catch (err) {
+    console.error("Error in forgotPassword:", err);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+};
 
 
-        
+exports.resetPassword = async (req, res) => {
+  const { identifier, otp, newPassword } = req.body;
+  if (!identifier || !otp || !newPassword) {
+    return res.status(400).json({ success: false, message: "All fields are required." });
+  }
+
+  try {
+    const user = identifier.includes('@')
+      ? await User.findOne({ email: identifier.toLowerCase() }).select('+otp +otpExpires +password')
+      : await User.findOne({ phone: identifier }).select('+otp +otpExpires +password');
+
+    if (!user) return res.status(404).json({ success: false, message: "User not found." });
+    if (!user.otp || !user.otpExpires) return res.status(400).json({ success: false, message: "No OTP found or expired." });
+    if (user.otpExpires < new Date()) {
+      user.otp = undefined;
+      user.otpExpires = undefined;
+      await user.save();
+      return res.status(400).json({ success: false, message: "OTP expired." });
+    }
+
+    const validOtp = await bcrypt.compare(otp, user.otp);
+    if (!validOtp) return res.status(401).json({ success: false, message: "Invalid OTP." });
+
+    user.otp = undefined;
+    user.otpExpires = undefined;
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password reset successful." });
+  } catch (err) {
+    console.error("Error in resetPassword:", err);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+};
