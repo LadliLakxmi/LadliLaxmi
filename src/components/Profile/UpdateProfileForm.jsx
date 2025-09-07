@@ -85,6 +85,7 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              disabled={!!user?.name}
             />
           </div>
 
@@ -99,6 +100,7 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={!!user?.email}
             />
           </div>
 
@@ -113,6 +115,7 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
+              disabled={!!user?.phone}
             />
           </div>
           <div>
@@ -126,6 +129,7 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
               value={panCard}
               onChange={(e) => setPanCard(e.target.value)}
               required
+              disabled={!!user?.panCard}
             />
           </div>
 
