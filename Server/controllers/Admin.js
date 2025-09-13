@@ -323,7 +323,7 @@ exports.updateUserByAdmin = async (req, res) => {
     }
 
     // 2. Check admin password validity
-    const isPasswordCorrect = await bcrypt.compare(adminPassword, admin.password);
+    const isPasswordCorrect = await bcrypt.compare(adminPassword, admin.adminupdatePass);
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: 'Incorrect admin password. Update denied.' });
     }
