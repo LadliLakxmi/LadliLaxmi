@@ -165,42 +165,45 @@ exports.login = async (req, res) => {
     }
 
       // --- OTP Logic for Admin Role (Email Only) ---
-    if (user.role === 'Admin') {
-      if (!user.email) {
-        return res.status(400).json({
-          success: false,
-          message: "Admin account does not have a registered email for OTP verification. Please contact support.",
-        });
-      }
 
-      const plainOtp = generateOtp(); // Generate plain OTP
-            const hashedOtp = await bcrypt.hash(plainOtp, 10); // HASH the OTP before storing
 
-            const otpExpires = new Date(Date.now() + (parseInt(process.env.OTP_EXPIRY_MINUTES) || 5) * 60 * 1000); // OTP valid for X minutes
+      
+    // if (user.role === 'Admin') {
+    //   if (!user.email) {
+    //     return res.status(400).json({
+    //       success: false,
+    //       message: "Admin account does not have a registered email for OTP verification. Please contact support.",
+    //     });
+    //   }
 
-            // Store HASHED OTP and expiry in the database
-            user.otp = hashedOtp; // Store the hashed OTP
-            user.otpExpires = otpExpires;
-            await user.save();
+    //   const plainOtp = generateOtp(); // Generate plain OTP
+    //         const hashedOtp = await bcrypt.hash(plainOtp, 10); // HASH the OTP before storing
 
-      // Send OTP via Email using the updated sendOtpEmail function
-      try {
-        await sendOtpEmail(user.email, plainOtp);
-      } catch (emailError) {
-        console.error("Failed to send OTP email during login:", emailError);
-        return res.status(500).json({
-          success: false,
-          message: "Failed to send OTP email. Please try again or contact support.",
-        });
-      }
+    //         const otpExpires = new Date(Date.now() + (parseInt(process.env.OTP_EXPIRY_MINUTES) || 5) * 60 * 1000); // OTP valid for X minutes
 
-      return res.status(200).json({
-        success: true,
-        message: "OTP sent to your registered email. Please verify.",
-        requiresOtpVerification: true, // Inform client to prompt for OTP
-        userId: user._id, // Send user ID so client knows which user to verify
-      });
-    }
+    //         // Store HASHED OTP and expiry in the database
+    //         user.otp = hashedOtp; // Store the hashed OTP
+    //         user.otpExpires = otpExpires;
+    //         await user.save();
+
+    //   // Send OTP via Email using the updated sendOtpEmail function
+    //   try {
+    //     await sendOtpEmail(user.email, plainOtp);
+    //   } catch (emailError) {
+    //     console.error("Failed to send OTP email during login:", emailError);
+    //     return res.status(500).json({
+    //       success: false,
+    //       message: "Failed to send OTP email. Please try again or contact support.",
+    //     });
+    //   }
+
+    //   return res.status(200).json({
+    //     success: true,
+    //     message: "OTP sent to your registered email. Please verify.",
+    //     requiresOtpVerification: true, // Inform client to prompt for OTP
+    //     userId: user._id, // Send user ID so client knows which user to verify
+    //   });
+    // }
 
     // --- Regular Login for Non-Admin Roles ---
     const token = generateToken(user);
