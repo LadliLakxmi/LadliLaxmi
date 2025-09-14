@@ -1,130 +1,114 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useForm } from "react-hook-form";
+import React from "react";
+import QR_For_Query from "../assets/QR_For_Query.jpg"; // Adjust image path as needed
 
 const Contact = () => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // success | error
-
-  const onSubmit = async (data) => {
-    try {
-      setLoading(true);
-      setStatus(null);
-
-      const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/v1/auth/mail`, data);
-
-      if (response.data.success) {
-        setStatus("success");
-        reset(); // clear form
-      } else {
-        setStatus("error");
-      }
-    } catch (err) {
-      console.error("Mail error:", err);
-      setStatus("error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <section className="w-full bg-gray-100 py-16 px-4 sm:px-6 lg:px-8 font-sans antialiased">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 grid-cols-1 gap-12 items-center">
-        {/* Form */}
-        <div className="bg-white rounded-2xl p-8 md:p-12 lg:p-16 flex flex-col justify-center items-center shadow-xl">
-          <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-8">
-            Send us a message today
-          </h2>
+    <section
+      className="relative w-full min-h-screen bg-gray-100 flex items-center justify-center font-sans antialiased"
+      style={{ minHeight: "100vh" }}
+    >
+      <div className="max-w-5xl w-full mx-auto bg-white rounded-3xl shadow-2xl p-10 md:p-16 flex flex-col items-center">
+        <h2 className="text-4xl md:text-4xl font-extrabold text-gray-900 text-center mb-8">
+          Contact & ID Update Information
+        </h2>
 
-          <form className="w-full space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <input
-              type="text"
-              placeholder="Enter your full name"
-              {...register("fullname", { required: "Full name is required" })}
-              className="text-black w-full px-6 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-amber-500"
-            />
-            {errors.fullname && <p className="text-red-500 text-sm">{errors.fullname.message}</p>}
+        <p className="text-lg font-semibold text-gray-800 mb-3">
+          📞 Contact Number: <span className="text-amber-600">7579631509</span>
+        </p>
+        <p className="text-base text-gray-800 mb-8 text-center max-w-xl">
+          अपनी आईडी में किसी भी प्रकार की अपडेट के लिए{" "}
+          <span className="font-semibold text-amber-600">₹100</span> QR पर भेजें और स्क्रीनशॉट ऊपर दिए नंबर पर Whatsapp करें।
+        </p>
 
-            <input
-              type="email"
-              placeholder="Enter your valid Email"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Invalid email format",
-                },
-              })}
-              className="text-black w-full px-6 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-amber-500"
-            />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+        <img
+          src={QR_For_Query}
+          alt="QR code for ID update payment"
+          className="w-56 h-56 md:w-64 md:h-64 object-cover border-2 border-amber-500 rounded-lg shadow mb-8"
+        />
 
-            <input
-              type="tel"
-              placeholder="Enter your mobile number"
-              {...register("phoneNo", {
-                required: "Phone number is required",
-                pattern: {
-                  value: /^[0-9]{10,15}$/,
-                  message: "Enter a valid number",
-                },
-              })}
-              className="text-black w-full px-6 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-amber-500"
-            />
-            {errors.phoneNo && <p className="text-red-500 text-sm">{errors.phoneNo.message}</p>}
+        <p className="text-sm text-gray-600 mb-8 text-center font-medium max-w-sm">
+          भुगतान का स्क्रीनशॉट <span className="font-bold text-amber-600">7579631509</span> पर भेजें।
+        </p>
 
-            <textarea
-              placeholder="Enter your message here..."
-              rows="5"
-              {...register("message", {
-                required: "Message is required",
-                minLength: { value: 10, message: "At least 10 characters" },
-              })}
-              className="text-black w-full px-6 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-amber-500"
-            />
-            {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
+        <h3 className="text-2xl font-bold text-amber-600 mb-4 text-center">
+          Important Links & Announcements
+        </h3>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50"
+        <ul className="space-y-8 text-base text-gray-700 w-full max-w-3xl px-4 md:px-0">
+          <li>
+            <p className="text-amber-600 mb-2 font-semibold">
+              स्पेशल टेलीग्राम मीटिंग 𝐋𝐚𝐝𝐥𝐢 𝐋𝐚𝐤𝐬𝐡𝐦𝐢 𝐉𝐚𝐧𝐡𝐢𝐭 𝐓𝐫𝐮𝐬𝐭 का पूरा प्लान जानकारी
+            </p>
+            <p className="mb-3 leading-relaxed whitespace-pre-line">
+              𝐏𝐥𝐚𝐧 𝐂𝐚𝐥𝐜𝐮𝐥𝐚𝐭𝐢𝐨𝐧 – कैसे मिलेगा ज्यादा लाभ, कम समय में
+              <br />
+              𝐃𝐨𝐧𝐚𝐭𝐢𝐨𝐧 𝐎𝐧𝐥𝐲 𝐎𝐧𝐞 𝐓𝐢𝐦𝐞 𝟒𝟎𝟎 रूपये
+              <br />
+              टोटल इनकम 𝟕𝟎 करोड़ और साथ में 2 करोड़ का रिवार्ड मिलेगा
+              <br />
+              🌹 बदलाव लाने की चाह रखने वाले ज़रूर जुड़ें
+              <br />
+              🌹 नए लोग ज़रूर जुड़ें – आपके सवालों के मिलेंगे जवाब
+              <br />
+              <strong className="text-amber-600">टेलीग्राम मीटिंग लिंक:</strong>{" "}
+              <a
+                href="https://t.me/+lpRQaDIeKJ5jMzU1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-700 break-words"
+              >
+                https://t.me/+lpRQaDIeKJ5jMzU1
+              </a>
+              <br />
+              मीटिंग टाइम 𝟎𝟗:𝟎𝟎 𝐏𝐌
+              <br />
+              समय पर जुड़ें, क्योंकि मौके इंतजार नहीं करते!
+              <br />
+              <strong>🙏 कृपया सभी सीनियर्स अपनी पूरी टीम के समय से मीटिंग में शामिल हों</strong>
+            </p>
+          </li>
+
+          <li>
+            <p className="font-semibold mb-1">YouTube Shorts लिंक:</p>
+            <a
+              href="https://youtube.com/shorts/Ukw--W4lH2U?si=eh2hN1SFQK8OutIJ"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-blue-700 break-words"
             >
-              {loading ? "Sending..." : "SEND MESSAGE"}
-            </button>
+              https://youtube.com/shorts/Ukw--W4lH2U?si=eh2hN1SFQK8OutIJ
+            </a>
+          </li>
 
-            {/* Status messages */}
-            {status === "success" && (
-              <p className="text-green-600 text-center font-semibold mt-2">
-                ✅ Message sent successfully!
-              </p>
-            )}
-            {status === "error" && (
-              <p className="text-red-600 text-center font-semibold mt-2">
-                ❌ Failed to send message. Please try again.
-              </p>
-            )}
-          </form>
-        </div>
+          <li>
+            <p className="font-semibold mb-1">Official YouTube Channel:</p>
+            <a
+              href="https://www.youtube.com/@LadliLaxmi-d6r6t"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-blue-700 break-words"
+            >
+              https://www.youtube.com/@LadliLaxmi-d6r6t
+            </a>
+          </li>
 
-        {/* Info Section (unchanged) */}
-        <div className="flex flex-col justify-center items-start lg:p-12 p-6 text-gray-700">
-          <h3 className="text-xl font-semibold text-amber-600 mb-4">REACH US</h3>
-          <h2 className="text-4xl md:text-5xl font-extrabold leading-tight text-gray-900 mb-8">
-            Get in touch with us for any inquiries or support.
-          </h2>
-          <p className="text-lg leading-relaxed mb-8">
-            We are here to help and answer any question you might have. We look
-            forward to hearing from you.
+          <li>
+            <p className="font-semibold mb-1">Official Whatsapp Channel:</p>
+            <a
+              href="https://chat.whatsapp.com/LSjtlL6yIdMGb7SeDWKz33"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-blue-700 break-words"
+            >
+              https://chat.whatsapp.com/LSjtlL6yIdMGb7SeDWKz33
+            </a>
+          </li>
+        </ul>
+          
+          <p className="text-lg mt-4 text-gray-700">
+            हमारी टीम आपके हर सवाल और सुझाव के लिए उपलब्ध है। कृपया ऊपर दिए गए साधनों का ही प्रयोग करें।
           </p>
-          {/* Contact details (same as before) */}
-        </div>
+
       </div>
     </section>
   );

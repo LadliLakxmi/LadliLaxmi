@@ -9,7 +9,6 @@ const {
   deleteWalletTransaction,
   getTransactionsForUser,
 } = require('../controllers/walletTransactionController');
-const {transferSponsorToMain} =require("../controllers/moneytransfer")
 
 const router = express.Router();
 // // Apply auth middleware to all routes in this router
@@ -28,5 +27,4 @@ router.route('/:id')
   // New route for user-specific transactions
 router.route('/user/:userId') // Endpoint will be e.g., /api/wallet-transactions/user/60d0fe4f5311236168a109ca
   .get(getTransactionsForUser);
-router.route('/transferToMain/:userId').post(transferSponsorToMain)
 module.exports = router;

@@ -47,10 +47,10 @@ const Home = () => {
       {/* ✅ Show Hero if role is not "admin" */}
       {role !== "admin" && <Hero role={role} />}
       
+      <Contact />
       <About />
       <Mission />
       <Services />
-      <Contact />
       <FAQ />
     </div>
   );

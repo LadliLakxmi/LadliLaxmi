@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import DashboardOverview from "./DashboardOverview";
-import DonatePage from "./Activation";
 import axios from "axios";
 import TransactionHistory from "./TransactionHistory";
 import MyTeam from "./MyTeam";
@@ -10,7 +9,6 @@ import Withdraw from "./Withdraw";
 import UpgradePage from "./UpgradePage";
 import DonateDownline from "./DonateDownline";
 import AddFund from "./AddFund";
-import TransferSponsorToMain from "./TransferSponsorToMain";
 import UplineBeneficiariesTable from "./UplineBeneficiariesTable";
 import DirectTeam from "./DirectTeam";
 import MatrixViewer from "./MatrixViewer";
@@ -80,10 +78,10 @@ const Main = ({ user, setUser }) => {
           }
         />
         <Route path="/withdraw" element={<Withdraw user={user} />} />
-        <Route
+        {/* <Route
           path="/moneyTransfer"
           element={<TransferSponsorToMain user={user} />}
-        />
+        /> */}
         <Route
           path="/addFund"
           element={<AddFund user={user} matrixChildren={user.matrixChildren} />}
