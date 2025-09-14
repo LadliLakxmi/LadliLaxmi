@@ -1,5 +1,5 @@
 import React from "react";
-import QR_For_Query from "../assets/QR_For_Query.jpg"; // Adjust image path as needed
+import QRimg from "../assets/QRQuery.jpg"; // Adjust image path as needed
 
 const Contact = () => {
   return (
@@ -21,7 +21,7 @@ const Contact = () => {
         </p>
 
         <img
-          src={QR_For_Query}
+          src={QRimg}
           alt="QR code for ID update payment"
           className="w-56 h-56 md:w-64 md:h-64 object-cover border-2 border-amber-500 rounded-lg shadow mb-8"
         />

@@ -78,10 +78,6 @@ const Main = ({ user, setUser }) => {
           }
         />
         <Route path="/withdraw" element={<Withdraw user={user} />} />
-        {/* <Route
-          path="/moneyTransfer"
-          element={<TransferSponsorToMain user={user} />}
-        /> */}
         <Route
           path="/addFund"
           element={<AddFund user={user} matrixChildren={user.matrixChildren} />}
