@@ -13,7 +13,7 @@ const Contact = () => {
         </h2>
 
         <p className="text-lg font-semibold text-gray-800 mb-3">
-          📞 Contact Number: <span className="text-amber-600">7579631509</span>
+          Whatsapp Number: <span className="text-amber-600">7579631509</span>
         </p>
         <p className="text-base text-gray-800 mb-8 text-center max-w-xl">
           अपनी आईडी में किसी भी प्रकार की अपडेट के लिए{" "}

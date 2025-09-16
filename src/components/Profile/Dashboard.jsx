@@ -24,7 +24,6 @@ const Dashboard = ({ user }) => {
               <UserCircle size={50} className="mx-auto text-blue-200 drop-shadow-md" />
               <h3 className="font-extrabold text-xl sm:text-2xl text-yellow-300 mb-1">{user.name || "User Name"}</h3>
               <p className="text-sm sm:text-base text-blue-100 mb-2 truncate">{user.email || "user@example.com"}</p>
-              <p className="text-sm sm:text-base text-blue-100 mb-2 ">{user.phone || "N/A"}</p>
               <div className="text-sm sm:text-base text-blue-100 flex-col items-center justify-center gap-4">
                 
                   <p className="flex items-baseline justify-center ">

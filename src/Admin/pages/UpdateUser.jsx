@@ -20,7 +20,7 @@ const UpdateUser = () => {
     accountNumber: '',
     accountHolder: '',
     bankName: '',
-    panCard:'',
+    panCard:undefined,
     ifscCode: '',
     upiId: '',
     role: 'user',
@@ -81,7 +81,7 @@ const UpdateUser = () => {
         referralCode: fetchedUser.referralCode || '',
         referredBy: fetchedUser.referredBy || '',
         sponserdBy: fetchedUser.sponserdBy || '',
-        panCard: fetchedUser.panCard || '',
+        panCard: fetchedUser.panCard || undefined,
         currentLevel: fetchedUser.currentLevel || 0,
         walletBalance: fetchedUser.walletBalance || 0,
         totalWithdrawn: fetchedUser.totalWithdrawn || 0,
@@ -110,7 +110,7 @@ const UpdateUser = () => {
         referralCode: '',
         referredBy: '',
         sponserdBy: '',
-        panCard:'',
+        panCard:undefined,
         currentLevel: 0,
         walletBalance: 0,
         totalWithdrawn: 0,
@@ -168,7 +168,7 @@ const UpdateUser = () => {
         ifscCode: formData.ifscCode,
         upiId: formData.upiId,
       },
-      panCard: formData.panCard || "",
+      panCard: formData.panCard || undefined,
       referralCode: formData.referralCode,
       referredBy: formData.referredBy,
       sponserdBy: formData.sponserdBy,
@@ -372,7 +372,7 @@ const UpdateUser = () => {
             <h3 className="text-xl font-semibold mb-6 text-center">Admin Password Required</h3>
             <form onSubmit={handleUpdateUser}>
               <input type="password" placeholder="Enter your admin password" value={adminPasswordInput}
-                onChange={e => setAdminPasswordInput(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none"
+                onChange={e => setAdminPasswordInput(e.target.value.trim())} className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none"
                 required autoFocus />
               {adminPasswordError && <p className="text-red-500 mb-4 text-center">{adminPasswordError}</p>}
               <button type="submit" disabled={isUpdating}
