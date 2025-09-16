@@ -168,7 +168,7 @@ const UpdateUser = () => {
         ifscCode: formData.ifscCode,
         upiId: formData.upiId,
       },
-      panCard: formData.panCard,
+      panCard: formData.panCard || "",
       referralCode: formData.referralCode,
       referredBy: formData.referredBy,
       sponserdBy: formData.sponserdBy,
@@ -270,7 +270,7 @@ const UpdateUser = () => {
             </div>
             <div>
               <label htmlFor="panCard" className="block text-sm font-medium text-gray-300 mb-1">Pan Card:</label>
-              <input type="text" id="panCard" name="panCard" value={formData.panCard} onChange={handleChange} required className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
+              <input type="text" id="panCard" name="panCard" value={formData.panCard} onChange={handleChange} className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white" />
             </div>
 
             {/* Display sponsor emails and name (read-only) */}
