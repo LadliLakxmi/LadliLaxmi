@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import QRimg from "../assets/QRQuery.jpg"; 
 
 const socialLinks = [
     {
@@ -245,12 +244,8 @@ function FooterWithSocial() {
             </li>
           </ul>
 
-          <p className='mt-4 text-gray-300'>अपनी आईडी में किसी भी प्रकार की अपडेट के लिए ₹100 QR code पर भेजें और स्क्रीनशॉट Whatsapp करें। </p>
-          <img
-                    src={QRimg}
-                    alt="QR code for ID update payment"
-                    className="w-36 h-36 md:w-44 md:h-44 object-cover border-2 border-amber-500 rounded-lg shadow mb-8"
-                  />
+          <p className='mt-4 text-gray-300'> Important अपनी आईडी में किसी भी प्रकार की अपडेट के लिए ₹100 UPI ID पर भेजें और स्क्रीनशॉट Whatsapp करें। </p>
+          <p className='text-gray-100'> UPI ID : <span className='text-amber-400 font-semibold'> mkt2024@ybl </span> </p>
         </div>
 
         {/* Contact & Social Media */}
