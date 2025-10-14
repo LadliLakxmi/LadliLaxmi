@@ -1,51 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS for styling
+import { DownloadTableExcel } from "react-export-table-to-excel";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Helper: Format readable date
 function formatCreationDate(dateString) {
-  if (!dateString) {
-    return "N/A";
-  }
+  if (!dateString) return "N/A";
   const date = new Date(dateString);
-  // Using 'en-IN' locale for a common Indian date format (e.g., "25 January 2024")
   return date.toLocaleDateString("en-IN", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 }
+
 const AdminWithdrawPanel = () => {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true); // State to manage loading status
+  const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
+  const tableRef = useRef(null);
 
-  // Function to fetch all withdrawal requests
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  // Fetch withdrawal requests
   const fetchRequests = async () => {
-    setLoading(true); // Set loading to true when fetching starts
+    setLoading(true);
     try {
-      const res = await axios.get(
-        "https://ladlilakshmi.onrender.com/api/v1/admin/withdrawals",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/admin/withdrawals", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setRequests(res.data);
-      toast.success("Withdrawal requests loaded successfully!"); // Show success toast
+      toast.success("Withdrawal requests loaded successfully!");
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message ||
-        "Error loading requests. Please try again.";
-      toast.error(errorMessage); // Show error toast
+      const errorMessage = err.response?.data?.message || "Error loading requests.";
+      toast.error(errorMessage);
       console.error("Error fetching requests:", err);
-      setRequests([]); // Ensure requests is an empty array on error
+      setRequests([]);
     } finally {
-      setLoading(false); // Set loading to false when fetching is complete (success or error)
+      setLoading(false);
     }
   };
 
-  // Fetch requests on component mount
   useEffect(() => {
     if (!token) {
       toast.error("Authentication token not found. Please log in.");
@@ -53,9 +52,8 @@ const AdminWithdrawPanel = () => {
       return;
     }
     fetchRequests();
-  }, [token]); // Depend on token, although it's unlikely to change often
+  }, [token]);
 
-  // Function to update the status of a withdrawal request
   const updateStatus = async (id, status) => {
     try {
       await axios.patch(
@@ -65,153 +63,206 @@ const AdminWithdrawPanel = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success(`Request ${status} successfully!`); // Show success toast
-      fetchRequests(); // Re-fetch requests to update the UI
+      toast.success(`Request ${status} successfully!`);
+      fetchRequests();
     } catch (err) {
       const errorMessage =
         err.response?.data?.message || "Failed to update request status.";
-      toast.error(errorMessage); // Show error toast
+      toast.error(errorMessage);
       console.error("Error updating status:", err);
     }
   };
+
+  // 🔍 Filter requests by selected date range
+  const filteredRequestsForExport = requests.filter((req) => {
+    if (!startDate && !endDate) return true;
+
+    const created = new Date(req.createdAt).setHours(0, 0, 0, 0);
+    const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
+    const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
+
+    return (!start || created >= start) && (!end || created <= end);
+  });
 
   if (loading) {
     return (
       <div className="p-6 text-center text-gray-700">
         <p>Loading withdrawal requests...</p>
-        {/* You can add a spinner or loading animation here */}
       </div>
     );
   }
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">
-        Admin Withdraw Requests
-      </h2>
+      {/* Header and Filter */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end mb-6 gap-4">
+        <h2 className="text-2xl font-bold text-gray-800">
+          Admin Withdraw Requests
+        </h2>
 
+        <div className="flex flex-wrap gap-4 items-end">
+          <div className="flex flex-col">
+            <label htmlFor="startDate" className="text-sm text-gray-700 mb-1">
+              Start Date
+            </label>
+            <input
+              id="startDate"
+              type="date"
+              className="border text-black border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="endDate" className="text-sm text-gray-700 mb-1">
+              End Date
+            </label>
+            <input
+              id="endDate"
+              type="date"
+              className="border text-black border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+
+          <div className="flex mt-1 sm:mt-6">
+            <DownloadTableExcel
+              filename={`withdraw_requests_${new Date().toISOString().split("T")[0]}`}
+              sheet="withdrawals"
+              currentTableRef={tableRef.current}
+            >
+              <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm whitespace-nowrap">
+                Download Excel Sheet
+              </button>
+            </DownloadTableExcel>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Table */}
       {requests.length === 0 ? (
         <p className="text-gray-600">No withdrawal requests found.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+        <>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+              <thead>
+                <tr className="bg-gray-100 text-gray-600 uppercase text-sm">
+                  <th className="py-3 px-6 text-left">Name</th>
+                  <th className="py-3 px-6 text-left">Email</th>
+                  <th className="py-3 px-6 text-left">Amount</th>
+                  <th className="py-3 px-6 text-left">Final Amount</th>
+                  <th className="py-3 px-6 text-left">Status</th>
+                  <th className="py-3 px-6 text-left">Date</th>
+                  <th className="py-3 px-6 text-left">Holder Name</th>
+                  <th className="py-3 px-6 text-left">Account Number</th>
+                  <th className="py-3 px-6 text-left">IFSC</th>
+                  <th className="py-3 px-6 text-left">Bank</th>
+                  <th className="py-3 px-6 text-left">UPI</th>
+                  <th className="py-3 px-6 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-700 text-sm font-light">
+                {requests.map((req) => (
+                  <tr key={req._id} className="border-b hover:bg-gray-50">
+                    <td className="py-3 px-6">{req.user?.name || "N/A"}</td>
+                    <td className="py-3 px-6">{req.user?.email || "N/A"}</td>
+                    <td className="py-3 px-6">
+                      ₹{Number(req.amount || 0).toFixed(2)}
+                    </td>
+                    <td className="py-3 px-6">
+                      ₹{(Number(req.amount || 0) * 0.9).toFixed(2)}
+                    </td>
+                    <td className="py-3 px-6">{req.status || "N/A"}</td>
+                    <td className="py-3 px-6">
+                      {formatCreationDate(req.createdAt)}
+                    </td>
+                    <td className="py-3 px-6">
+                      {req.user?.bankDetails?.accountHolder || "N/A"}
+                    </td>
+                    <td className="py-3 px-6">
+                      {req.user?.bankDetails?.accountNumber || "N/A"}
+                    </td>
+                    <td className="py-3 px-6">
+                      {req.user?.bankDetails?.ifscCode || "N/A"}
+                    </td>
+                    <td className="py-3 px-6">
+                      {req.user?.bankDetails?.bankName || "N/A"}
+                    </td>
+                    <td className="py-3 px-6">
+                      {req.user?.bankDetails?.upiId || "N/A"}
+                    </td>
+                    <td className="py-3 px-6 text-center">
+                      {req.status === "pending" && (
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            onClick={() => updateStatus(req._id, "approved")}
+                            className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded-md"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => updateStatus(req._id, "rejected")}
+                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-md"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Export-only table (hidden) */}
+          <table ref={tableRef} style={{ display: "none" }}>
             <thead>
-              <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                <th className="py-3 px-6 text-left border-b border-gray-200">
-                  User{" "}
-                </th>
-                <th className="py-3 px-6 text-left border-b border-gray-200">
-                  Amount
-                </th>
-                <th className="py-3 px-6 text-left border-b border-gray-200">
-                  Final Amount (-10%)
-                </th>
-                <th className="py-3 px-6 text-left border-b border-gray-200">
-                  Status
-                </th>
-                <th className="py-3 px-6 text-left border-b border-gray-200">
-                  Date
-                </th>
-                <th className="py-3 px-6 text-left border-b border-gray-200">
-                  Bank Details
-                </th>
-                <th className="py-3 px-6 text-center border-b border-gray-200">
-                  Actions
-                </th>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Final Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Holder Name</th>
+                <th>Account Number</th>
+                <th>IFSC</th>
+                <th>Bank</th>
+                <th>UPI</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700 text-sm font-light">
-              {requests.map((req) => (
-                <tr
-                  key={req._id}
-                  className="border-b border-gray-200 hover:bg-gray-50"
-                >
-                  {/* The critical fix: Safely access req.user.email */}
-                  <td className="py-3 px-6 text-left whitespace-nowrap">
-                    Name: {req.user?.name || "N/A"}{" "}
-                    {/* Use optional chaining and a fallback */}
-                    <br />
-                    Email: {req.user?.email || "N/A"}
-                  </td>
-                  <td className="py-3 px-6 text-left">
-                    ₹{req.amount?.toFixed(2) || "0.00"}{" "}
-                    {/* Safely display amount */}
-                  </td>
-                  <td className="py-3 px-6 text-left">
-                    ₹{req.amount?.toFixed(2) * 0.9 || "0.00"}{" "}
-                    {/* Safely display amount */}
-                  </td>
-                  <td className="py-3 px-6 text-left">
-                    <span
-                      className={`py-1 px-3 rounded-full text-xs font-bold ${
-                        req.status === "approved"
-                          ? "bg-green-200 text-green-800"
-                          : req.status === "rejected"
-                          ? "bg-red-200 text-red-800"
-                          : "bg-yellow-200 text-yellow-800"
-                      }`}
-                    >
-                      {req.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-6 text-left">
-                    {formatCreationDate(req?.createdAt)}{" "}
-                    {/* Safely display Date */}
-                  </td>
-                  <td className="py-3 px-6 text-left">
-                    {/* The corrected section for bank details */}
-                    {req.user?.bankDetails ? (
-                      <>
-                        <p>
-                          Holder: {req.user.bankDetails.accountHolder || "N/A"}
-                        </p>
-                        <p>
-                          Acc: {req.user.bankDetails.accountNumber || "N/A"}
-                        </p>
-                        <p>IFSC: {req.user.bankDetails.ifscCode || "N/A"}</p>
-                        <p>Bank: {req.user.bankDetails.bankName || "N/A"}</p>
-                        <p>UpiId: {req.user.bankDetails.upiId || "N/A"}</p>
-                      </>
-                    ) : (
-                      "Not provided"
-                    )}
-                  </td>
-                  <td className="py-3 px-6 text-center">
-                    {req.status === "pending" && (
-                      <div className="flex justify-center space-x-2">
-                        <button
-                          onClick={() => updateStatus(req._id, "approved")}
-                          className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded-md transition duration-200"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => updateStatus(req._id, "rejected")}
-                          className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-md transition duration-200"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    )}
-                  </td>
+            <tbody>
+              {filteredRequestsForExport.length > 0 ? (
+                filteredRequestsForExport.map((req) => (
+                  <tr key={`export-${req._id}`}>
+                    <td>{req.user?.name || "N/A"}</td>
+                    <td>{req.user?.email || "N/A"}</td>
+                    <td>{Number(req.amount || 0).toFixed(2)}</td>
+                    <td>{(Number(req.amount || 0) * 0.9).toFixed(2)}</td>
+                    <td>{req.status || "N/A"}</td>
+                    <td>{formatCreationDate(req.createdAt)}</td>
+                    <td>{req.user?.bankDetails?.accountHolder || "N/A"}</td>
+                    <td>{req.user?.bankDetails?.accountNumber || "N/A"}</td>
+                    <td>{req.user?.bankDetails?.ifscCode || "N/A"}</td>
+                    <td>{req.user?.bankDetails?.bankName || "N/A"}</td>
+                    <td>{req.user?.bankDetails?.upiId || "N/A"}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="11">No data in selected date range</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
-        </div>
+        </>
       )}
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+
+      <ToastContainer />
     </div>
   );
 };
