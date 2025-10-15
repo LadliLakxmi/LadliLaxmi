@@ -425,7 +425,7 @@ const Withdraw = ({ user, fetchUserData }) => {
           <div className="mt-4">
             <label
               htmlFor="amount"
-              className="block text-lg font-medium text-yellow-300 mb-2 flex items-center gap-2"
+              className="text-lg font-medium text-yellow-300 mb-2 flex items-center gap-2"
             >
               <IndianRupee size={24} /> Withdraw Amount (₹)
             </label>

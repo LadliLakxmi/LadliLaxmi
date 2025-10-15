@@ -1,44 +1,48 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import UserTable from "../Components/UserTable";
-import Swal from 'sweetalert2'; // For elegant confirmation and alerts
+import Swal from 'sweetalert2';
 
-
+const USERS_PER_PAGE = 200;
 
 const Users = () => {
-  const [users, setUsers] = useState([]);
-   const [searchTerm, setSearchTerm] = useState(""); // New state for search term
-  const [loading, setLoading] = useState(true); // New state for loading indicator
+  const [usersCache, setUsersCache] = useState({}); // pageNumber -> [users]
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
+  const fetchUsers = async (page) => {
+    if (usersCache[page]) return; // Already fetched
 
-  const fetchUsers = async () => {
-  try {
-    const token = localStorage.getItem("token"); // ✅ define token here
-    const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/admin/getalluser", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    // --- 🚨 The fix is here! ---
-      // Check if the response data contains a 'users' array
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        "https://ladlilakshmi.onrender.com/api/v1/admin/getalluser",
+        {
+          params: { page, limit: USERS_PER_PAGE },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       if (res.data && Array.isArray(res.data.users)) {
-        // Set the state to the array inside the 'users' key
-        setUsers(res.data.users);
+        setUsersCache((prev) => ({ ...prev, [page]: res.data.users }));
+        // Calculate total pages if totalCount is available
+        if (res.data.totalCount) {
+          setTotalPages(Math.ceil(res.data.totalCount / USERS_PER_PAGE));
+        }
       } else {
-        // Handle cases where the data structure is not as expected
-        console.error("API response is not in the expected format:", res.data);
-        setUsers([]); // Reset to an empty array to prevent errors
+        setUsersCache((prev) => ({ ...prev, [page]: [] }));
       }
-  } catch (err) {
-    console.error("Failed to fetch users:", err);
-    Swal.fire('Error', 'Failed to fetch users. Please try again.', 'error'); 
-  
-  }finally {
-      setLoading(false); // Set loading to false after fetch (success or failure)
+    } catch (err) {
+      Swal.fire('Error', 'Failed to fetch users. Please try again.', 'error');
+    } finally {
+      setLoading(false);
     }
-};
+  };
 
-// --- New: handleUpgrade Function ---
+  // --- New: handleUpgrade Function ---
   const handleUpgrade = async (userId, nextLevel, userEmail) => {
     // 1. Confirmation Dialog
     const result = await Swal.fire({
@@ -56,9 +60,7 @@ const Users = () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.post(
-
           "https://ladlilakshmi.onrender.com/api/v1/upgrade",
-          // "http://localhost:4001/api/v1/upgrade",
         {
           userId: userId,
           level: nextLevel,
@@ -99,20 +101,19 @@ const Users = () => {
     }
   };
 
-
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers(currentPage);
+  }, [currentPage]);
 
-    // --- CORRECTED: Filtered Users Logic ---
+  // Filtered users for display
   const filteredUsers = searchTerm === ""
-    ? users // If search term is empty, show all users
-    : users.filter(user => { // Otherwise, apply the filter
-        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    ? (usersCache[currentPage] || [])
+    : (usersCache[currentPage] || []).filter(user => {
+        const term = searchTerm.toLowerCase();
         return (
-          (user.name && user.name.toLowerCase().includes(lowerCaseSearchTerm)) ||
-          (user.email && user.email.toLowerCase().includes(lowerCaseSearchTerm)) ||
-          (user.referralCode && user.referralCode.toLowerCase().includes(lowerCaseSearchTerm))
+          (user.name && user.name.toLowerCase().includes(term)) ||
+          (user.email && user.email.toLowerCase().includes(term)) ||
+          (user.referralCode && user.referralCode.toLowerCase().includes(term))
         );
       });
 
@@ -121,7 +122,7 @@ const Users = () => {
       <h2 className="text-xl font-bold mb-4 text-white bg-[#141628] p-2 rounded-md shadow-md">
         All Users
       </h2>
-        {/* Search Bar */}
+      {/* Search Bar */}
       <div className="mb-4">
         <input
           type="text"
@@ -132,13 +133,38 @@ const Users = () => {
         />
       </div>
 
-      {/* <UserTable users={filteredUsers} onUpgradeClick={handleUpgrade}/> */}
       {/* User Table */}
       {loading ? (
         <div className="text-white text-center p-4 bg-[#141628] rounded shadow-md">Loading users...</div>
       ) : (
-        <UserTable users={filteredUsers} onUpgradeClick={handleUpgrade} />
+        <UserTable
+          users={filteredUsers}
+          currentPage={currentPage}
+          pageSize={USERS_PER_PAGE}
+          onUpgradeClick={handleUpgrade} 
+        />
       )}
+
+      {/* Pagination Controls */}
+      <div className="pagination-controls mt-4 flex gap-2 justify-center">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(p => p - 1)}
+          className="px-4 py-2 bg-gray-600 text-white rounded"
+        >
+          Previous
+        </button>
+        <span className="flex items-center text-white">
+          Page {currentPage} / {totalPages}
+        </span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(p => p + 1)}
+          className="px-4 py-2 bg-gray-600 text-white rounded"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

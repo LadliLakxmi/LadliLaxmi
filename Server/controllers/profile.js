@@ -1,29 +1,27 @@
 const User = require("../models/User");
-const buildMatrixHierarchy2 = async (userId, visited = new Set()) => {
-  if (visited.has(userId.toString())) return null;
 
-  visited.add(userId.toString());
+const countDescendants = async (userId) => {
+  let queue = [userId];
+  let count = 0;
+  let visited = new Set();
 
-  const user = await User.findById(userId)
-    .populate("matrixChildren", "name email referralCode currentLevel")
-    .populate("walletTransactions")
-    .lean();
+  while (queue.length > 0) {
+    const currentId = queue.shift();
+    if (visited.has(currentId.toString())) continue;
+    visited.add(currentId.toString());
 
-  if (!user) return null;
+    // Get matrixChildren of current user
+    const user = await User.findById(currentId).select("matrixChildren").lean();
+    if (!user || !user.matrixChildren) continue;
 
-  const node = {
-    ...user,
-    matrixChildren: [],
-  };
-
-  for (const child of user.matrixChildren || []) {
-    const childNode = await buildMatrixHierarchy2(child._id, visited);
-    if (childNode) {
-      node.matrixChildren.push(childNode);
+    for (let childId of user.matrixChildren) {
+      if (!visited.has(childId.toString())) {
+        queue.push(childId.toString());
+        count++; // count each descendant
+      }
     }
   }
-
-  return node;
+  return count;
 };
 
 const buildMatrixHierarchy = async (
@@ -82,8 +80,7 @@ exports.getProfile = async (req, res) => {
     const userId = req.params.id;
 
     const rootUser = await User.findById(userId)
-      .populate("directReferrals", "name email currentLevel")
-      .populate("directReferrals", "name email")
+      .populate("directReferrals", "name email currentLevel phone referralCode")
       .populate("matrixChildren", "name email referralCode currentLevel")
       .populate("donationsSent")
       .populate({
@@ -139,6 +136,7 @@ exports.getProfile = async (req, res) => {
       email: rootUser.email,
       phone: rootUser.phone,
       referralCode: rootUser.referralCode,
+      directReferrals: rootUser.directReferrals,
       // ... any other top-level fields you explicitly need for the main profile card
     };
 
@@ -301,42 +299,95 @@ exports.getTeam = async (req, res) => {
     const userId = req.params.id;
 
     const rootUser = await User.findById(userId)
+      .select("email phone referralCode directReferrals")
       .populate("directReferrals", "name email phone referralCode currentLevel")
-      .populate("matrixChildren", "name email referralCode currentLevel")
       .lean();
 
     if (!rootUser) {
       return res.status(404).json({ message: "User not found." });
     }
-    const hierarchyRoot2 = await buildMatrixHierarchy2(userId);
-    if (!hierarchyRoot2) {
-      return res.status(404).json({ message: "Hierarchy data not available." });
-    }
-    // Attach totalIncome to the root of the hierarchy object
-    // You can attach it to `hierarchyRoot` directly or to `rootUser` before creating `hierarchyRoot`
-    // For simplicity and clarity, let's add it to the `profile` object we send back.
-    const Team = {
-      ...hierarchyRoot2, // This contains the nested matrixChildren structure
+
+    // Use the new descendant counting function
+    const totalDescendants = await countDescendants(userId);
+
+    const TeamInfo = {
       email: rootUser.email,
-      directReferrals: rootUser.directReferrals,
       phone: rootUser.phone,
       referralCode: rootUser.referralCode,
-      // ... any other top-level fields you explicitly need for the main profile card
+      directReferrals: rootUser.directReferrals,
+      totalDescendants,
     };
 
-    res.status(200).json({ Team: Team });
-    // res.status(200).json({ profile: hierarchyRoot });
+    res.status(200).json({ Team: TeamInfo });
   } catch (error) {
     console.error("Error fetching Team:", error);
-
-    // More specific error message for invalid ID format
     if (error.name === "CastError") {
       return res.status(400).json({
-        message:
-          "Invalid user ID format. Please provide a valid MongoDB ObjectId.",
+        message: "Invalid user ID format. Please provide a valid MongoDB ObjectId.",
       });
     }
+    res.status(500).json({ message: "Server error." });
+  }
+};
 
+
+// controller/team.js
+
+exports.getTeamPaged = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+
+    let flatList = [];
+    let queue = [userId];
+    let visited = new Set();
+
+    while (queue.length > 0) {
+      // Batch size of 50 (adjust based on your server capacity)
+      const batchIds = [];
+      while (queue.length > 0 && batchIds.length < 50) {
+        const currentId = queue.shift();
+        if (!visited.has(currentId.toString())) {
+          visited.add(currentId.toString());
+          batchIds.push(currentId);
+        }
+      }
+
+      // Fetch this batch of users in one query
+      const usersBatch = await User.find({ _id: { $in: batchIds } })
+        .select("name email referralCode currentLevel matrixChildren") // Limit fields for better perf
+        .lean();
+
+      // Process batch results and queue children
+      for (const user of usersBatch) {
+        if (user._id.toString() !== userId.toString()) {
+          flatList.push(user);
+        }
+        if (user.matrixChildren && user.matrixChildren.length > 0) {
+          for (const childId of user.matrixChildren) {
+            if (!visited.has(childId.toString())) {
+              queue.push(childId.toString());
+            }
+          }
+        }
+      }
+    }
+
+    // Paginate the flattened list
+    const total = flatList.length;
+    const start = (page - 1) * limit;
+    const end = Math.min(page * limit, total);
+    const pageData = flatList.slice(start, end);
+
+    res.json({
+      members: pageData,
+      totalCount: total,
+      page: page,
+      pageSize: limit,
+    });
+  } catch (err) {
+    console.error("Error in getTeamPaged:", err);
     res.status(500).json({ message: "Server error." });
   }
 };

@@ -118,9 +118,6 @@ const MatrixViewer = () => {
                             <p className="text-sm sm:text-base text-blue-100 mb-2 truncate">
                                 {user.email || "user@example.com"}
                             </p>
-                            {/* <p className="text-sm sm:text-base text-blue-100 mb-2 ">
-                                {user.phone || "N/A"}
-                            </p> */}
                             <div className="text-sm sm:text-base text-blue-100 flex-col items-center justify-center gap-4">
                                 <p className="flex items-baseline justify-center ">
                                     <Share2 size={16} /> Code:{" "}

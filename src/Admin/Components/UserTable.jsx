@@ -1,6 +1,4 @@
-import React, { useRef } from "react"; 
-import { DownloadTableExcel } from "react-export-table-to-excel";
-
+import React from "react";
 // Define upgrade levels and their costs
 const LEVELS = {
   1: { upgradeCost: 400 },
@@ -15,22 +13,20 @@ const LEVELS = {
   10: { upgradeCost: 128000 },
   11: { upgradeCost: 256000 },
 };
-
-// --- New Helper Function for Date Formatting ---
+// Helper function for date formatting
 function formatCreationDate(dateString) {
   if (!dateString) {
     return "N/A";
   }
   const date = new Date(dateString);
-  // Using 'en-IN' locale for a common Indian date format (e.g., "25 January 2024")
   return date.toLocaleDateString('en-IN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
 }
-export default function UserTable({ users, onUpgradeClick }) {
-    // Defensive check: Render a message if users is not an array or is empty.
+
+export default function UserTable({ users, currentPage = 1, pageSize = 200 }) {
   if (!Array.isArray(users) || users.length === 0) {
     return (
       <div className="text-white text-center p-4 bg-[#141628] rounded shadow-md">
@@ -39,31 +35,11 @@ export default function UserTable({ users, onUpgradeClick }) {
     );
   }
 
-  const tableRef = useRef(null);
   return (
     <div className="w-full rounded-md shadow-md overflow-x-auto">
-
-      {/* Add the download button here */}
-      <div className="flex py-4 ">
-        <DownloadTableExcel
-          filename="users_table" // The name of the downloaded file
-          sheet="users" // The name of the sheet
-          currentTableRef={tableRef.current} // Pass the ref to the table
-        >
-          <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
-            Export to Excel
-          </button>
-        </DownloadTableExcel>
-      </div>
-
-
-      {/* The table inside has `min-w-full` to ensure it can expand beyond its container's width.
-          This is what causes the overflow and triggers the scrollbar on the parent div. */}
-      <table className="min-w-full bg-[#141628] text-white" ref={tableRef}>
-        <thead className="bg-gray-700 sticky ">
+      <table className="min-w-full bg-[#141628] text-white">
+        <thead className="bg-gray-700 sticky">
           <tr>
-            {/* Using `whitespace-nowrap` on headers to prevent text from wrapping,
-                which makes the columns wider and forces a scroll */}
             <th className="py-2 px-4 text-left whitespace-nowrap">S.No.</th>
             <th className="py-2 px-4 text-left whitespace-nowrap">Name</th>
             <th className="py-2 px-4 text-left whitespace-nowrap">Email</th>
@@ -82,7 +58,7 @@ export default function UserTable({ users, onUpgradeClick }) {
         <tbody>
           {users.map((user, index) => (
             <tr key={user._id} className="border-t border-gray-600 hover:bg-gray-800">
-              <td className="py-2 px-4 whitespace-nowrap">{index + 1}</td>
+              <td className="py-2 px-4 whitespace-nowrap">{(currentPage - 1) * pageSize + index + 1}</td>
               <td className="py-2 px-4 whitespace-nowrap">{user?.name || "N/A"}</td>
               <td className="py-2 px-4 whitespace-nowrap">{user?.email || "N/A"}</td>
               <td className="py-2 px-4 whitespace-nowrap">{user?.phone || "N/A"}</td>

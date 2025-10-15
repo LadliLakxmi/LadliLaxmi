@@ -14,55 +14,25 @@ import DirectTeam from "./DirectTeam";
 import MatrixViewer from "./MatrixViewer";
 import Id_card from "./Id_card";
 
-const countAllDescendantsBFS = (team) => {
-  if (!team || !team.matrixChildren || team.matrixChildren.length === 0) {
-    return 0;
-  }
-
-  let count = 0;
-  const queue = [...team.matrixChildren]; // Start with direct children
-
-  while (queue.length > 0) {
-    const current = queue.shift(); // Get the first node from the queue
-    count++; // Count this descendant
-
-    // Add its direct children to the end of the queue
-    if (current.matrixChildren && current.matrixChildren.length > 0) {
-      for (const child of current.matrixChildren) {
-        queue.push(child);
-      }
-    }
-  }
-  return count;
-};
 
 const Main = ({ user, setUser }) => {
-  const [team, setTeam] = useState(null);
+    const [totalDescendants, setTotalDescendants] = useState(0);
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await axios.get(
-          // Using localhost for development, ensure it's correct for your setup
-
-          `https://ladlilakshmi.onrender.com/api/v1/profile/get-team/${user._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setTeam(data.data.Team);
+        const { data } = await axios.get(
+          `https://ladlilakshmi.onrender.com/api/v1/profile/get-team/${user._id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        setTotalDescendants(data.Team.totalDescendants || 0);
       } catch (err) {
-        console.error("Failed to fetch Team", err);
-        // Optionally, set an error state here to display a message to the user
+        console.error("Failed to fetch Team data", err);
       }
     };
     if (user._id) fetchData();
-  }, [user._id, token]); // Added token to dependency array for completeness
-
-  const totalChildCount = countAllDescendantsBFS(team); // 🧮 Total child count
-
+  }, [user._id, token]);
   return (
     <div className=" flex  flex-col w-full min-h-screen px-1 md:px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 ">
       <Routes>
@@ -70,7 +40,7 @@ const Main = ({ user, setUser }) => {
           path="/"
           element={
             <DashboardOverview
-              countchild={totalChildCount}
+              countchild={totalDescendants}
               user={user}
               setUser={setUser}
               walletTransactions={user.walletTransactions}
@@ -90,9 +60,9 @@ const Main = ({ user, setUser }) => {
         />
         <Route
           path="/myteam"
-          element={<MyTeam team={team} matrixChildren={user.matrixChildren} />}
+          element={<MyTeam user={user} />}
         />
-        <Route path="/directteam" element={<DirectTeam team={team} />} />
+        <Route path="/directteam" element={<DirectTeam user={user} />} />
         <Route
           path={`/upgrade/${user.currentLevel + 1}`}
           element={

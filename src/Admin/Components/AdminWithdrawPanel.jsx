@@ -154,13 +154,13 @@ const AdminWithdrawPanel = () => {
                   <th className="py-3 px-6 text-left">Email</th>
                   <th className="py-3 px-6 text-left">Amount</th>
                   <th className="py-3 px-6 text-left">Final Amount</th>
-                  <th className="py-3 px-6 text-left">Status</th>
-                  <th className="py-3 px-6 text-left">Date</th>
-                  <th className="py-3 px-6 text-left">Holder Name</th>
-                  <th className="py-3 px-6 text-left">Account Number</th>
                   <th className="py-3 px-6 text-left">IFSC</th>
+                  <th className="py-3 px-6 text-left">Account Number</th>
+                  <th className="py-3 px-6 text-left">Holder Name</th>
                   <th className="py-3 px-6 text-left">Bank</th>
                   <th className="py-3 px-6 text-left">UPI</th>
+                  <th className="py-3 px-6 text-left">Date</th>
+                  <th className="py-3 px-6 text-left">Status</th>
                   <th className="py-3 px-6 text-center">Actions</th>
                 </tr>
               </thead>
@@ -175,18 +175,14 @@ const AdminWithdrawPanel = () => {
                     <td className="py-3 px-6">
                       ₹{(Number(req.amount || 0) * 0.9).toFixed(2)}
                     </td>
-                    <td className="py-3 px-6">{req.status || "N/A"}</td>
                     <td className="py-3 px-6">
-                      {formatCreationDate(req.createdAt)}
-                    </td>
-                    <td className="py-3 px-6">
-                      {req.user?.bankDetails?.accountHolder || "N/A"}
+                      {req.user?.bankDetails?.ifscCode || "N/A"}
                     </td>
                     <td className="py-3 px-6">
                       {req.user?.bankDetails?.accountNumber || "N/A"}
                     </td>
                     <td className="py-3 px-6">
-                      {req.user?.bankDetails?.ifscCode || "N/A"}
+                      {req.user?.bankDetails?.accountHolder || "N/A"}
                     </td>
                     <td className="py-3 px-6">
                       {req.user?.bankDetails?.bankName || "N/A"}
@@ -194,6 +190,10 @@ const AdminWithdrawPanel = () => {
                     <td className="py-3 px-6">
                       {req.user?.bankDetails?.upiId || "N/A"}
                     </td>
+                    <td className="py-3 px-6">
+                      {formatCreationDate(req.createdAt)}
+                    </td>
+                    <td className="py-3 px-6">{req.status || "N/A"}</td>
                     <td className="py-3 px-6 text-center">
                       {req.status === "pending" && (
                         <div className="flex justify-center space-x-2">

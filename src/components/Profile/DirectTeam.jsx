@@ -1,15 +1,13 @@
 import React from 'react';
 import { User, Mail, Phone, Link, Award, Table2, Users } from 'lucide-react'; // Import necessary icons
 
-const DirectTeam = ({ team }) => {
+const DirectTeam = ({ user }) => {
   // Ensure directReferrals array is safely accessed
-  const directMembers = team?.directReferrals || [];
+   const directMembers = user?.directReferrals || [];
 
   return (
     <div className="w-full min-h-screen bg-gray-50  mt-10 md:mt-0 p-4 sm:p-6 lg:p-8">
-      {/* Optional: A header card specific to Direct Team if needed,
-          but usually, this component would be nested under a main dashboard.
-          For now, I'll just add a table header. */}
+      
 
       {/* Direct Referrals Table */}
       <div className="text-center mb-8">
