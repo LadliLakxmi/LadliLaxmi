@@ -11,23 +11,38 @@ require("dotenv").config();
 // 1. Get all users (excluding password, with donations populated)
 exports.getAllUsers = async (req, res) => {
   try {
-    // Parse pagination params, with safe defaults
+    // Parse and validate pagination parameters
     const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
     const limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 200;
     const skip = (page - 1) * limit;
 
-    // For pagination: get total count (runs in DB, efficient if indexed)
-    const totalCount = await User.countDocuments();
+    // Get search term and prepare filter
+    const search = req.query.search ? req.query.search.trim() : "";
+    let filter = {};
+    if (search !== "") {
+      const regex = new RegExp(search, "i"); // case-insensitive regex
+      filter = {
+        $or: [
+          { name: regex },
+          { email: regex },
+          { referralCode: regex },
+        ],
+      };
+    }
 
-    // Paginated query for users
-    const users = await User.find()
-      .select('-password')
-      .populate('donationsReceived')
+    // Get total count of matching documents for pagination
+    const totalCount = await User.countDocuments(filter);
+
+    // Query users with filter, pagination and populate donationsReceived
+    const users = await User.find(filter)
+      .select("-password") // Exclude sensitive fields
+      .populate("donationsReceived") // Populate donationsReceived
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
-    // Compute total income for each user
-    const usersWithIncome = users.map(user => {
+    // Calculate totalIncome for each user
+    const usersWithIncome = users.map((user) => {
       let totalIncome = 0;
       if (user.donationsReceived && user.donationsReceived.length > 0) {
         totalIncome = user.donationsReceived.reduce((sum, donation) => {
@@ -37,23 +52,25 @@ exports.getAllUsers = async (req, res) => {
           return sum;
         }, 0);
       }
-      const userObject = user.toObject();
-      userObject.totalIncome = totalIncome;
-      return userObject;
+      return {
+        ...user,
+        totalIncome,
+      };
     });
 
-    // Respond with results
-    res.json({ 
+    // Send paginated users with total count metadata
+    res.json({
       users: usersWithIncome,
-      totalCount,        // For frontend pagination
-      currentPage: page, // For frontend clarity
-      pageSize: limit    // For frontend clarity
+      totalCount,
+      currentPage: page,
+      pageSize: limit,
     });
   } catch (err) {
-    console.error('Error fetching users and calculating income:', err);
-    res.status(500).json({ error: 'Error fetching users' });
+    console.error("Error fetching users and calculating income:", err);
+    res.status(500).json({ error: "Error fetching users." });
   }
 };
+
 
 // 2. Get total count of users
 exports.getUserCount = async (req, res) => {

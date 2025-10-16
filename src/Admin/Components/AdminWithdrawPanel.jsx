@@ -219,20 +219,19 @@ const AdminWithdrawPanel = () => {
           </div>
 
           {/* Export-only table (hidden) */}
-          <table ref={tableRef} style={{ display: "none" }}>
+          <table ref={tableRef} style={{ display: "none"}}>
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Amount</th>
                 <th>Final Amount</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Holder Name</th>
-                <th>Account Number</th>
                 <th>IFSC</th>
+                <th>Account Number</th>
+                <th>Holder Name</th>
                 <th>Bank</th>
                 <th>UPI</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>
@@ -243,13 +242,12 @@ const AdminWithdrawPanel = () => {
                     <td>{req.user?.email || "N/A"}</td>
                     <td>{Number(req.amount || 0).toFixed(2)}</td>
                     <td>{(Number(req.amount || 0) * 0.9).toFixed(2)}</td>
-                    <td>{req.status || "N/A"}</td>
-                    <td>{formatCreationDate(req.createdAt)}</td>
-                    <td>{req.user?.bankDetails?.accountHolder || "N/A"}</td>
-                    <td>{req.user?.bankDetails?.accountNumber || "N/A"}</td>
                     <td>{req.user?.bankDetails?.ifscCode || "N/A"}</td>
+                    <td>{req.user?.bankDetails?.accountNumber || "N/A"}</td>
+                    <td>{req.user?.bankDetails?.accountHolder || "N/A"}</td>
                     <td>{req.user?.bankDetails?.bankName || "N/A"}</td>
                     <td>{req.user?.bankDetails?.upiId || "N/A"}</td>
+                    <td>{formatCreationDate(req.createdAt)}</td>
                   </tr>
                 ))
               ) : (
