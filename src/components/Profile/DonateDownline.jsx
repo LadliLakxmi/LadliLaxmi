@@ -35,7 +35,16 @@ const DonateDownline = ({ user, fetchUserData }) => {
         setIsVerifyingReferral(false);
         return;
       }
+
+      if (code === user.referralCode) {
+      setReferralCodeError("You cannot donate to your own referral code.");
+      setDownlineUserName("");
+      setIsVerifyingReferral(false);
+      return;
+    }
+
       setIsVerifyingReferral(true);
+
       try {
         const response = await axios.get(
           `https://ladlilakshmi.onrender.com/api/v1/donations/get-user-by-referral/${code}`,
@@ -56,7 +65,7 @@ const DonateDownline = ({ user, fetchUserData }) => {
         setIsVerifyingReferral(false);
       }
     },
-    [token]
+    [token,]
   );
 
   const debouncedVerifyReferralCode = useCallback(

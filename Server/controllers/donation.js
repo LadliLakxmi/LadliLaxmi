@@ -324,6 +324,13 @@ exports.transferFundsToDownline = async (req, res) => {
       return res.status(404).json({ message: "Recipient user not found with that referral code." });
     }
 
+    if (recipient._id.equals(sender._id)) {
+  await session.abortTransaction();
+  return res.status(400).json({
+    message: "You cannot transfer funds to your own referral code.",
+  });
+}
+
     // 5. Check Sender's Wallet Balance
     if (sender.walletBalance < amount) {
       await session.abortTransaction();
