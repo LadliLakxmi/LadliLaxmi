@@ -75,7 +75,7 @@ export default function UserTable({ users, currentPage = 1, pageSize = 200 , onU
                   <button
                     onClick={() => onUpgradeClick(user._id, user.currentLevel + 1, user.email)}
                     className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={user.currentLevel === 0 || user.currentLevel === 11 || user?.upgradewalletBalance < LEVELS[user.currentLevel+1]?.upgradeCost} // Disable if already at max
+                    disabled={ user.currentLevel === 11 || user?.upgradewalletBalance < LEVELS[user.currentLevel+1]?.upgradeCost} // Disable if already at max
                   >
                     Upgrade to L {user.currentLevel + 1}
                   </button>
