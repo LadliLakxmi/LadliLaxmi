@@ -9,9 +9,15 @@ const Users = () => {
   const [usersCache, setUsersCache] = useState({});
   const [searchResults, setSearchResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState(1); // Local input state
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Sync pageInput with currentPage when changed by buttons or code
+  useEffect(() => {
+    setPageInput(currentPage);
+  }, [currentPage]);
 
   // Fetch users (with optional search)
   const fetchUsers = async (page, search = "") => {
@@ -165,32 +171,51 @@ const Users = () => {
             type="number"
             min="1"
             max={totalPages}
-            value={currentPage}
+            value={pageInput}
             onChange={(e) => {
+              setPageInput(e.target.value); // Reflect typed value
+            }}
+            onBlur={(e) => {
               const page = Number(e.target.value);
-              if (page >= 1 && page <= totalPages) setCurrentPage(page);
+              if (page >= 1 && page <= totalPages) {
+                setCurrentPage(page);
+                setPageInput(page);
+              } else {
+                setPageInput(currentPage);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const page = Number(e.target.value);
+                if (page >= 1 && page <= totalPages) {
+                  setCurrentPage(page);
+                  setPageInput(page);
+                } else {
+                  setPageInput(currentPage);
+                }
+              }
             }}
             className="
-    w-20
-    text-center
-    bg-[#202336]
-    text-white
-    border
-    border-gray-600
-    rounded-md
-    px-2
-    py-1
-    focus:outline-none
-    focus:ring-2
-    focus:ring-blue-500
-    focus:border-blue-500
-    transition
-    duration-200
-    ease-in-out
-    appearance-none
-    [&::-webkit-inner-spin-button]:appearance-none
-    [&::-webkit-outer-spin-button]:appearance-none
-  "
+              w-20
+              text-center
+              bg-[#202336]
+              text-white
+              border
+              border-gray-600
+              rounded-md
+              px-2
+              py-1
+              focus:outline-none
+              focus:ring-2
+              focus:ring-blue-500
+              focus:border-blue-500
+              transition
+              duration-200
+              ease-in-out
+              appearance-none
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none
+            "
           />
 
           <span className="flex items-center text-white">/ {totalPages}</span>
