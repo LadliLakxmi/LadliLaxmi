@@ -140,6 +140,18 @@ const AdminWithdrawPanel = () => {
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
+
+          <div className="flex mt-1 sm:mt-6">
+            <DownloadTableExcel
+              filename={`withdraw_requests_${new Date().toISOString().split("T")[0]}`}
+              sheet="withdrawals"
+              currentTableRef={tableRef.current}
+            >
+              <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm whitespace-nowrap">
+                Download Excel Sheet
+              </button>
+            </DownloadTableExcel>
+          </div>
         </div>
       </div>
 
