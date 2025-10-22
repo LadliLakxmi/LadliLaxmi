@@ -24,7 +24,7 @@ const Sidebar = () => {
           All Funds
         </NavLink>
         <NavLink to="/Admindashboard/payments" className={linkClass}>
-         withdraw Rquests
+         withdraw Requests
         </NavLink>
          <NavLink to="/Admindashboard/update" className={linkClass}>
           Update Users

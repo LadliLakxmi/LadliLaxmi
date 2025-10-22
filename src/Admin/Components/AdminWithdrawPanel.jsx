@@ -28,15 +28,19 @@ const AdminWithdrawPanel = () => {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/admin/withdrawals", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.get(
+        "https://ladlilakshmi.onrender.com/api/v1/admin/withdrawals",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setRequests(res.data);
       toast.success("Withdrawal requests loaded successfully!");
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Error loading requests.";
+      const errorMessage =
+        err.response?.data?.message || "Error loading requests.";
       toast.error(errorMessage);
       console.error("Error fetching requests:", err);
       setRequests([]);
@@ -102,41 +106,39 @@ const AdminWithdrawPanel = () => {
 
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex flex-col">
-            <label htmlFor="startDate" className="text-sm text-gray-700 mb-1">
+            <label
+              htmlFor="startDate"
+              className="text-base font-bold text-gray-700 mb-1 transition-all duration-200"
+            >
               Start Date
             </label>
             <input
               id="startDate"
               type="date"
-              className="border text-black border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-700 dark:border-gray-500 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-bold rounded-lg px-3 py-2 text-base
+      focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all duration-200 ease-in-out
+      hover:border-blue-400"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="endDate" className="text-sm text-gray-700 mb-1">
+            <label
+              htmlFor="endDate"
+              className="text-base font-bold text-gray-700 mb-1 transition-all duration-200"
+            >
               End Date
             </label>
             <input
               id="endDate"
               type="date"
-              className="border text-black border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-700 dark:border-gray-500 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-bold rounded-lg px-3 py-2 text-base
+      focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all duration-200 ease-in-out
+      hover:border-blue-400"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
-          </div>
-
-          <div className="flex mt-1 sm:mt-6">
-            <DownloadTableExcel
-              filename={`withdraw_requests_${new Date().toISOString().split("T")[0]}`}
-              sheet="withdrawals"
-              currentTableRef={tableRef.current}
-            >
-              <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm whitespace-nowrap">
-                Download Excel Sheet
-              </button>
-            </DownloadTableExcel>
           </div>
         </div>
       </div>
@@ -219,7 +221,7 @@ const AdminWithdrawPanel = () => {
           </div>
 
           {/* Export-only table (hidden) */}
-          <table ref={tableRef} style={{ display: "none"}}>
+          <table ref={tableRef} style={{ display: "none" }}>
             <thead>
               <tr>
                 <th>Name</th>
@@ -243,7 +245,11 @@ const AdminWithdrawPanel = () => {
                     <td>{Number(req.amount || 0).toFixed(2)}</td>
                     <td>{(Number(req.amount || 0) * 0.9).toFixed(2)}</td>
                     <td>{req.user?.bankDetails?.ifscCode || "N/A"}</td>
-                    <td>{req.user?.bankDetails?.accountNumber || "N/A"}</td>
+                    {/* <td>{req.user?.bankDetails?.accountNumber || "N/A"}</td> */}
+                    <td>{`\u200B${
+                      req.user?.bankDetails?.accountNumber || "N/A"
+                    }`}</td>
+
                     <td>{req.user?.bankDetails?.accountHolder || "N/A"}</td>
                     <td>{req.user?.bankDetails?.bankName || "N/A"}</td>
                     <td>{req.user?.bankDetails?.upiId || "N/A"}</td>
