@@ -20,6 +20,7 @@ import UpdateProfileForm from "./UpdateProfileForm";
 import ChangePasswordForm from './ChangePasswordForm'; // Import the new component
 
 import { UserCog , Key} from "lucide-react";
+import DownlineStatus from "./DownlineStatus";
 // ---
 // Define enhanced color classes for Tailwind safety with a "money" theme
 // ---
@@ -265,7 +266,7 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
         ))}
       </div>
       <div className="min-h-screen bg-gray-100 p-6">
-      
+      <DownlineStatus/>
       <UserTransactions />
     </div>
 
