@@ -9,7 +9,7 @@ const {
   getUserByEmail,
   updateUserByAdmin,
   getAllWalletTransactions,
-  // verifyAdminUpdateOtp
+ getDashboardStats
 } = require("../controllers/Admin");
 const router = express.Router();
 // Get total user count
