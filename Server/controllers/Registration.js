@@ -2,7 +2,6 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const { generateOtp, sendOtpEmail } = require("../utils/mailSender");
 require("dotenv").config();
 
 // Ensure process.env.JWT_SECRET is set in your .env file
@@ -61,6 +60,9 @@ exports.register = async (req, res) => {
         return res
           .status(400)
           .json({ success: false, message: "Invalid referrer code provided." });
+      }
+      if (sponser.currentLevel === 0) { // Sponsor inactive, cannot refer
+        return res.status(400).json({ success: false, message: "Sponsor is inactive and cannot refer others. Please use a different referral code." });
       }
     }else{
       sponser = await User.findOne({ referralCode: "R7079AEU" }); 
@@ -163,48 +165,6 @@ exports.login = async (req, res) => {
         .status(401)
         .json({ success: false, message: "Invalid email/phone number or password" });
     }
-
-      // --- OTP Logic for Admin Role (Email Only) ---
-
-
-      
-    // if (user.role === 'Admin') {
-    //   if (!user.email) {
-    //     return res.status(400).json({
-    //       success: false,
-    //       message: "Admin account does not have a registered email for OTP verification. Please contact support.",
-    //     });
-    //   }
-
-    //   const plainOtp = generateOtp(); // Generate plain OTP
-    //         const hashedOtp = await bcrypt.hash(plainOtp, 10); // HASH the OTP before storing
-
-    //         const otpExpires = new Date(Date.now() + (parseInt(process.env.OTP_EXPIRY_MINUTES) || 5) * 60 * 1000); // OTP valid for X minutes
-
-    //         // Store HASHED OTP and expiry in the database
-    //         user.otp = hashedOtp; // Store the hashed OTP
-    //         user.otpExpires = otpExpires;
-    //         await user.save();
-
-    //   // Send OTP via Email using the updated sendOtpEmail function
-    //   try {
-    //     await sendOtpEmail(user.email, plainOtp);
-    //   } catch (emailError) {
-    //     console.error("Failed to send OTP email during login:", emailError);
-    //     return res.status(500).json({
-    //       success: false,
-    //       message: "Failed to send OTP email. Please try again or contact support.",
-    //     });
-    //   }
-
-    //   return res.status(200).json({
-    //     success: true,
-    //     message: "OTP sent to your registered email. Please verify.",
-    //     requiresOtpVerification: true, // Inform client to prompt for OTP
-    //     userId: user._id, // Send user ID so client knows which user to verify
-    //   });
-    // }
-
     // --- Regular Login for Non-Admin Roles ---
     const token = generateToken(user);
     // user.token = token; // This line is not needed if you're sending the token in the response and not saving it to DB
@@ -403,6 +363,41 @@ exports.logout = async (req, res) => {
       success: false,
       message: "Logout failed",
       error: error.message,
+    });
+  }
+};
+exports.Referraluser = async (req, res) => {
+  const { code } = req.params;
+
+  try {
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        message: "Referral code is required.",
+      });
+    }
+
+    const user = await User.findOne({ referralCode: code });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Referrer not found.",
+      });
+    }
+
+    // Return just the user name (you can add more info if needed)
+    return res.status(200).json({
+      success: true,
+      user: {
+        name: user.name,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching referral user:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching referral user.",
     });
   }
 };

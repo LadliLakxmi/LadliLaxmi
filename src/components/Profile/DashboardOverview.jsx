@@ -1,4 +1,4 @@
-
+import UserTransactions from "./UserTransactions";
 import React, { useState, useEffect } from "react";
 import { ClipboardCopy } from "lucide-react";
 import {
@@ -217,34 +217,39 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
       </div>
   </div>
 </div>
-
-
-      {/* Referral Link Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-5 rounded-xl shadow-lg mb-10 flex flex-col md:flex-row items-center justify-between gap-4">
-        <span className="text-lg font-semibold text-center md:text-left">
-          Share your referral link and grow your network:
+{user.currentLevel === 0 && (
+<div className="text-red-400 p-4 underline text-2xl rounded-md flex text-center justify-center font-bold mb-6 bg-red-50 border border-red-200">
+  Activate your Account to Get your Referral Link
+</div>
+)}
+{user.currentLevel > 0 && (
+  <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-5 rounded-xl shadow-lg mb-10 flex flex-col md:flex-row items-center justify-between gap-4">
+    <span className="text-lg font-semibold text-center md:text-left">
+      Share your referral link and grow your network:
+    </span>
+    <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+      <a
+        href={`${BASE_REGISTRATION_URL}?referralCode=${user.referralCode}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex-grow bg-blue-700 px-4 py-2 rounded-lg text-sm sm:text-base font-bold break-words border text-wrap hover:bg-blue-900 transition-colors cursor-pointer text-center"
+        title={`${BASE_REGISTRATION_URL}?referralCode=${user.referralCode}`}
+      >
+        <span className="block w-full">
+          {BASE_REGISTRATION_URL}?referralCode={user.referralCode}
         </span>
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-          <a
-            href={`${BASE_REGISTRATION_URL}?referralCode=${user.referralCode}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-grow bg-blue-700 px-4 py-2 rounded-lg text-sm sm:text-base font-bold break-words border text-wrap hover:bg-blue-900 transition-colors cursor-pointer text-center"
-            title={`${BASE_REGISTRATION_URL}?referralCode=${user.referralCode}`}
-          >
-            <span className="block w-full">
-              {BASE_REGISTRATION_URL}?referralCode={user.referralCode}
-            </span>
-          </a>
+      </a>
 
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base font-semibold bg-white text-blue-800 rounded-lg hover:bg-blue-100 transition-all duration-300 transform hover:scale-105 shadow-md"
-          >
-            <ClipboardCopy size={18} /> Copy Link
-          </button>
-        </div>
-      </div>
+      <button
+        onClick={handleCopy}
+        className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base font-semibold bg-white text-blue-800 rounded-lg hover:bg-blue-100 transition-all duration-300 transform hover:scale-105 shadow-md"
+      >
+        <ClipboardCopy size={18} /> Copy Link
+      </button>
+    </div>
+  </div>
+)}
+
 
       {/* Overview Cards */}
       {/* Changed grid layout to provide more space for new cards */}
@@ -259,6 +264,10 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
           />
         ))}
       </div>
+      <div className="min-h-screen bg-gray-100 p-6">
+      
+      <UserTransactions />
+    </div>
 
        {/* --- NEW: Render UpdateProfileForm as a Modal --- */}
       {showUpdateProfileModal && (

@@ -20,6 +20,9 @@ import AdminMain from "./Admin/AdminMain";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import setupInterceptors from "./services/operations/axiosConfig"; // Import the interceptor setup
 import VerifyOtp from "./components/Auth/VerifyOtp";
+import ResetPassword from "./components/Auth/ResetPassword";
+import ForgotPasswordRequest from "./components/Auth/ForgotPasswordRequest";
+
 
 
 
@@ -99,6 +102,9 @@ let role=""
           path="/verify-otp"
           element={<VerifyOtp />}
         />
+               <Route path="/forgot-password" element={<ForgotPasswordRequest />} />
+  <Route path="/reset-password/:token" element={<ResetPassword />} />
+  
         <Route
           path="/userdashboard/*"
           element={

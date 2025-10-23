@@ -4,7 +4,6 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const WithdrawRequest = require('../models/WithdrawRequest')
 const WalletTransaction = require('../models/WalletTransaction');
-const { generateOtp, sendOtpEmail } = require("../utils/mailSender");
 require("dotenv").config();
 
 
@@ -112,28 +111,23 @@ exports.withdrawals = async (req, res) => {
 // 4. Get a single user by Email (Admin only)
 exports.getUserByEmail = async (req, res) => {
   try {
-    const { email } = req.query; // Expect email as a query parameter
+    const { email } = req.query;
     if (!email) {
       return res.status(400).json({ message: 'Email query parameter is required.' });
     }
 
-    // First, find the user by their email. We're not populating referredBy/sponserdBy here
-    // as their schema types might be String (e.g., referralCode or plain ID string)
     const user = await User.findOne({ email: email.toLowerCase().trim() })
       .select('-password')
-      .populate('donationsSent donationsReceived'); // Keep other necessary populations
+      .populate('donationsSent donationsReceived');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found with the provided email.' });
     }
 
-    // Initialize variables for referredBy and sponserdBy emails/names
     let referredByEmail = null;
     let sponserdByEmail = null;
     let sponserdByName = null;
 
-    // --- Logic to find the referredBy user's email ---
-    // Assuming `user.referredBy` stores a referral code string.
     if (user.referredBy && typeof user.referredBy === 'string') {
       const referrerUser = await User.findOne({ referralCode: user.referredBy }).select('email name');
       if (referrerUser) {
@@ -141,50 +135,38 @@ exports.getUserByEmail = async (req, res) => {
       }
     }
 
-    // --- Logic to find the sponserdBy user's email ---
-    // This handles cases where `sponserdBy` might be an ObjectId, a string ID, or a default string like "Admin".
     if (user.sponserdBy) {
-      if (typeof user.sponserdBy === 'string' ) {
-        // If sponserdBy is a string, assume it's a user ID and try to find that user.
-        // We use a try-catch for `findById` in case the string isn't a valid ObjectId format.
+      if (typeof user.sponserdBy === 'string') {
         try {
           const sponsorUser = await User.findOne({ referralCode: user.sponserdBy }).select('email name');
           if (sponsorUser) {
             sponserdByEmail = sponsorUser.email;
             sponserdByName = sponsorUser.name;
           } else {
-            // If ID is valid but no user found
             sponserdByEmail = 'User not found (invalid ID)';
             sponserdByName = 'Unknown';
           }
         } catch (idErr) {
-          // Catch error if sponserdBy string is not a valid MongoDB ObjectId
-          console.warn(`sponserdBy value "${user.sponserdBy}" is not a valid ObjectId format.`);
           sponserdByEmail = 'N/A (Invalid ID format)';
           sponserdByName = 'Unknown';
         }
       } else if (typeof user.sponserdBy === 'object' && user.sponserdBy._id) {
-          // This case handles if `sponserdBy` was already defined as a `ref` in your User schema
-          // and was successfully populated in the initial `User.findOne` call.
-          // (Though in the provided code, it wasn't explicitly populated).
-          sponserdByEmail = user.sponserdBy.email || 'N/A';
-          sponserdByName = user.sponserdBy.name || 'N/A';
+        sponserdByEmail = user.sponserdBy.email || 'N/A';
+        sponserdByName = user.sponserdBy.name || 'N/A';
       } else if (user.sponserdBy === 'Admin') {
-          // Handle the specific "Admin" string case
-          sponserdByEmail = 'Admin (Default)';
-          sponserdByName = 'Admin';
+        sponserdByEmail = 'Admin (Default)';
+        sponserdByName = 'Admin';
       }
     }
 
-    // Construct the response object, converting the Mongoose document to a plain object first.
     const responseUser = {
-      ...user.toObject(), // Convert Mongoose document to a plain JS object to add properties
-      referredByEmail: referredByEmail,
-      sponserdByEmail: sponserdByEmail,
-      sponserdByName: sponserdByName, // Optionally include sponsor name
+      ...user.toObject(),
+      referredByEmail,
+      sponserdByEmail,
+      sponserdByName,
     };
 
-    res.json(responseUser); // Return the enhanced user object
+    res.json(responseUser);
   } catch (err) {
     console.error("Error fetching user by email:", err);
     res.status(500).json({ error: 'Error fetching user by email.' });
@@ -194,34 +176,53 @@ exports.getUserByEmail = async (req, res) => {
 exports.updateUserByAdmin = async (req, res) => {
   try {
     const { id } = req.params; // User ID to update
-    const { adminPassword, ...updates } = req.body; // Get admin password and update fields
+    const { adminPassword, updationPassword, ...updates } = req.body; // Extract adminPassword and updationPassword
 
-    // 1. Find the current admin user (assumes authentication middleware sets req.user.id)
+
+    // 1. Find the currently logged-in admin user (assumes auth middleware populates req.user.id)
     const adminId = req.user.id;
-    const admin = await User.findById(adminId);
+    const admin = await User.findById(adminId).select('+updationPassword');;
 
     if (!admin) {
       return res.status(401).json({ message: 'Admin not found or not authenticated.' });
     }
 
-    // 2. Check admin password validity
-    const isPasswordCorrect = await bcrypt.compare(adminPassword, admin.password);
+    // 2. Verify admin password
+    const isPasswordCorrect = await bcrypt.compare(adminPassword, admin.updationPassword);
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: 'Incorrect admin password. Update denied.' });
     }
 
-    // 3. If admin's password is valid, process the update (including hashing a new password, if provided)
+    // 3. If password update provided, hash it
     if (updates.password) {
       const salt = await bcrypt.genSalt(10);
       updates.password = await bcrypt.hash(updates.password, salt);
     }
 
-    const user = await User.findByIdAndUpdate(id, updates, { new: true, runValidators: true }).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+    // 4. Handle updationPassword ONLY if the target user is admin
+    // Get target user data to know role
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User to update not found.' });
+    }
+    if (targetUser.role === 'Admin') {
+      if (updationPassword) {
+        const salt = await bcrypt.genSalt(10);
+        updates.updationPassword = await bcrypt.hash(updationPassword, salt);
+      }
     }
 
-    res.json({ success: true, message: 'User updated successfully', user });
+    // 5. Update user with accumulated updates, excluding password fields that are empty
+    const updatedUser = await User.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    }).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found after update.' });
+    }
+
+    res.json({ success: true, message: 'User updated successfully', user: updatedUser });
   } catch (err) {
     console.error("Error updating user:", err);
     if (err.name === 'ValidationError') {

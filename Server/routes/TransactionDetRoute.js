@@ -5,10 +5,11 @@ const {
   transactiondetails,
   getAllTransactions,
   updateTransactionStatus,
+   getUserTransactions,
 } = require("../controllers/transactiondata");
 
 router.post("/transaction", transactiondetails);
 router.get("/transactions", getAllTransactions);
 router.put("/transaction/:id/status", updateTransactionStatus);
-
+router.get("/my-transactions",auth, getUserTransactions);
 module.exports = router;

@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    updationPassword: {
+      type: String,
+      select: false, // hide from queries for security
+    },
 
     phone: {
       type: String,
@@ -114,7 +118,6 @@ const userSchema = new mongoose.Schema(
     ],
     totalWithdrawn: { type: Number, default: 0 },
 
-
     bankDetails: {
       accountHolder: { type: String },
       accountNumber: { type: String },
@@ -141,6 +144,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    resetPasswordToken: {
+      type:String,
+      select: false,          // Token for password reset link
+    },
+    resetPasswordExpires:{
+       type:  Date,
+       select:false,          // Token expiry time 
+      },
 
     isActive: {
       type: Boolean,
