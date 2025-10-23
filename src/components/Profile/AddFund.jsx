@@ -100,7 +100,7 @@ const AddFund = () => {
               Please include:{" "}
               <strong className="text-white">Full Name</strong>,{" "}
               <strong className="text-white">Email ID</strong>,{" "}
-              <strong className="text-white">Referral Code</strong>, and{" "}
+              <strong className="text-white">User ID:</strong>, and{" "}
               <strong className="text-white">UTR No.</strong> in your message.
             </p>
             <p className="text-gray-400 text-sm">

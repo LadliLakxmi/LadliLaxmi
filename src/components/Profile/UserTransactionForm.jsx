@@ -138,7 +138,7 @@ const UserTransactionForm = () => {
         <input
           type="text"
           name="Referalcode"
-          placeholder="Referral Code"
+          placeholder="User ID"
           value={formData.Referalcode}
           onChange={handleChange}
           className="w-full p-3 border text-black border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition-colors"

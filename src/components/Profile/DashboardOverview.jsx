@@ -218,6 +218,9 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
       </div>
   </div>
 </div>
+<div className="text-black p-4 bg-amber-200 text-center text-2xl rounded-lg">
+  <p>User ID: {`${user.referralCode}`}</p>
+</div>
 {user.currentLevel === 0 && (
 <div className="text-red-400 p-4 underline text-2xl rounded-md flex text-center justify-center font-bold mb-6 bg-red-50 border border-red-200">
   Activate your Account to Get your Referral Link
