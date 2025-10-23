@@ -29,5 +29,6 @@ router.put("/users/:id", auth, isAdmin, updateUserByAdmin);
 router.delete("/deleteUser/:id", auth, isAdmin, deleteUser);
 router.get("/withdrawals", auth, isAdmin, withdrawals);
 router.get("/getalltransactions", auth, isAdmin, getAllWalletTransactions);
+router.get("/getdashboardstats", auth, isAdmin, getDashboardStats);
 
 module.exports = router;

@@ -251,3 +251,39 @@ exports.getAllWalletTransactions = async (req, res) => {
     res.status(500).json({ error: 'Error fetching wallet transactions.' });
   }
 };
+
+
+
+// ✅ Get all admin dashboard statistics
+exports.getDashboardStats = async (req, res) => {
+  try {
+    // Total registered users
+    const totalUsers = await User.countDocuments();
+
+    // Total active users (users whose currentLevel > 0)
+    const totalActiveUsers = await User.countDocuments({ currentLevel: { $gt: 0 } });
+
+    // Total approved withdraw amount
+    const approvedWithdraws = await WithdrawRequest.aggregate([
+      { $match: { status: "approved" } },
+      { $group: { _id: null, totalWithdrawAmount: { $sum: "$amount" } } },
+    ]);
+
+    const totalWithdraw =
+      approvedWithdraws.length > 0 ? approvedWithdraws[0].totalWithdrawAmount : 0;
+
+    // Send response
+    res.status(200).json({
+      success: true,
+      totalUsers,
+      totalActiveUsers,
+      totalWithdraw,
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard stats:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching dashboard stats",
+    });
+  }
+};

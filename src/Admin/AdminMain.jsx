@@ -4,7 +4,6 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Payments from "./pages/Payments";
-import Reports from "./pages/Reports";
 import Sidebar from "./Components/Sidebar";
 import UpdateUser from "./pages/UpdateUser";
 import AllFunds from "./Components/AllFunds";
@@ -74,15 +73,6 @@ const AdminMain = () => {
             element={
               <AdminLayout>
                 <WalletTransactionsTable />
-              </AdminLayout>
-            }
-          />
-
-          <Route
-            path="/reports"
-            element={
-              <AdminLayout>
-                <Reports />
               </AdminLayout>
             }
           />

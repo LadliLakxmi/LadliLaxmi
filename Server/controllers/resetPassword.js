@@ -5,54 +5,61 @@ import nodemailer from "nodemailer";
 
 
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-
   try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const { email } = req.body;
 
-    // Generate secure token
+    // Validate email input
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required" });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Generate secure random token
     const token = crypto.randomBytes(20).toString("hex");
 
-    // Store token and expiry (1 hour)
+    // Save token and expiry (1 hour)
     user.resetPasswordToken = token;
     user.resetPasswordExpires = Date.now() + 3600000;
     await user.save();
 
-    // Configure transporter
+    // Build reset URL (update with your frontend URL)
+    const resetUrl = `https://www.ladlilakshmi.com/reset-password/${token}`;
+
+    // Setup nodemailer transporter
     const transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST || "smtp.gmail.com",
       port: process.env.MAIL_PORT ? Number(process.env.MAIL_PORT) : 465,
-      secure: process.env.MAIL_SECURE === "true" || true, // true for 465, false for other ports
+      secure: process.env.MAIL_SECURE === "true" || true,
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
     });
 
-    const resetUrl = `https://www.ladlilakshmi.com/reset-password/${token}`;
-
-    const mailOptions = {
-      from: process.env.MAIL_USER, // better to have from same as auth user
+    // Send the reset email using async/await
+    await transporter.sendMail({
+      from: process.env.MAIL_USER,
       to: user.email,
       subject: "Password Reset Request",
       html: `
-        <p>You requested a password reset.</p>
-        <p>Click this <a href="${resetUrl}">${resetUrl}</a> to reset your password.</p>
-        <p>If you didn't request this, ignore this email.</p>
+        <p>Hello,</p>
+        <p>You requested a password reset. Click the link below to reset your password:</p>
+        <p><a href="${resetUrl}">${resetUrl}</a></p>
+        <p>If you didn't request this, you can ignore this email.</p>
       `,
-    };
-
-    // Send mail with error handling
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.error("Error sending reset email:", err);
-        return res.status(500).json({ message: "Failed to send email" });
-      }
-      return res.status(200).json({ success: true, message: "Password reset email sent" });
     });
+
+    // Success response
+    res.status(200).json({ success: true, message: "Password reset email sent successfully." });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Forgot Password Error:", error); // Logs full error to Render logs
+    res.status(500).json({ success: false, message: "Internal server error. Please try again later." });
   }
 };
 

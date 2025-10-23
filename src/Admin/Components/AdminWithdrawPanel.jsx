@@ -90,8 +90,9 @@ const AdminWithdrawPanel = () => {
 
   if (loading) {
     return (
-      <div className="p-6 text-center text-gray-700">
+       <div className="p-6 text-center text-white mt-20">
         <p>Loading withdrawal requests...</p>
+        <p>Please wait...</p>
       </div>
     );
   }
