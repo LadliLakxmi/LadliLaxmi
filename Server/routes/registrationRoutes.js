@@ -9,7 +9,7 @@ router.post('/login',login);
 router.post('/logout',logout);
 router.post('/verify-otp',verifyOtp);
 router.post('/changepassword',auth,changePassword);
-outer.post("/forgot-password", forgotPassword);
+router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 router.get("/referral/:code", Referraluser);
 
