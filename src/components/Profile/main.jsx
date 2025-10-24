@@ -13,6 +13,8 @@ import UplineBeneficiariesTable from "./UplineBeneficiariesTable";
 import DirectTeam from "./DirectTeam";
 import MatrixViewer from "./MatrixViewer";
 import Id_card from "./Id_card";
+import DownlineStatus from "./DownlineStatus";
+import UserTransactions from "./UserTransactions";
 
 
 const Main = ({ user, setUser }) => {
@@ -86,6 +88,8 @@ const Main = ({ user, setUser }) => {
         />
         <Route path="/donate" element={<DonateDownline user={user} />} />
         <Route path="/card" element={<Id_card user={user} />} />
+        <Route path="/downlinestatus" element={<div className="mt-4"> <DownlineStatus/> <UserTransactions/></div>} />
+        
       </Routes>
     </div>
   );

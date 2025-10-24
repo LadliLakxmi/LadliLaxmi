@@ -10,8 +10,6 @@ const DownlineStatus = () => {
     const fetchStatus = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) throw new Error("User is not authenticated");
-
         const res = await axios.get(
           "https://ladlilakshmi.onrender.com/api/v1/user/downline-status",
           {
@@ -20,7 +18,7 @@ const DownlineStatus = () => {
         );
         setData(res.data.downlineStatus || []);
       } catch (err) {
-        setError(err.message || "Failed to load data");
+        setError("Failed to load data");
       } finally {
         setLoading(false);
       }
@@ -28,55 +26,71 @@ const DownlineStatus = () => {
     fetchStatus();
   }, []);
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="bg-white rounded-xl shadow p-6 text-black text-center">
-        Loading downline data...
-      </div>
+      <div className="text-center text-gray-600 p-6">Data is Loading...  Please wait.... </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
-      <div className="bg-red-100 rounded-xl shadow p-6 text-red-700 text-center">
-        Error: {error}
-      </div>
+      <div className="text-center text-red-600 p-6">{error}</div>
     );
-  }
 
   return (
-    <section
-      aria-labelledby="downline-overview-title"
-      className="bg-white rounded-xl shadow p-6 text-black max-w-4xl mx-auto"
-    >
-      <h2 id="downline-overview-title" className="text-2xl font-semibold mb-6">
-        Downline Overview
+    <div className="bg-white rounded-2xl shadow-lg p-6 text-black w-full max-w-5xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center text-indigo-600">
+        Downline Status Summary
       </h2>
-      {data.length === 0 ? (
-        <p className="text-center text-gray-500">No downline data available.</p>
-      ) : (
-        <table className="w-full border-collapse" role="table">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border px-4 py-3 text-center font-medium">Level</th>
-              <th className="border px-4 py-3 text-center font-medium">Members</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map(({ level, actualCount, possibleCount }) => (
+
+      <table className="w-full text-center text-sm sm:text-base">
+        <thead>
+          <tr className="bg-gray-100 text-gray-700">
+            <th className="py-3 px-2 border">Level</th>
+            <th className="py-3 px-2 border">Active</th>
+            <th className="py-3 px-2 border">Inactive</th>
+            <th className="py-3 px-2 border">Possible</th>
+            <th className="py-3 px-2 border">Progress</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {data.map(({ level, actualCount, inactiveCount, possibleCount }) => {
+            const progress = Math.round(
+              (actualCount / possibleCount) * 100
+            );
+            return (
               <tr key={level} className="even:bg-gray-50">
-                <td className="border px-4 py-2 text-center font-semibold">
-                  Level {level}
+                <td className="py-2 border font-semibold text-indigo-600">
+                  {level}
                 </td>
-                <td className="border px-4 py-2 text-center">
-                  You have {actualCount} out of {possibleCount} members
+                <td className="py-2 border font-semibold">
+                  {actualCount}
+                </td>
+                <td
+                  className={`py-2 border font-semibold ${
+                    inactiveCount > 0 ? "text-red-600" : "text-gray-500"
+                  }`}
+                >
+                  {inactiveCount}
+                </td>
+                <td className="py-2 border">{possibleCount}</td>
+
+                {/* Progress Bar */}
+                <td className="py-2 border">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-xs text-gray-600">{progress}%</span>
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

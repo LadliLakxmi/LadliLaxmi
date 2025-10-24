@@ -32,6 +32,7 @@ const UserSidebar = ({ user }) => {
     "Transaction History": <FaHistory className="inline-block mr-3 text-teal-400" />,
     "Direct Team": <FaHandshake className="inline-block mr-3 text-pink-400" />,
     "Donate Downline": <FaGift className="inline-block mr-3 text-red-400" />,
+     "Downline Status":  <FaUsers className="inline-block mr-3 text-orange-400" />,
     "Id Card": <FaIdCard className="inline-block mr-3 text-blue-400" />, // Using FaIdCard for the ID card
   
   };
@@ -44,6 +45,7 @@ const UserSidebar = ({ user }) => {
     { to: "/userdashboard/Upline", label: "Help To Upline" },
     { to: "/userdashboard/card", label: "Id Card" },
     { to: "/userdashboard/downline", label: "My Downline" },
+    { to: "/userdashboard/downlinestatus", label: "Downline Status" },
     { to: "/userdashboard/myteam", label: "My Team" },
     { to: "/userdashboard/transactions", label: "Transaction History" },
     { to: "/userdashboard/donate", label: "Donate Downline" },
@@ -116,7 +118,7 @@ const UserSidebar = ({ user }) => {
             ))}
           </ul>
         {/* Logout */}
-        <div className="px-8 border-t mb-40 md:mb-2 border-gray-700">
+        <div className="px-8 py-4 border-t mb-40 md:mb-2 border-gray-700">
           <Logout />
         </div>
         </nav>
