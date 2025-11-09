@@ -124,6 +124,19 @@ const userSchema = new mongoose.Schema(
       ifscCode: { type: String },
       bankName: { type: String },
       upiId: { type: String }, // Add UPI ID here
+      bankProof: {
+        type: String, // Cloudinary URL
+        default: "",},
+    },
+    bankProofVerified: {
+      type: String,
+      enum: ["pending", "verified", "rejected", ""],
+      default: "" // "" means no proof uploaded yet
+    },
+    EmergencyWallet: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
     upgradewalletBalance: {
       type: Number,

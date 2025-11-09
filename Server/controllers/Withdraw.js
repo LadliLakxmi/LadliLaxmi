@@ -43,6 +43,18 @@ exports.WithdrawRequest = async (req, res) => {
         .json({ message: `Insufficient available balance in your wallet.` });
     }
 
+        
+if (!user.bankDetails.bankProof) {
+  await session.abortTransaction();
+  return res.status(400).json({ message: "Please upload bank proof before requesting withdrawal." });
+}
+
+// require admin verification
+if (user.bankProofVerified !== "verified") {
+  await session.abortTransaction();
+  return res.status(400).json({ message: "Bank proof not verified by admin yet. Please wait for verification." });
+}
+
     // --- Bank Details Saving Logic ---
     // If user doesn't have bank details saved, or if any field is missing, require them in the request
     if (

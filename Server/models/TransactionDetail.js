@@ -21,7 +21,10 @@ const TransactionDetailSchema = new mongoose.Schema(
     UTRno: {
       type: String,
       required: true,
+      trim: true,
+      set: (value) => value.replace(/\s+/g, ""), // ✅ removes all spaces inside string
     },
+
     status: {
       type: String,
       default: "pending",

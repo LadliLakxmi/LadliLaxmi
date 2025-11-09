@@ -26,6 +26,9 @@ const Sidebar = () => {
         <NavLink to="/Admindashboard/payments" className={linkClass}>
          withdraw Requests
         </NavLink>
+        <NavLink to="/Admindashboard/bank-proofs" className={linkClass}>
+         Bank Proof Actions
+        </NavLink>
          <NavLink to="/Admindashboard/update" className={linkClass}>
           Update Users
         </NavLink>

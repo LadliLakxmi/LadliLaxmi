@@ -44,6 +44,7 @@ const walletTransactionRoutes = require('./routes/walletTransactionRoutes');
 const UplineRoutes = require('./routes/UplineRoutes');
 const transactionroute =require('./routes/TransactionDetRoute')
 const DownlineStatusRoutes =require('./routes/DownlineStatusRoutes')
+const bankRoutes = require('./routes/bankRoutes');
 
 // Mount routes
 app.use('/api/v1/wallet-transactions', walletTransactionRoutes);
@@ -57,6 +58,7 @@ app.use("/api/v1/donations", donationRoutes);
 app.use("/api/v1/profile", profileRoute);
 app.use("/api/v1/admin",adminRoutes );
 app.use("/api/v1/user",DownlineStatusRoutes );
+app.use("/api/v1", bankRoutes);
 
 // Admin routes
 

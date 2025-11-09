@@ -9,7 +9,10 @@ const {
   getUserByEmail,
   updateUserByAdmin,
   getAllWalletTransactions,
- getDashboardStats
+   getDashboardStats,
+  getBankProofByUser,
+  verifyBankProof,
+  getAllBankProofs,
 } = require("../controllers/Admin");
 const router = express.Router();
 // Get total user count
@@ -30,5 +33,9 @@ router.delete("/deleteUser/:id", auth, isAdmin, deleteUser);
 router.get("/withdrawals", auth, isAdmin, withdrawals);
 router.get("/getalltransactions", auth, isAdmin, getAllWalletTransactions);
 router.get("/getdashboardstats", auth, isAdmin, getDashboardStats);
+
+router.get("/user/:userId/bank-proof", auth, isAdmin, getBankProofByUser); // lazy fetch proof url
+router.patch("/user/:userId/bank-proof-verify", auth, isAdmin, verifyBankProof); // verify/reject action
+router.get("/bank-proofs",  auth, isAdmin, getAllBankProofs);
 
 module.exports = router;

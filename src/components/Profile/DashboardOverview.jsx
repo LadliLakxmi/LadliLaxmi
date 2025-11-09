@@ -143,6 +143,12 @@ const DashboardOverview = ({ user, setUser,countchild }) => {
       color: "green", // Use new 'green' color
       icon: FaMoneyBillWave, // New icon
     },
+        {
+      title: "Emergency Wallet Balance",
+      value: `₹${(user.EmergencyWalletBalance ?? 0).toFixed(2)}`,
+      color: "emerald",
+      icon: FaWallet,
+    },
     {
       title: "Total Withdrawn", // New card
       value: `₹${(user.totalWithdrawn ?? 0).toFixed(2)}`, // Use totalWithdrawn from user prop

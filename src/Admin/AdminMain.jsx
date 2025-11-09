@@ -8,6 +8,7 @@ import Sidebar from "./Components/Sidebar";
 import UpdateUser from "./pages/UpdateUser";
 import AllFunds from "./Components/AllFunds";
 import WalletTransactionsTable from "./pages/WalletTransactionsTable";
+import BankProofAdminPanel from "./pages/BankProofAdminPanel";
 
 function AdminLayout({ children }) {
   return (
@@ -57,6 +58,14 @@ const AdminMain = () => {
             element={
               <AdminLayout>
                 <Payments />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/bank-proofs"
+            element={
+              <AdminLayout>
+               <BankProofAdminPanel />
               </AdminLayout>
             }
           />

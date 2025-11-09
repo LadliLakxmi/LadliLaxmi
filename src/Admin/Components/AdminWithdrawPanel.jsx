@@ -24,6 +24,10 @@ const AdminWithdrawPanel = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+   const [proofModalOpen, setProofModalOpen] = useState(false);
+  const [currentProof, setCurrentProof] = useState(null); // { url, status, userId }
+  const [loadingProof, setLoadingProof] = useState(false);
+
   // Fetch withdrawal requests
   const fetchRequests = async () => {
     setLoading(true);
@@ -74,6 +78,50 @@ const AdminWithdrawPanel = () => {
         err.response?.data?.message || "Failed to update request status.";
       toast.error(errorMessage);
       console.error("Error updating status:", err);
+    }
+  };
+
+
+   // ✅ fetch Bank Proof of user (lazy load)
+  const fetchBankProof = async (userId) => {
+    try {
+      setLoadingProof(true);
+      const res = await axios.get(
+        `https://ladlilakshmi.onrender.com/api/v1/admin/user/${userId}/bank-proof`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log("Bank proof response:", res.data);
+      setCurrentProof({
+        url: res.data.bankProof,
+        status: res.data.status,
+        userId,
+      });
+
+      setProofModalOpen(true);
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to load bank proof.";
+      toast.error(msg);
+      console.error("fetchBankProof error:", err);
+    } finally {
+      setLoadingProof(false);
+    }
+  };
+
+// ✅ Verify or Reject proof
+  const adminVerifyProof = async (userId, action) => {
+    try {
+      await axios.patch(
+        `https://ladlilakshmi.onrender.com/api/v1/admin/user/${userId}/bank-proof-verify`,
+        { action }, // "verified" OR "rejected"
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success(`Proof ${action} successfully`);
+      setProofModalOpen(false);
+      fetchRequests(); // refresh list
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to update proof.";
+      toast.error(msg);
     }
   };
 
@@ -156,6 +204,62 @@ const AdminWithdrawPanel = () => {
         </div>
       </div>
 
+      {proofModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-amber-100 text-black p-4 rounded max-w-2xl w-full">
+
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">Bank Proof</h3>
+              <button
+                onClick={() => setProofModalOpen(false)}
+                className="px-3 py-1 bg-gray-300 rounded"
+              >
+                Close
+              </button>
+            </div>
+
+            {loadingProof ? (
+              <p>Loading proof...</p>
+            ) : currentProof?.url ? (
+              <>
+                <img
+                  src={currentProof.url}
+                  alt="bank-proof"
+                  className="w-full max-h-[60vh] object-contain mb-4"
+                />
+
+                <p className="mb-2">
+                  Current status:{" "}
+                  <strong>{currentProof.status || "N/A"}</strong>
+                </p>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() =>
+                      adminVerifyProof(currentProof.userId, "verified")
+                    }
+                    className="bg-green-600 text-white py-2 px-4 rounded"
+                  >
+                    Verify
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      adminVerifyProof(currentProof.userId, "rejected")
+                    }
+                    className="bg-red-600 text-white py-2 px-4 rounded"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p>No proof uploaded for this user.</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main Table */}
       {requests.length === 0 ? (
         <p className="text-gray-600">No withdrawal requests found.</p>
@@ -176,6 +280,7 @@ const AdminWithdrawPanel = () => {
                   <th className="py-3 px-6 text-left">UPI</th>
                   <th className="py-3 px-6 text-left">Date</th>
                   <th className="py-3 px-6 text-left">Status</th>
+                  <th className="py-3 px-6 text-center">BankProof Action</th>
                   <th className="py-3 px-6 text-center">Actions</th>
                 </tr>
               </thead>
@@ -209,6 +314,14 @@ const AdminWithdrawPanel = () => {
                       {formatCreationDate(req.createdAt)}
                     </td>
                     <td className="py-3 px-6">{req.status || "N/A"}</td>
+                    <td className="py-3 px-6">
+                    <button
+                      onClick={() => fetchBankProof(req.user._id)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded"
+                    >
+                      View Proof
+                    </button>
+                  </td>
                     <td className="py-3 px-6 text-center">
                       {req.status === "pending" && (
                         <div className="flex justify-center space-x-2">

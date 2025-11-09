@@ -287,3 +287,81 @@ exports.getDashboardStats = async (req, res) => {
     });
   }
 };
+
+// GET admin withdraw list (existing) - keep as is but DO NOT populate bankProof url to save time
+// You probably already have this. Keep returning requests WITHOUT sending bankProof URL
+
+// GET bank proof for a specific user (lazy-load when admin clicks "View Proof")
+exports.getBankProofByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId).select("bankDetails.bankProof bankProofVerified");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // DO NOT auto-show on list; return when requested
+    return res.status(200).json({
+      bankProof: user.bankDetails.bankProof || null,
+      status: user.bankProofVerified || "",
+    });
+  } catch (err) {
+    console.error("getBankProofByUser error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+// PATCH admin verify/reject bank proof
+exports.verifyBankProof = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { action } = req.body; // expected "verified" or "rejected"
+
+    if (!["verified", "rejected"].includes(action)) {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.bankProofVerified = action;
+    await user.save();
+
+    return res.status(200).json({ message: `Bank proof ${action} successfully.` });
+  } catch (err) {
+    console.error("verifyBankProof error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+// ✅ FETCH ALL USERS WHO UPLOADED BANK PROOF
+exports.getAllBankProofs = async (req, res) => {
+  try {
+    const users = await User.find({
+      "bankDetails.bankProof": { $exists: true, $ne: "" }
+    }).select("name email phone bankDetails bankProofVerified");
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No bank proofs found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      proofs: users.map(user => ({
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        bankDetails: user.bankDetails,
+        proofUrl: user.bankDetails.bankProof,
+        status: user.bankProofVerified || "pending",
+      }))
+    });
+
+  } catch (err) {
+    console.error("getAllBankProofs error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
