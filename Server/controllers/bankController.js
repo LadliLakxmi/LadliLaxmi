@@ -48,14 +48,14 @@ export const uploadBankProof = async (req, res) => {
 
     // user.bankDetails.bankProof = result.secure_url;
     user.bankDetails.bankProof = result.secure_url;
-    user.bankDetails.bankProofVerified = "pending"; // ← important: admin will verify later
+    user.bankProofVerified = "pending"; // ← important: admin will verify later
     await user.save();
 
     res.status(200).json({
       success: true,
       message: "Bank proof successfully upload ho gaya!",
       imageUrl: result.secure_url,
-      status: user.bankDetails.bankProofVerified,
+      status: user.bankProofVerified,
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
