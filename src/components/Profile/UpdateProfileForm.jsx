@@ -65,7 +65,7 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
 
     try {
       const response = await axios.post(
-        "https://ladlilakshmi.onrender.com/api/v1/save-bank-details",
+        "https://ladlilakshmi.onrender.com/api/v1/withdraw/save-bank-details",
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
