@@ -111,9 +111,9 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
 
   return (
    <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4 overflow-y-auto">
-  <div className="flex gap-4 bg-white rounded-lg shadow-xl w-full max-w-[80%] p-6 relative animate-scaleIn max-h-[90vh] overflow-y-auto">
+  <div className="flex lg:flex-row flex-col gap-4 bg-white rounded-lg shadow-xl w-full lg:max-w-[80%] p-6 relative animate-scaleIn max-h-[90vh] overflow-y-auto">
   {/* ------------ LEFT SIDE: PROFILE UPDATE ------------ */}
-        <div className="w-1/2">
+        <div className="lg:w-1/2">
           <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
             <X size={24} />
           </button>
@@ -166,7 +166,7 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
         </div>
 
         {/* ------------ RIGHT SIDE: BANK / KYC ------------ */}
-        <div className="w-1/2 flex flex-col items-center p-4 rounded-lg">
+        <div className="lg:w-1/2 flex flex-col items-center p-4 rounded-lg">
           <h2 className="text-black mb-4 text-xl "><strong>KYC</strong></h2>
 
 
