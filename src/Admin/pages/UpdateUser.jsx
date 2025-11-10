@@ -1,62 +1,65 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const UpdateUser = () => {
-  const [userEmail, setUserEmail] = useState('');
+  const [userEmail, setUserEmail] = useState("");
   const [isAdminUser, setIsAdminUser] = useState(false);
 
-  const [userIdToUpdate, setUserIdToUpdate] = useState('');
+  const [userIdToUpdate, setUserIdToUpdate] = useState("");
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    referralCode: '',
-    referredBy: '',
-    sponserdBy: '',
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    referralCode: "",
+    referredBy: "",
+    sponserdBy: "",
     currentLevel: 0,
     walletBalance: 0,
+    EmergencyWallet: 0,
     upgradewalletBalance: 0,
     totalWithdrawn: 0,
-    accountNumber: '',
-    accountHolder: '',
-    bankName: '',
+    accountNumber: "",
+    accountHolder: "",
+    bankName: "",
     panCard: undefined,
-    ifscCode: '',
-    upiId: '',
-    role: 'user',
+    ifscCode: "",
+    upiId: "",
+    bankProof: "",
+    bankProofVerified: "",
+    role: "user",
     isActive: true,
-    updationPassword: '',
+    updationPassword: "",
   });
 
-  const [referredByEmailDisplay, setReferredByEmailDisplay] = useState('');
-  const [sponserdByEmailDisplay, setSponserdByEmailDisplay] = useState('');
-  const [sponserdByNameDisplay, setSponserdByNameDisplay] = useState('');
+  const [referredByEmailDisplay, setReferredByEmailDisplay] = useState("");
+  const [sponserdByEmailDisplay, setSponserdByEmailDisplay] = useState("");
+  const [sponserdByNameDisplay, setSponserdByNameDisplay] = useState("");
 
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [adminPasswordInput, setAdminPasswordInput] = useState('');
-  const [adminPasswordError, setAdminPasswordError] = useState('');
+  const [adminPasswordInput, setAdminPasswordInput] = useState("");
+  const [adminPasswordError, setAdminPasswordError] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const API_BASE_URL = 'https://ladlilakshmi.onrender.com/api/v1/admin';
+  const API_BASE_URL = "https://ladlilakshmi.onrender.com/api/v1/admin";
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     return { headers: { Authorization: `Bearer ${token}` } };
   };
 
   const handleFetchUserByEmail = async () => {
     if (!userEmail) {
-      setError('Please enter a user email.');
+      setError("Please enter a user email.");
       resetUserState();
       return;
     }
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
     try {
       const res = await axios.get(
         `${API_BASE_URL}/users/by-email?email=${userEmail}`,
@@ -65,96 +68,102 @@ const UpdateUser = () => {
       const fetchedUser = res.data;
       setUserData(fetchedUser);
       setUserIdToUpdate(fetchedUser._id);
-      setReferredByEmailDisplay(fetchedUser.referredByEmail || 'N/A');
-      setSponserdByEmailDisplay(fetchedUser.sponserdByEmail || 'N/A');
-      setSponserdByNameDisplay(fetchedUser.sponserdByName || 'N/A');
+      setReferredByEmailDisplay(fetchedUser.referredByEmail || "N/A");
+      setSponserdByEmailDisplay(fetchedUser.sponserdByEmail || "N/A");
+      setSponserdByNameDisplay(fetchedUser.sponserdByName || "N/A");
       setFormData({
-        name: fetchedUser.name || '',
-        email: fetchedUser.email || '',
-        phone: fetchedUser.phone || '',
-        password: '',
-        referralCode: fetchedUser.referralCode || '',
-        referredBy: fetchedUser.referredBy || '',
-        sponserdBy: fetchedUser.sponserdBy || '',
+        name: fetchedUser.name || "",
+        email: fetchedUser.email || "",
+        phone: fetchedUser.phone || "",
+        password: "",
+        referralCode: fetchedUser.referralCode || "",
+        referredBy: fetchedUser.referredBy || "",
+        sponserdBy: fetchedUser.sponserdBy || "",
         panCard: fetchedUser.panCard || undefined,
         currentLevel: fetchedUser.currentLevel || 0,
         walletBalance: fetchedUser.walletBalance || 0,
         totalWithdrawn: fetchedUser.totalWithdrawn || 0,
         upgradewalletBalance: fetchedUser.upgradewalletBalance || 0,
-        accountNumber: fetchedUser.bankDetails?.accountNumber || '',
-        accountHolder: fetchedUser.bankDetails?.accountHolder || '',
-        bankName: fetchedUser.bankDetails?.bankName || '',
-        ifscCode: fetchedUser.bankDetails?.ifscCode || '',
-        upiId: fetchedUser.bankDetails?.upiId || '',
-        role: fetchedUser.role || 'user',
+        EmergencyWallet: fetchedUser.EmergencyWallet || 0,
+        accountNumber: fetchedUser.bankDetails?.accountNumber || "",
+        accountHolder: fetchedUser.bankDetails?.accountHolder || "",
+        bankName: fetchedUser.bankDetails?.bankName || "",
+        ifscCode: fetchedUser.bankDetails?.ifscCode || "",
+        upiId: fetchedUser.bankDetails?.upiId || "",
+        bankProofVerified: fetchedUser.bankProofVerified || "",
+        bankProof: fetchedUser.bankDetails?.bankProof || "",
+        role: fetchedUser.role || "user",
         isActive: fetchedUser.isActive,
-        updationPassword: '',
+        updationPassword: "",
       });
-      setIsAdminUser(fetchedUser.role === 'Admin');
+      setIsAdminUser(fetchedUser.role === "Admin");
       setMessage(`User "${fetchedUser.name}" details fetched successfully!`);
     } catch (err) {
       setIsAdminUser(false);
       resetUserState();
-      setError(err.response?.data?.message || 'Failed to fetch user.');
+      setError(err.response?.data?.message || "Failed to fetch user.");
     }
   };
 
   const resetUserState = () => {
     setUserData(null);
-    setUserIdToUpdate('');
-    setReferredByEmailDisplay('');
-    setSponserdByEmailDisplay('');
-    setSponserdByNameDisplay('');
+    setUserIdToUpdate("");
+    setReferredByEmailDisplay("");
+    setSponserdByEmailDisplay("");
+    setSponserdByNameDisplay("");
     setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      password: '',
-      referralCode: '',
-      referredBy: '',
-      sponserdBy: '',
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      referralCode: "",
+      referredBy: "",
+      sponserdBy: "",
       panCard: undefined,
       currentLevel: 0,
       walletBalance: 0,
       totalWithdrawn: 0,
       upgradewalletBalance: 0,
-      accountNumber: '',
-      accountHolder: '',
-      bankName: '',
-      ifscCode: '',
-      upiId: '',
-      role: 'user',
+      EmergencyWallet: 0,
+      accountNumber: "",
+      accountHolder: "",
+      bankName: "",
+      ifscCode: "",
+      upiId: "",
+      role: "user",
+      bankProof: "",
+      bankProofVerified: "",
       isActive: true,
-      updationPassword: '',
+      updationPassword: "",
     });
-    setMessage('');
+    setMessage("");
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleShowPasswordModal = (e) => {
     e.preventDefault();
-    setAdminPasswordInput('');
-    setAdminPasswordError('');
+    setAdminPasswordInput("");
+    setAdminPasswordError("");
     setShowPasswordModal(true);
   };
 
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     if (!adminPasswordInput.trim()) {
-      setAdminPasswordError('Please enter your password.');
+      setAdminPasswordError("Please enter your password.");
       return;
     }
     setIsUpdating(true);
-    setAdminPasswordError('');
-    setError('');
-    setMessage('');
+    setAdminPasswordError("");
+    setError("");
+    setMessage("");
 
     const updatePayload = {
       name: formData.name,
@@ -164,6 +173,7 @@ const UpdateUser = () => {
       walletBalance: parseFloat(formData.walletBalance) || 0,
       totalWithdrawn: parseFloat(formData.totalWithdrawn) || 0,
       upgradewalletBalance: parseFloat(formData.upgradewalletBalance) || 0,
+      EmergencyWallet: parseFloat(formData.EmergencyWallet) || 0,
       role: formData.role,
       isActive: formData.isActive,
       bankDetails: {
@@ -172,8 +182,10 @@ const UpdateUser = () => {
         bankName: formData.bankName,
         ifscCode: formData.ifscCode,
         upiId: formData.upiId,
+        bankProof: formData.bankProof,
       },
       panCard: formData.panCard || undefined,
+      bankProofVerified: formData.bankProofVerified,
       referralCode: formData.referralCode,
       referredBy: formData.referredBy,
       sponserdBy: formData.sponserdBy,
@@ -184,7 +196,7 @@ const UpdateUser = () => {
       updatePayload.updationPassword = formData.updationPassword;
     }
     if (!userIdToUpdate) {
-      setError('Please fetch a user before updating.');
+      setError("Please fetch a user before updating.");
       setShowPasswordModal(false);
       setIsUpdating(false);
       return;
@@ -195,11 +207,12 @@ const UpdateUser = () => {
         updatePayload,
         getAuthHeaders()
       );
-      setMessage(res.data.message || 'User updated successfully!');
+      setMessage(res.data.message || "User updated successfully!");
       setShowPasswordModal(false);
     } catch (err) {
       setAdminPasswordError(
-        err.response?.data?.message || 'Update failed. Possible incorrect admin password.'
+        err.response?.data?.message ||
+          "Update failed. Possible incorrect admin password."
       );
     } finally {
       setIsUpdating(false);
@@ -208,11 +221,15 @@ const UpdateUser = () => {
 
   return (
     <div className="p-5 max-w-4xl mx-auto font-sans bg-gray-900 text-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-6 text-gray-100">Update User Details (Admin Panel)</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-100">
+        Update User Details (Admin Panel)
+      </h2>
 
       {/* Fetch user by email */}
       <div className="mb-8 border border-gray-700 p-6 rounded-lg shadow-lg bg-gray-800">
-        <h3 className="text-xl font-semibold mb-4 text-gray-100">1. Find User by Email</h3>
+        <h3 className="text-xl font-semibold mb-4 text-gray-100">
+          1. Find User by Email
+        </h3>
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <input
             type="email"
@@ -234,16 +251,23 @@ const UpdateUser = () => {
 
       {/* Update form */}
       {userData && (
-        <form onSubmit={handleShowPasswordModal} className="border border-blue-600 p-6 rounded-lg shadow-lg bg-gray-800">
+        <form
+          onSubmit={handleShowPasswordModal}
+          className="border border-blue-600 p-6 rounded-lg shadow-lg bg-gray-800"
+        >
           <h3 className="text-xl font-semibold mb-6 text-gray-100">
             2. Update Data for: {userData.name} ({userData.email})
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-
             {/* Basic Info Fields */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Name:</label>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Name:
+              </label>
               <input
                 type="text"
                 id="name"
@@ -256,7 +280,12 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email:</label>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Email:
+              </label>
               <input
                 type="email"
                 id="email"
@@ -269,7 +298,12 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">Phone:</label>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Phone:
+              </label>
               <input
                 type="text"
                 id="phone"
@@ -281,7 +315,10 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
                 New Password (leave blank to keep current):
               </label>
               <input
@@ -296,7 +333,10 @@ const UpdateUser = () => {
 
             {isAdminUser && (
               <div>
-                <label htmlFor="updationPassword" className="block text-sm font-medium text-gray-300 mb-1">
+                <label
+                  htmlFor="updationPassword"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
                   New Admin Updation Password (leave blank to keep current):
                 </label>
                 <input
@@ -312,7 +352,12 @@ const UpdateUser = () => {
 
             {/* Referral and Sponsorship Fields */}
             <div>
-              <label htmlFor="referralCode" className="block text-sm font-medium text-gray-300 mb-1">Referral Code:</label>
+              <label
+                htmlFor="referralCode"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Referral Code:
+              </label>
               <input
                 type="text"
                 id="referralCode"
@@ -325,7 +370,12 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="referredBy" className="block text-sm font-medium text-gray-300 mb-1">Referred By (ID):</label>
+              <label
+                htmlFor="referredBy"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Referred By (ID):
+              </label>
               <input
                 type="text"
                 id="referredBy"
@@ -337,7 +387,12 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="sponserdBy" className="block text-sm font-medium text-gray-300 mb-1">Sponsored By (ID):</label>
+              <label
+                htmlFor="sponserdBy"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Sponsored By (ID):
+              </label>
               <input
                 type="text"
                 id="sponserdBy"
@@ -349,7 +404,12 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="panCard" className="block text-sm font-medium text-gray-300 mb-1">Pan Card:</label>
+              <label
+                htmlFor="panCard"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Pan Card:
+              </label>
               <input
                 type="text"
                 id="panCard"
@@ -362,23 +422,40 @@ const UpdateUser = () => {
 
             {/* Sponsor emails and name display */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Referred By Email:</label>
-              <p className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200">{referredByEmailDisplay}</p>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Referred By Email:
+              </label>
+              <p className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200">
+                {referredByEmailDisplay}
+              </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Sponsored By Email:</label>
-              <p className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200">{sponserdByEmailDisplay}</p>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Sponsored By Email:
+              </label>
+              <p className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200">
+                {sponserdByEmailDisplay}
+              </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Sponsored By Name:</label>
-              <p className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200">{sponserdByNameDisplay}</p>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Sponsored By Name:
+              </label>
+              <p className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200">
+                {sponserdByNameDisplay}
+              </p>
             </div>
 
             {/* Financial and Level Info */}
             <div>
-              <label htmlFor="currentLevel" className="block text-sm font-medium text-gray-300 mb-1">Current Level:</label>
+              <label
+                htmlFor="currentLevel"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Current Level:
+              </label>
               <input
                 type="number"
                 id="currentLevel"
@@ -391,7 +468,12 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="walletBalance" className="block text-sm font-medium text-gray-300 mb-1">Wallet Balance:</label>
+              <label
+                htmlFor="walletBalance"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Wallet Balance:
+              </label>
               <input
                 type="number"
                 id="walletBalance"
@@ -405,7 +487,12 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="upgradewalletBalance" className="block text-sm font-medium text-gray-300 mb-1">Upgrade Wallet Balance:</label>
+              <label
+                htmlFor="upgradewalletBalance"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Upgrade Wallet Balance:
+              </label>
               <input
                 type="number"
                 id="upgradewalletBalance"
@@ -419,7 +506,28 @@ const UpdateUser = () => {
             </div>
 
             <div>
-              <label htmlFor="totalWithdrawn" className="block text-sm font-medium text-gray-300 mb-1">Total Withdrawn:</label>
+            <label htmlFor="EmergencyWallet" className="block text-sm font-medium text-gray-300 mb-1">
+              Emergency Wallet:
+            </label>
+            <input
+              type="number"
+              id="EmergencyWallet"
+              name="EmergencyWallet"
+              value={formData.EmergencyWallet}
+              onChange={handleChange}
+              step="0.01"
+              min="0"
+              className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white"
+            />
+          </div>
+
+            <div>
+              <label
+                htmlFor="totalWithdrawn"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Total Withdrawn:
+              </label>
               <input
                 type="number"
                 id="totalWithdrawn"
@@ -434,11 +542,17 @@ const UpdateUser = () => {
 
             {/* Bank Details */}
             <div className="col-span-1 md:col-span-2 border-t pt-4 mt-4 border-gray-700">
-              <h4 className="text-lg font-semibold mb-4 text-gray-100">Bank Details</h4>
+              <h4 className="text-lg font-semibold mb-4 text-gray-100">
+                Bank Details
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-
                 <div>
-                  <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-300 mb-1">Account Number:</label>
+                  <label
+                    htmlFor="accountNumber"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
+                    Account Number:
+                  </label>
                   <input
                     type="text"
                     id="accountNumber"
@@ -450,7 +564,12 @@ const UpdateUser = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="accountHolder" className="block text-sm font-medium text-gray-300 mb-1">Account Name:</label>
+                  <label
+                    htmlFor="accountHolder"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
+                    Account Name:
+                  </label>
                   <input
                     type="text"
                     id="accountHolder"
@@ -462,7 +581,12 @@ const UpdateUser = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="bankName" className="block text-sm font-medium text-gray-300 mb-1">Bank Name:</label>
+                  <label
+                    htmlFor="bankName"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
+                    Bank Name:
+                  </label>
                   <input
                     type="text"
                     id="bankName"
@@ -474,7 +598,12 @@ const UpdateUser = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="ifscCode" className="block text-sm font-medium text-gray-300 mb-1">IFSC Code:</label>
+                  <label
+                    htmlFor="ifscCode"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
+                    IFSC Code:
+                  </label>
                   <input
                     type="text"
                     id="ifscCode"
@@ -486,7 +615,12 @@ const UpdateUser = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="upiId" className="block text-sm font-medium text-gray-300 mb-1">UPI ID:</label>
+                  <label
+                    htmlFor="upiId"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
+                    UPI ID:
+                  </label>
                   <input
                     type="text"
                     id="upiId"
@@ -497,13 +631,38 @@ const UpdateUser = () => {
                   />
                 </div>
 
+                <div>
+                  <label
+                    htmlFor="bankProofVerified"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
+                    Bank Proof Status:
+                  </label>
+                  <select
+                    id="bankProofVerified"
+                    name="bankProofVerified"
+                    value={formData.bankProofVerified}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
+                  >
+                    <option value="">Not Uploaded</option>
+                    <option value="pending">Pending</option>
+                    <option value="verified">Verified</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
               </div>
             </div>
 
             {/* Role & Active */}
             {!isAdminUser && (
               <div>
-                <label htmlFor="role" className="block text-sm font-medium text-gray-300 mb-1">Role:</label>
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
+                  Role:
+                </label>
                 <select
                   id="role"
                   name="role"
@@ -525,7 +684,10 @@ const UpdateUser = () => {
                 onChange={handleChange}
                 className="h-4 w-4 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-700"
               />
-              <label htmlFor="isActive" className="ml-2 block text-sm font-medium text-gray-300">
+              <label
+                htmlFor="isActive"
+                className="ml-2 block text-sm font-medium text-gray-300"
+              >
                 Is Active
               </label>
             </div>
@@ -550,7 +712,9 @@ const UpdateUser = () => {
             >
               ×
             </button>
-            <h3 className="text-xl font-semibold mb-6 text-center">Admin Password Required</h3>
+            <h3 className="text-xl font-semibold mb-6 text-center">
+              Admin Password Required
+            </h3>
             <form onSubmit={handleUpdateUser}>
               <input
                 type="password"
@@ -562,14 +726,16 @@ const UpdateUser = () => {
                 autoFocus
               />
               {adminPasswordError && (
-                <p className="text-red-500 mb-4 text-center">{adminPasswordError}</p>
+                <p className="text-red-500 mb-4 text-center">
+                  {adminPasswordError}
+                </p>
               )}
               <button
                 type="submit"
                 disabled={isUpdating}
                 className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition"
               >
-                {isUpdating ? 'Updating...' : 'Confirm Update'}
+                {isUpdating ? "Updating..." : "Confirm Update"}
               </button>
             </form>
           </div>
