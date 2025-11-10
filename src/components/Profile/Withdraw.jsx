@@ -12,6 +12,9 @@ import WithdrawHistory from "./WithdrawHistory";
 import { useNavigate } from "react-router-dom";
 import BankProofUpload from "./BankProofUpload";
 
+// --- Removed all INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL and calculateCumulativeMaxWithdrawal ---
+// These are no longer relevant as cumulative limits are removed from the backend for the main wallet.
+
 const Withdraw = ({ user, fetchUserData }) => {
   const navigate = useNavigate();
   const [bankDetails, setBankDetails] = useState(null);
@@ -22,21 +25,23 @@ const Withdraw = ({ user, fetchUserData }) => {
     accountNumber: "",
     ifscCode: "",
     bankName: "",
-    upiId: "",
+    upiId: "", // Use upiId instead of phoneNumber if that's what backend expects
     amount: "",
   });
-
   const [isLoading, setIsLoading] = useState(false);
-  const [hasPendingRequest, setHasPendingRequest] = useState(false);
+  const [hasPendingRequest, setHasPendingRequest] = useState(false); // To prevent multiple pending requests
 
   const token = localStorage.getItem("token");
-  const currentLevel = Number(user?.currentLevel) || 0;
 
+  const currentLevel = Number(user?.currentLevel) || 0;
+  // --- Start of Changes: Calculate active direct members ---
   const activeDirectMembers =
     user?.directReferrals?.filter((ref) => Number(ref.currentLevel) >= 1)
       .length || 0;
-
+  // --- End of Changes ---
+  // Get the next upgrade cost (still relevant for display)
   const INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL_FRONTEND = {
+    // Re-add for nextUpgradeCost display
     1: { nextUpgradeCost: 400 },
     2: { nextUpgradeCost: 500 },
     3: { nextUpgradeCost: 1000 },
@@ -50,13 +55,13 @@ const Withdraw = ({ user, fetchUserData }) => {
     11: { nextUpgradeCost: 256000 },
     12: { nextUpgradeCost: 0 },
   };
-
   const nextLevelToUpgrade = currentLevel + 1;
   const nextUpgradeCost =
     INDIVIDUAL_MAX_WITHDRAWAL_PER_LEVEL_FRONTEND[nextLevelToUpgrade]
       ?.nextUpgradeCost || 0;
 
   useEffect(() => {
+    // Corrected bank details handling
     if (user && user.bankDetails) {
       setFormData((prev) => ({
         ...prev,
@@ -64,9 +69,9 @@ const Withdraw = ({ user, fetchUserData }) => {
         accountNumber: user.bankDetails.accountNumber || "",
         ifscCode: user.bankDetails.ifscCode || "",
         bankName: user.bankDetails.bankName || "",
-        upiId: user.bankDetails.upiId || "",
+        upiId: user.bankDetails.upiId || "", // Assuming this is now 'upiId'
       }));
-
+      // Check if any of the bank details are non-empty strings to set bankDetails
       const hasAnyBankDetail = Object.values(user.bankDetails).some(
         (detail) => typeof detail === "string" && detail.trim() !== ""
       );
@@ -98,12 +103,15 @@ const Withdraw = ({ user, fetchUserData }) => {
         );
         setHasPendingRequest(pendingRequest);
       } catch (err) {
+        console.error("Failed to fetch withdrawal status", err);
         toast.error("Failed to load withdrawal status.");
       }
     };
 
-    if (token) fetchWithdrawalStatus();
-  }, [user, token]);
+    if (token) {
+      fetchWithdrawalStatus();
+    }
+  }, [user, token]); // fetchUserData is not needed here as it's passed as a prop, not a state dependency
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -120,6 +128,7 @@ const Withdraw = ({ user, fetchUserData }) => {
       return;
     }
 
+    // --- Start of Changes: Check for active direct members before withdrawal ---
     if (activeDirectMembers < 2) {
       toast.error(
         "You need at least 2 direct members who have activated to Level 1 or higher to withdraw."
@@ -127,15 +136,17 @@ const Withdraw = ({ user, fetchUserData }) => {
       setIsLoading(false);
       return;
     }
+    // --- End of Changes ---
 
     const amount = Number(formData.amount);
-    let WalletBalance = Number(user?.walletBalance) || 0;
 
     if (!amount || amount <= 0) {
       toast.error("Please enter a valid amount to withdraw.");
       setIsLoading(false);
       return;
     }
+
+    let WalletBalance = Number(user?.walletBalance) || 0;
 
     if (amount > WalletBalance) {
       toast.error(`Insufficient funds in your Wallet.`);
@@ -145,62 +156,18 @@ const Withdraw = ({ user, fetchUserData }) => {
 
     if (hasPendingRequest) {
       toast.error(
-        "You already have a pending withdrawal request. Please wait."
+        "You already have a pending withdrawal request. Please wait for it to be processed."
       );
       setIsLoading(false);
       return;
     }
-
-    if (!bankDetails) {
-      if (
-        !formData.accountHolder ||
-        !formData.accountNumber ||
-        !formData.ifscCode ||
-        !formData.bankName
-      ) {
-        toast.error("Please fill in all required bank details.");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        await axios.put(
-          "https://ladlilakshmi.onrender.com/api/v1/profile/bank-details",
-          {
-            accountHolder: formData.accountHolder,
-            accountNumber: formData.accountNumber,
-            ifscCode: formData.ifscCode,
-            bankName: formData.bankName,
-            upiId: formData.upiId || "",
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        toast.success("Bank details saved successfully!");
-
-        setBankDetails({
-          accountHolder: formData.accountHolder,
-          accountNumber: formData.accountNumber,
-          ifscCode: formData.ifscCode,
-          bankName: formData.bankName,
-          upiId: formData.upiId || "",
-        });
-
-        if (fetchUserData) await fetchUserData();
-      } catch (err) {
-        toast.error(
-          err.response?.data?.message ||
-            "An error occurred while saving bank details."
-        );
-        setIsLoading(false);
-        return;
-      }
-    }
-
+    // Proceed with withdrawal request
     try {
       const payload = {
         amount,
+        // Send bankDetails only if they were *just* entered/updated in this request,
+        // otherwise, the backend will use the saved ones.
+        // This handles the scenario where details are required for the first time.
         bankDetails: !bankDetails
           ? {
               accountHolder: formData.accountHolder,
@@ -209,25 +176,31 @@ const Withdraw = ({ user, fetchUserData }) => {
               bankName: formData.bankName,
               upiId: formData.upiId || "",
             }
-          : undefined,
+          : undefined, // If bankDetails are already saved, no need to send them again
       };
-
       await axios.post(
         "https://ladlilakshmi.onrender.com/api/v1/withdraw/request",
         payload,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          // Endpoint change: /withdraw
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      toast.success("Withdraw request submitted successfully!");
+      toast.success(
+        "Withdraw request submitted successfully! It will be processed shortly."
+      );
+      setFormData((prev) => ({ ...prev, amount: "" })); // Clear amount field
 
-      setFormData((prev) => ({ ...prev, amount: "" }));
+      // Re-fetch user data to update wallet balances and pending request status
       if (fetchUserData) {
         await fetchUserData();
-        setHasPendingRequest(true);
+        setHasPendingRequest(true); // Assume pending after successful submission
       }
     } catch (err) {
+      console.error("Withdrawal error:", err);
       toast.error(
         err.response?.data?.message ||
           "An error occurred while sending your withdraw request."
@@ -237,38 +210,23 @@ const Withdraw = ({ user, fetchUserData }) => {
     }
   };
 
-  /* ✅ Optimized Button Logic */
-  const isButtonDisabled =
-    isLoading ||
-    hasPendingRequest ||
-    currentLevel < 1 ||
-    Number(formData.amount) <= 0 ||
-    (Number(user?.walletBalance) || 0) <= 0 ||
-    activeDirectMembers < 2 ||
-    !isProofVerified;
-
-  const getButtonLabel = () => {
-    if (isLoading) return "Loading...";
-    if (hasPendingRequest) return "Pending Request";
-    if (activeDirectMembers < 2) return "Need 2 Active Direct Members";
-
-    if (!user?.bankDetails?.bankProof)
-      return "Upload Bank Proof First";
-
-    if (user?.bankProofVerified !== "verified")
-      return "Bank Proof Uploaded — Awaiting Verification";
-
-    return "Submit Withdraw Request";
-  };
-
   return (
     <div className="flex min-h-[calc(100vh-150px)] items-center justify-center p-4">
-      <ToastContainer theme="dark" />
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div className="bg-gradient-to-br from-green-800 to-emerald-900 text-white p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md mx-auto relative overflow-hidden transform transition-all duration-500 ease-in-out hover:scale-[1.01]">
-        
-        {/* Rest UI unchanged */}
-        
-<div className="absolute -top-10 -right-10 w-40 h-40 bg-green-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse"></div>
+        {/* Decorative background elements */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-green-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse"></div>
         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-700 opacity-20 rounded-full mix-blend-lighten filter blur-xl animate-pulse delay-200"></div>
 
         <h2 className="text-3xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg flex items-center justify-center gap-3">
@@ -340,54 +298,11 @@ const Withdraw = ({ user, fetchUserData }) => {
           )}
         </div>
 
-        {/* bank proof upload  */}
-        {/* <BankProofUpload/> */}
-        {user?.bankDetails?.bankProof?  <>
-     <h2>Bank Proof Already Uploaded</h2>
-    </>:<BankProofUpload userId={user._id}/>}
-    {/* </>:<BankProofUpload userId={user._id} onProofUploaded={handleProofUpload} />} */}
-
         <form onSubmit={handleWithdraw} className="space-y-6">
-
+          {/* Bank Details Section (Conditional) */}
           {!bankDetails ? (
-            <div className="bg-green-700/30 p-5 rounded-lg shadow-inner">
-              <h3 className="text-xl font-bold text-yellow-300 mb-4 flex items-center gap-2">
-                <Landmark size={24} /> Enter Bank Details
-              </h3>
-              {[
-                {
-                  label: "Account Holder Name",
-                  name: "accountHolder",
-                  type: "text",
-                },
-                {
-                  label: "Account Number",
-                  name: "accountNumber",
-                  type: "text",
-                },
-                { label: "IFSC Code", name: "ifscCode", type: "text" },
-                { label: "Bank Name", name: "bankName", type: "text" },
-                { label: "UPI ID (Optional)", name: "upiId", type: "text" }, // Changed to UPI ID
-              ].map((field) => (
-                <div key={field.name} className="mb-4 last:mb-0">
-                  <label
-                    htmlFor={field.name}
-                    className="block text-sm font-medium text-green-100 mb-1"
-                  >
-                    {field.label}
-                  </label>
-                  <input
-                    type={field.type}
-                    id={field.name}
-                    name={field.name}
-                    value={formData[field.name]}
-                    onChange={handleChange}
-                    required={field.name !== "upiId"} // UPI ID is optional
-                    className="mt-1 block w-full px-4 py-2 bg-green-900/60 border border-green-600 rounded-md shadow-sm text-white placeholder-green-200 focus:outline-none focus:ring-yellow-400 focus:border-yellow-400 sm:text-sm"
-                    placeholder={`Enter ${field.label}`}
-                  />
-                </div>
-              ))}
+            <div className=" bg-amber-600 p-4 rounded-lg">
+              Please Update your Profile By KYC
             </div>
           ) : (
             <div className="bg-yellow-700/30 border border-yellow-600 rounded-lg p-5 text-sm text-yellow-100 shadow-md">
@@ -443,34 +358,80 @@ const Withdraw = ({ user, fetchUserData }) => {
             You will get after 10% deduction: ₹{Number(formData.amount) * 0.9}
           </div>
 
-          {/* ✅ Optimized Button */}
+          {/* Submit Button */}
           <button
             type="submit"
-            disabled={isButtonDisabled}
-            className={`w-full flex justify-center items-center py-3 px-6 rounded-xl shadow-lg font-extrabold text-lg transition-all duration-300 
+            disabled={
+              isLoading ||
+              hasPendingRequest ||
+              currentLevel < 1 ||
+              Number(formData.amount) <= 0 ||
+              (Number(user?.walletBalance) || 0) <= 0 ||
+              activeDirectMembers < 2 ||
+              !isProofVerified
+            }
+            className={`w-full flex justify-center items-center py-3 px-6 border border-transparent rounded-xl shadow-lg font-extrabold text-lg transition-all duration-300 ease-in-out transform
               ${
-                isButtonDisabled
+                currentLevel < 1 ||
+                isLoading ||
+                hasPendingRequest ||
+                Number(formData.amount) <= 0 ||
+                (Number(user?.walletBalance) || 0) <= 0 ||
+                activeDirectMembers < 2
                   ? "bg-gray-600 text-gray-300 opacity-80 cursor-not-allowed"
-                  : "bg-gradient-to-r from-yellow-500 to-orange-600 text-purple-900 hover:scale-105 active:scale-95"
+                  : "bg-gradient-to-r from-yellow-500 to-orange-600 text-purple-900 hover:from-yellow-600 hover:to-orange-700 hover:scale-105 active:scale-95"
               }`}
           >
-            {/* Spinner if loading */}
-            {isLoading && (
+            {isLoading ? (
               <svg
                 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                 xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
                 fill="none"
+                viewBox="0 0 24 24"
               >
-                <circle cx="12" cy="12" r="10" strokeWidth="4"></circle>
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
+            ) : hasPendingRequest ? (
+              <span className="flex items-center gap-2">
+                <ArrowUpCircle size={24} /> Pending Request
+              </span>
+            ) : activeDirectMembers < 2 ? (
+              <span className="flex items-center gap-2">
+                <Banknote size={24} /> Need 2 Active Direct Members
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                {!user?.bankDetails?.bankProof ? (
+                  <p className="text-red-400">
+                    Please upload bank proof to request withdraw.
+                  </p>
+                ) : user?.bankProofVerified !== "verified" ? (
+                  <p className="text-yellow-400">
+                    Bank proof uploaded — waiting for admin verification. or Rejected by Admin contact support. after 2 days
+                  </p>
+                ) : null}
+                {isProofVerified ? (
+                  <>
+                    <Banknote size={24} />
+                    Submit Withdraw Request
+                  </>
+                ) : (
+                  "Upload Bank Proof First"
+                )}
+              </span>
             )}
-
-            {/* Label based on logic */}
-            <span className="flex items-center gap-2">
-              <Banknote size={24} />
-              {getButtonLabel()}
-            </span>
           </button>
         </form>
 
@@ -481,6 +442,7 @@ const Withdraw = ({ user, fetchUserData }) => {
 };
 
 export default Withdraw;
+
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import { toast, ToastContainer } from "react-toastify";

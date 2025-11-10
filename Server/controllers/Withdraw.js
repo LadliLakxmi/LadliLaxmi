@@ -268,3 +268,55 @@ exports.getMyWithdrawRequests = async (req, res) => {
   }
 };
 
+// ✅ controllers/bankDetailsController.js
+
+
+exports.saveBankDetails = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const userId = req.user.id;
+    const { accountHolder, accountNumber, ifscCode, bankName, upiId } = req.body;
+
+    // ✅ Validate Required Fields
+    if (!accountHolder || !accountNumber || !ifscCode || !bankName) {
+      await session.abortTransaction();
+      return res.status(400).json({
+        message:
+          "All bank details fields including account holder name, account number, IFSC code, bank name are required.",
+      });
+    }
+
+    const user = await User.findById(userId).session(session);
+    if (!user) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // ✅ Save bank details
+    user.bankDetails = {
+      accountHolder,
+      accountNumber,
+      ifscCode,
+      bankName,
+      upiId: upiId || "",
+    };
+
+    await user.save({ session });
+    await session.commitTransaction();
+
+    return res.status(200).json({
+      success: true,
+      message: "Bank details saved successfully",
+      bankDetails: user.bankDetails,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    console.error("Bank detail save error:", error);
+    return res.status(500).json({ message: "Server Error" });
+  } finally {
+    session.endSession();
+  }
+};
+
