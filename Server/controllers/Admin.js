@@ -338,9 +338,32 @@ exports.verifyBankProof = async (req, res) => {
 // ✅ FETCH ALL USERS WHO UPLOADED BANK PROOF
 exports.getAllBankProofs = async (req, res) => {
   try {
-    const users = await User.find({
-      "bankDetails.bankProof": { $exists: true, $ne: "" }
-    }).select("name email phone bankDetails bankProofVerified");
+    // 1. --- PAGINATION & LIMIT ---
+    // Frontend se 'page' lo, default 1
+    const page = parseInt(req.query.page) || 1;
+    // Limit set karo, default 100 (jaisa aapne kaha)
+    const limit = parseInt(req.query.limit) || 100;
+    // Calculate karo kitne documents skip karne hain
+    const skip = (page - 1) * limit;
+
+    // Filter query ko alag se define karein taaki usey count ke liye bhi use kar sakein
+    const queryFilter = {
+      "bankDetails.bankProof": { $exists: true, $ne: "" }, // Sirf woh jinhone upload kiya
+      "bankProofVerified": { $ne: "rejected" } // ✅ AAPKI NAYI REQUEST: 'rejected' waale mat dikhao
+    };
+
+    // 2. --- TOTAL COUNT ---
+    // Pagination ke bina total documents count karo
+    const totalDocs = await User.countDocuments(queryFilter);
+
+    if (totalDocs === 0) {
+      return res.status(404).json({ message: "No bank proofs found" });
+    }
+
+    const users = await User.find(queryFilter).select("name email phone bankDetails bankProofVerified")
+    .sort({ updatedAt: -1 })
+    .skip(skip)               // Pagination: Skip docs
+    .limit(limit);              // Pagination: Limit docs
 
     if (!users || users.length === 0) {
       return res.status(404).json({ message: "No bank proofs found" });
@@ -348,6 +371,14 @@ exports.getAllBankProofs = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      // Pagination metadata (frontend ke liye)
+      totalDocs: totalDocs,
+      totalPages: Math.ceil(totalDocs / limit),
+      currentPage: page,
+      limit: limit,
+
+      // Data
+      countOnPage: users.length, // Is page par kitne docs hain
       count: users.length,
       proofs: users.map(user => ({
         userId: user._id,
@@ -355,8 +386,9 @@ exports.getAllBankProofs = async (req, res) => {
         email: user.email,
         phone: user.phone,
         bankDetails: user.bankDetails,
-        proofUrl: user.bankDetails.bankProof,
+        proofUrl: user.bankDetails.bankProof.url,
         status: user.bankProofVerified || "pending",
+        lastUpdated: user.updatedAt
       }))
     });
 

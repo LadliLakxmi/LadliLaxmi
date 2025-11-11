@@ -75,7 +75,9 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
       setBankSuccess("✅ Bank details saved successfully!");
       setBankDetails(response.data.bankDetails);
     } catch (err) {
-      setBankError(err.response?.data?.message || "Failed to save bank details.");
+      setBankError(
+        err.response?.data?.message || "Failed to save bank details."
+      );
     } finally {
       setLoading(false);
     }
@@ -96,13 +98,16 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setProfileSuccess(response.data.message || "Profile updated successfully!");
+      setProfileSuccess(
+        response.data.message || "Profile updated successfully!"
+      );
       if (onProfileUpdated) onProfileUpdated(response.data.user);
 
       setTimeout(() => onClose(), 1500);
     } catch (err) {
       setProfileError(
-        err.response?.data?.message || "Failed to update profile. Please try again."
+        err.response?.data?.message ||
+          "Failed to update profile. Please try again."
       );
     } finally {
       setLoading(false);
@@ -110,11 +115,14 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
   };
 
   return (
-   <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4 overflow-y-auto">
-  <div className="flex lg:flex-row flex-col gap-4 bg-white rounded-lg shadow-xl w-full lg:max-w-[80%] p-6 relative animate-scaleIn max-h-[90vh] overflow-y-auto">
-  {/* ------------ LEFT SIDE: PROFILE UPDATE ------------ */}
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4 overflow-y-auto">
+      <div className="flex lg:flex-row flex-col gap-4 bg-white rounded-lg shadow-xl w-full lg:max-w-[80%] p-6 relative animate-scaleIn max-h-[90vh] overflow-y-auto">
+        {/* ------------ LEFT SIDE: PROFILE UPDATE ------------ */}
         <div className="lg:w-1/2">
-          <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          >
             <X size={24} />
           </button>
 
@@ -124,51 +132,106 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* NAME */}
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Name
             </label>
-            <input type="text"  disabled={!!user?.name} value={name} onChange={(e) => setName(e.target.value)}
-              required className="text-black block w-full px-3 py-2 border rounded-md" />
+            <input
+              type="text"
+              disabled={!!user?.name}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="text-black block w-full px-3 py-2 border rounded-md"
+            />
 
             {/* EMAIL */}
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Email
             </label>
-            <input type="email" disabled={!!user?.email} value={email} onChange={(e) => setEmail(e.target.value)}
-              required className="text-black block w-full px-3 py-2 border rounded-md" />
+            <input
+              type="email"
+              disabled={!!user?.email}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="text-black block w-full px-3 py-2 border rounded-md"
+            />
 
             {/* PHONE */}
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Phone
             </label>
-            <input type="tel" disabled={!!user?.phone} value={phone} onChange={(e) => setPhone(e.target.value)}
-              required className="text-black block w-full px-3 py-2 border rounded-md" />
+            <input
+              type="tel"
+              disabled={!!user?.phone}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              className="text-black block w-full px-3 py-2 border rounded-md"
+            />
 
             {/* PAN CARD */}
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               PanCard
             </label>
-            <input type="text" disabled={!!user?.panCard} value={panCard} onChange={(e) => setPanCard(e.target.value)}
-              required className="text-black block w-full px-3 py-2 border rounded-md" />
+            <input
+              type="text"
+              disabled={!!user?.panCard}
+              value={panCard}
+              onChange={(e) => setPanCard(e.target.value)}
+              required
+              className="text-black block w-full px-3 py-2 border rounded-md"
+            />
 
-            {profileError && <p className="text-red-600 text-sm text-center">{profileError}</p>}
-            {profileSuccess && <p className="text-green-600 text-sm text-center">{profileSuccess}</p>}
+            {profileError && (
+              <p className="text-red-600 text-sm text-center">{profileError}</p>
+            )}
+            {profileSuccess && (
+              <p className="text-green-600 text-sm text-center">
+                {profileSuccess}
+              </p>
+            )}
 
-            <button type="submit" disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white">
-              {loading ? "Updating..." : <><Save size={20} /> Save Changes</>}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex justify-center items-center gap-2 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {loading ? (
+                "Updating..."
+              ) : (
+                <>
+                  <Save size={20} /> Save Changes
+                </>
+              )}
             </button>
           </form>
           <div className="mt-8">
-          <BankProofUpload userId={user._id}/>
-
+            <BankProofUpload
+              userId={user._id}
+              currentProofUrl={user?.bankDetails?.bankProof?.url}
+              currentStatus={user?.bankProofVerified}
+            />
           </div>
         </div>
 
         {/* ------------ RIGHT SIDE: BANK / KYC ------------ */}
         <div className="lg:w-1/2 flex flex-col items-center p-4 rounded-lg">
-          <h2 className="text-black mb-4 text-xl "><strong>KYC</strong></h2>
-
+          <h2 className="text-black mb-4 text-xl ">
+            <strong>KYC</strong>
+          </h2>
 
           <form onSubmit={handleBankFormSubmit} className="space-y-6 w-full">
             {!bankDetails ? (
@@ -177,20 +240,26 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
                   <Landmark size={24} /> Enter Bank Details
                 </h3>
 
-                {["accountHolder", "accountNumber", "ifscCode", "bankName", "upiId"].map(
-                  (field, i) => (
-                    <input
-                      key={i}
-                      type="text"
-                      name={field}
-                      value={formData[field]}
-                      placeholder={field === "upiId" ? "UPI ID (Optional)" : field}
-                      onChange={handleChange}
-                      required={field !== "upiId"}
-                      className="block w-full px-4 py-2 rounded-md bg-green-900/60 border text-white placeholder-green-200 mb-3"
-                    />
-                  )
-                )}
+                {[
+                  "accountHolder",
+                  "accountNumber",
+                  "ifscCode",
+                  "bankName",
+                  "upiId",
+                ].map((field, i) => (
+                  <input
+                    key={i}
+                    type="text"
+                    name={field}
+                    value={formData[field]}
+                    placeholder={
+                      field === "upiId" ? "UPI ID (Optional)" : field
+                    }
+                    onChange={handleChange}
+                    required={field !== "upiId"}
+                    className="block w-full px-4 py-2 rounded-md bg-green-900/60 border text-white placeholder-green-200 mb-3"
+                  />
+                ))}
               </div>
             ) : (
               <div className="bg-yellow-700/30 border border-yellow-600 rounded-lg p-5 text-sm text-black shadow-md">
@@ -198,27 +267,53 @@ const UpdateProfileForm = ({ user, onClose, onProfileUpdated }) => {
                   <Landmark size={24} /> Your Saved Bank Details
                 </h3>
 
-                <p><strong>Account Holder:</strong> {bankDetails.accountHolder}</p>
-                <p><strong>Account Number:</strong> {bankDetails.accountNumber}</p>
-                <p><strong>IFSC Code:</strong> {bankDetails.ifscCode}</p>
-                <p><strong>Bank Name:</strong> {bankDetails.bankName}</p>
-                {bankDetails.upiId && <p><strong>UPI ID:</strong> {bankDetails.upiId}</p>}
+                <p>
+                  <strong>Account Holder:</strong> {bankDetails.accountHolder}
+                </p>
+                <p>
+                  <strong>Account Number:</strong> {bankDetails.accountNumber}
+                </p>
+                <p>
+                  <strong>IFSC Code:</strong> {bankDetails.ifscCode}
+                </p>
+                <p>
+                  <strong>Bank Name:</strong> {bankDetails.bankName}
+                </p>
+                {bankDetails.upiId && (
+                  <p>
+                    <strong>UPI ID:</strong> {bankDetails.upiId}
+                  </p>
+                )}
               </div>
             )}
 
-            {bankError && <p className="text-red-400 text-center">{bankError}</p>}
-            {bankSuccess && <p className="text-green-400 text-center">{bankSuccess}</p>}
+            {bankError && (
+              <p className="text-red-400 text-center">{bankError}</p>
+            )}
+            {bankSuccess && (
+              <p className="text-green-400 text-center">{bankSuccess}</p>
+            )}
 
-           <button
-  type="submit"
-  disabled={loading || !!bankDetails}
-  className={`w-full flex justify-center items-center py-3 rounded-xl shadow-lg text-white gap-2 
-    ${loading || !!bankDetails ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"}
+            <button
+              type="submit"
+              disabled={loading || !!bankDetails}
+              className={`w-full flex justify-center items-center py-3 rounded-xl shadow-lg text-white gap-2 
+    ${
+      loading || !!bankDetails
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-green-600 hover:bg-green-700"
+    }
   `}
->
-  {loading ? "Saving..." : <> <Banknote size={22} /> Save Bank Details </>}
-</button>
-
+            >
+              {loading ? (
+                "Saving..."
+              ) : (
+                <>
+                  {" "}
+                  <Banknote size={22} /> Save Bank Details{" "}
+                </>
+              )}
+            </button>
           </form>
         </div>
       </div>

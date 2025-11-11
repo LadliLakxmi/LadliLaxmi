@@ -37,10 +37,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       sparse: true, // Allows null/undefined if not unique
-      // required:true
-      // Consider adding a unique constraint if phone numbers should be unique,
-      // but use 'sparse: true' if some users might not have one.
-    },
+  },
 
     referralCode: {
       type: String,
@@ -125,8 +122,15 @@ const userSchema = new mongoose.Schema(
       bankName: { type: String },
       upiId: { type: String }, // Add UPI ID here
       bankProof: {
-        type: String, // Cloudinary URL
-        default: "",},
+        url: {
+          type: String,
+          default: "",
+        },
+        public_id: {
+          type: String,
+          default: "",
+        },
+      },
     },
     bankProofVerified: {
       type: String,
@@ -198,10 +202,5 @@ userSchema.virtual("totalDonationsReceived").get(function () {
 userSchema.virtual("totalDonationsSent").get(function () {
   return this.donationsSent?.length;
 });
-
-// userSchema.index({ referralCode: 1 }, { unique: true });
-// userSchema.index({ email: 1 }, { unique: true });
-// userSchema.index({ referredBy: 1 });
-// userSchema.index({ currentLevel: 1 });
 
 module.exports = mongoose.model("User", userSchema);
