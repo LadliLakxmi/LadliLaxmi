@@ -5,6 +5,8 @@ import User from "../models/User.js";
 import multer from "multer";
 import sharp from "sharp";
 import fs from "fs";
+import path from "path"; // ✅ 1. Path module import karein
+import { tmpdir } from "os"; // ✅ 2. OS ka temporary directory lene ke liye
 
 // ✅ Function to remove spaces & special chars from filename
 function cleanFileName(originalName) {
@@ -17,12 +19,16 @@ function cleanFileName(originalName) {
 // ✅ Multer using memory, NOT saving to disk
 const storage = multer.memoryStorage();
 export const upload = multer({ storage });
-const compressedPath = `temp-${Date.now()}.jpg`;
-
+// const compressedPath = `temp-${Date.now()}.jpg`;
 
 // 👉 Bank Proof Upload Controller
 export const uploadBankProof = async (req, res) => {
+  const compressedPath = path.join(tmpdir(), `temp-${req.body.userId}-${Date.now()}.jpg`);
   try {
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file was uploaded." });
+    }
     const { userId } = req.body;
     const user = await User.findById(userId);
 
@@ -73,10 +79,6 @@ export const uploadBankProof = async (req, res) => {
       url: result.secure_url,
       public_id: result.public_id
     };
-
-    // ✅ remove temp files
-     fs.unlinkSync(req.file.path);
-     fs.unlinkSync(compressedPath);
 
     user.bankProofVerified = "pending"; // ← important: admin will verify later
     await user.save();
