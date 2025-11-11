@@ -348,7 +348,7 @@ exports.getAllBankProofs = async (req, res) => {
 
     // Filter query ko alag se define karein taaki usey count ke liye bhi use kar sakein
     const queryFilter = {
-      "bankDetails.bankProof": { $exists: true, $ne: "" }, // Sirf woh jinhone upload kiya
+      "bankDetails.bankProof.url": { $exists: true, $ne: "" }, // Sirf woh jinhone upload kiya
       "bankProofVerified": { $ne: "rejected" } // ✅ AAPKI NAYI REQUEST: 'rejected' waale mat dikhao
     };
 
