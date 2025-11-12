@@ -367,8 +367,7 @@ const Withdraw = ({ user, fetchUserData }) => {
               currentLevel < 1 ||
               Number(formData.amount) <= 0 ||
               (Number(user?.walletBalance) || 0) <= 0 ||
-              activeDirectMembers < 2 ||
-              !isProofVerified
+              activeDirectMembers < 2 
             }
             className={`w-full flex justify-center items-center py-3 px-6 border border-transparent rounded-xl shadow-lg font-extrabold text-lg transition-all duration-300 ease-in-out transform
               ${
