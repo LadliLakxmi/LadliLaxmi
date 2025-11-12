@@ -413,7 +413,7 @@ const Withdraw = ({ user, fetchUserData }) => {
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                {!user?.bankDetails?.bankProof ? (
+                {/* {!user?.bankDetails?.bankProof ? (
                   <p className="text-red-400">
                     Please upload bank proof to request withdraw.
                   </p>
@@ -421,15 +421,19 @@ const Withdraw = ({ user, fetchUserData }) => {
                   <p className="text-yellow-400">
                     Bank proof uploaded — waiting for admin verification. or Rejected by Admin contact support. after 2 days
                   </p>
-                ) : null}
-                {isProofVerified ? (
+                ) : null} */}
+                {/* {isProofVerified ? (
                   <>
                     <Banknote size={24} />
                     Submit Withdraw Request
                   </>
                 ) : (
                   "Upload Bank Proof First"
-                )}
+                )} */}
+                <>
+                    <Banknote size={24} />
+                    Submit Withdraw Request
+                  </>
               </span>
             )}
           </button>
