@@ -17,13 +17,30 @@ function cleanFileName(originalName) {
 }
 
 // ✅ Multer using memory, NOT saving to disk
-const storage = multer.memoryStorage();
-export const upload = multer({ storage });
-// const compressedPath = `temp-${Date.now()}.jpg`;
+// const storage = multer.memoryStorage();
+
+// ✅ NEW CODE (Ise istemal karein)
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, tmpdir()); // OS ki temporary directory me save karega
+  },
+  filename: (req, file, cb) => {
+    // Ek unique filename banayein
+    const uniqueSuffix = `${req.body.userId || 'unknown'}-${Date.now()}`;
+    cb(null, `${uniqueSuffix}-${cleanFileName(file.originalname)}`);
+  }
+});
+
+// ✅ BEST PRACTICE: Ek file size limit bhi set karein (jaise 20MB)
+export const upload = multer({
+  storage: storage, // Naya diskStorage
+  limits: { fileSize: 5 * 1024 * 1024 } // 20 MB limit
+});
 
 // 👉 Bank Proof Upload Controller
 export const uploadBankProof = async (req, res) => {
   const compressedPath = path.join(tmpdir(), `temp-${req.body.userId}-${Date.now()}.jpg`);
+  const originalPath = req.file?.path;
   try {
 
     if (!req.file) {
@@ -47,6 +64,9 @@ export const uploadBankProof = async (req, res) => {
     
     // 1. ✅ CHECK: Agar already verified hai, toh re-upload block kar do
     if (user.bankProofVerified === "verified") {
+      if (fs.existsSync(originalPath)) {
+        fs.unlinkSync(originalPath);
+      }
       return res.status(400).json({
         success: false,
         message: "Bank proof is already verified. Re-upload not allowed.",
@@ -65,7 +85,7 @@ export const uploadBankProof = async (req, res) => {
     }
     // 3. ✅ COMPRESS & SAVE
 
-    await sharp(req.file.buffer)
+    await sharp(originalPath)
       .jpeg({ quality: 70 })
       .toFile(compressedPath);
 
@@ -90,11 +110,17 @@ export const uploadBankProof = async (req, res) => {
       status: user.bankProofVerified,
     });
   } catch (err) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ success: false, message: "File is too large! Limit is 5MB."});
+    }
     res.status(500).json({ success: false, message: err.message });
   }finally {
     // 6. ✅ CLEANUP: Temporary file ko hamesha delete karein (success ya error)
     if (fs.existsSync(compressedPath)) {
-      fs.unlinkSync(compressedPath);
+      fs.unlinkSync(compressedPath);// Compressed file delete karein
+    }
+    if (originalPath && fs.existsSync(originalPath)) { 
+      fs.unlinkSync(originalPath); // Original uploaded file delete karein
     }
   }
 };
