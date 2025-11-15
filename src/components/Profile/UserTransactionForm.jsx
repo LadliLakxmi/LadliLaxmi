@@ -52,7 +52,9 @@ const UserTransactionForm = () => {
   const handleChange = (e) => {
     // setFormData({...formData, [e.target.name]: e.target.value });
     const { name, value } = e.target; // ✅ FIX: 'name' aur 'value' ko yahaan define karein
-  setFormData({ ...formData, [name]: value });
+    const processedValue = name === 'amount' ? parseFloat(value) || 0 : value;
+
+  setFormData({ ...formData, [name]: processedValue });
      if (name === "UTRno") {
       // Clear previous timeout
       if (utrCheckTimeoutRef.current) {
