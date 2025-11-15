@@ -17,38 +17,59 @@ import axios from "axios";
 const AllFunds = () => {
   const [transactions, setTransactions] = useState([]);
   const [errorMessage, setErrorMessage] = useState(""); // For displaying API errors
+  // ✅ Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = async (page = 1) => {
+    setLoading(true);
+    setErrorMessage("");
   try {
-    const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/transactions");
-    const sorted = res.data.transactions.sort((a, b) => {
-      // Priority: pending > approved
-      if (a.status === "pending" && b.status !== "pending") return -1;
-      if (a.status !== "pending" && b.status === "pending") return 1;
+    // ✅ API call ko page aur limit ke sath update karein
+      const res = await axios.get(
+        `https://ladlilakshmi.onrender.com/api/v1/transactions?page=${page}&limit=30`
+      );
 
-      // Within same status, latest first
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-
-    setTransactions(sorted);
+    // ✅ Naya data aur pagination state set karein
+      setTransactions(res.data.transactions);
+      setCurrentPage(res.data.currentPage);
+      setTotalPages(res.data.totalPages);
   } catch (err) {
           setErrorMessage("Failed to fetch transactions. Please try again.");
-  }
+  }finally {
+      setLoading(false);
+    }
 };
 
 
   const updateStatus = async (id, newStatus) => {
     try {
       await axios.put(`https://ladlilakshmi.onrender.com/api/v1/transaction/${id}/status`, { status: newStatus });
-      fetchTransactions(); // Refresh list
+      // ✅ Refresh current page (na ki sab kuch)
+      fetchTransactions(currentPage);
     } catch (err) {
  setErrorMessage("Failed to update transaction status. Please try again.");
     }
   };
 
   useEffect(() => {
-    fetchTransactions();
+    fetchTransactions(1);
   }, []);
+
+  // ✅ Page change handlers
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      fetchTransactions(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      fetchTransactions(currentPage - 1);
+    }
+  };
+
 
   return (
     <div className="p-4  w-full overflow-x-auto">
@@ -59,6 +80,10 @@ const AllFunds = () => {
           <span className="block sm:inline"> {errorMessage}</span>
         </div>
       )}
+
+      {/* ✅ Loading indicator */}
+      {loading && <p className="text-center">Loading transactions...</p>}
+
       <table className="w-full table-auto border border-gray-300">
         <thead className="bg-gray-200 text-black">
           <tr>
@@ -104,6 +129,28 @@ const AllFunds = () => {
           ))}
         </tbody>
       </table>
+
+      {/* ✅ PAGINATION BUTTONS */}
+      <div className="flex justify-between items-center mt-4">
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1 || loading}
+          className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded disabled:bg-gray-300"
+        >
+          Previous
+        </button>
+        <span className="text-gray-200">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages || loading}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:bg-gray-300"
+        >
+          Next
+        </button>
+      </div>
+
     </div>
   );
 };

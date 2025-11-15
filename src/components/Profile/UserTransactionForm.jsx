@@ -28,9 +28,13 @@ const UserTransactionForm = () => {
       // For now, we will simulate by fetching all transactions and checking locally.
       // In a real application, you should create a specific backend endpoint
       // like GET /api/v1/transactions/check-utr?utr=YOUR_UTR_NO
-      const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/transactions");
-      const transactions = res.data.transactions;
-      const foundDuplicate = transactions.some(tx => tx.UTRno === utr);
+      // const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/transactions");
+      // const transactions = res.data.transactions;
+      // const foundDuplicate = transactions.some(tx => tx.UTRno === utr);
+
+      const res = await axios.get(`https://ladlilakshmi.onrender.com/api/v1/transaction/check-utr/${utr}`);
+      // res.data ab { exists: true } ya { exists: false } hoga
+      const foundDuplicate = res.data.exists;
 
       setIsUtrDuplicate(foundDuplicate);
       if (foundDuplicate) {
@@ -45,7 +49,9 @@ const UserTransactionForm = () => {
     }
   };
   const handleChange = (e) => {
-    setFormData({...formData, [e.target.name]: e.target.value });
+    // setFormData({...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target; // ✅ FIX: 'name' aur 'value' ko yahaan define karein
+  setFormData({ ...formData, [name]: value });
      if (name === "UTRno") {
       // Clear previous timeout
       if (utrCheckTimeoutRef.current) {
