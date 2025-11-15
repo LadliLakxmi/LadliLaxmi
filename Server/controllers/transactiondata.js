@@ -12,11 +12,11 @@ exports.transactiondetails = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-     // --- NEW: Prevent duplicate UTRno ---
-    const existingTransaction = await TransactionDetail.findOne({ UTRno });
-    if (existingTransaction) {
-      return res.status(409).json({ message: "A transaction with this UTR number already exists." });
-    }
+    //  // --- NEW: Prevent duplicate UTRno ---
+    // const existingTransaction = await TransactionDetail.findOne({ UTRno });
+    // if (existingTransaction) {
+    //   return res.status(409).json({ message: "A transaction with this UTR number already exists." });
+    // }
 
     const newTransaction = new TransactionDetail({
       name,
@@ -34,24 +34,12 @@ exports.transactiondetails = async (req, res) => {
       transaction: newTransaction,
     });
   } catch (error) {
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.UTRno) {
+      return res.status(409).json({
+        message: "A transaction with this UTR number already exists."
+      });
+    } 
     console.error("Transaction save error:", error);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-};
-
-// 2. Get All Transactions (admin dashboard)
-exports.getAllTransactions = async (req, res) => {
-  try {
-    const transactions = await TransactionDetail.find().sort({ createdAt: -1 });
-    return res.status(200).json({
-      message: "Fetched all transactions",
-      transactions,
-    });
-  } catch (error) {
-    console.error("Fetch transactions error:", error);
     return res.status(500).json({
       message: "Internal server error",
       error: error.message,
@@ -137,25 +125,25 @@ exports.updateTransactionStatus = async (req, res) => {
 };
 
 // 🟩 Get All Add Fund Transactions for Logged-in User
-// exports.getUserTransactions = async (req, res) => {
-//   try {
-//     // Auth middleware sets req.user from JWT
-//     const userEmail = req.user.email;
+exports.getUserTransactions = async (req, res) => {
+  try {
+    // Auth middleware sets req.user from JWT
+    const userEmail = req.user.email;
 
-//     const transactions = await TransactionDetail.find({ email: userEmail })
-//       .sort({ createdAt: -1 })
-//       .select("name email Referalcode amount UTRno status createdAt updatedAt");
+    const transactions = await TransactionDetail.find({ email: userEmail })
+      .sort({ createdAt: -1 })
+      .select("name email Referalcode amount UTRno status createdAt updatedAt");
 
-//     return res.status(200).json({
-//       message: "User transactions fetched successfully",
-//       count: transactions.length,
-//       transactions,
-//     });
-//   } catch (error) {
-//     console.error("Fetch user transactions error:", error);
-//     return res.status(500).json({ message: "Internal Server Error", error: error.message });
-//   }
-// };
+    return res.status(200).json({
+      message: "User transactions fetched successfully",
+      count: transactions.length,
+      transactions,
+    });
+  } catch (error) {
+    console.error("Fetch user transactions error:", error);
+    return res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};
 
 // controllers/transactiondata.js
 

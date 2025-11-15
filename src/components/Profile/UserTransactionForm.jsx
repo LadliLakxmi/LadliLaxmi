@@ -6,7 +6,7 @@ const UserTransactionForm = () => {
     name: "",
     email: "",
     Referalcode: "",
-    amount: "",
+    amount: 0,
     UTRno: ""
   });
   const [isUtrDuplicate, setIsUtrDuplicate] = useState(false);
@@ -67,14 +67,20 @@ const UserTransactionForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormMessage({ type: "", text: "" }); // Clear previous messages
+    // ✅ FIX: Validation ko alag-alag check karein
+  const { name, email, Referalcode, amount, UTRno } = formData;
 
     // Basic client-side validation for empty fields (though backend also validates)
-    const requiredFields = ["name", "email", "Referalcode", "amount", "UTRno"];
-    const isFormValid = requiredFields.every(field => formData[field].trim() !== "");
-    if (!isFormValid) {
-      setFormMessage({ type: "error", text: "Please fill in all fields." });
-      return;
-    }
+if (!name.trim() || !email.trim() || !Referalcode.trim() || !UTRno.trim()) {
+    setFormMessage({ type: "error", text: "Please fill in all text fields." });
+    return;
+  }
+
+  // Check karein ki amount ek valid number hai aur 0 se zyada hai
+  if (typeof amount !== 'number' || amount <= 0) {
+    setFormMessage({ type: "error", text: "Please enter a valid amount." });
+    return;
+  }
 
     // Don't submit if UTR is detected as duplicate
     if (isUtrDuplicate) {
@@ -88,7 +94,7 @@ const UserTransactionForm = () => {
         name: "",
         email: "",
         Referalcode: "",
-        amount: "",
+        amount: 0,
         UTRno: ""
       });
             setIsUtrDuplicate(false); // Reset duplicate status after successful submission
