@@ -155,17 +155,61 @@ exports.getAllTransactions = async (req, res) => {
     const limit = parseInt(req.query.limit) || 30; // Ek page par 20 records
     const skip = (page - 1) * limit; // Kitne records skip karne hain
 
-    // 2. Database se TOTAL count pata karein (pagination ke liye)
-    const totalTransactions = await TransactionDetail.countDocuments();
+    // // 2. Database se TOTAL count pata karein (pagination ke liye)
+    // const totalTransactions = await TransactionDetail.countDocuments();
     
-    // 3. Sorting ko backend me karein:
-    //    status: -1 (Z-A) = "rejected", "pending", "approved"
-    //    createdAt: -1 = Naya sabse upar
-    const transactions = await TransactionDetail.find()
-      .sort({ createdAt: -1 }) 
-      .skip(skip)
-      .limit(limit);
+    // // 3. Sorting ko backend me karein:
+    // //    status: -1 (Z-A) = "rejected", "pending", "approved"
+    // //    createdAt: -1 = Naya sabse upar
+    // const transactions = await TransactionDetail.find()
+    //   .sort({ createdAt: -1 }) 
+    //   .skip(skip)
+    //   .limit(limit);
 
+    // ✅ Aggregation Pipeline for Custom Sort (pending > approved > rejected)
+    const pipeline = [
+      {
+        // 1. Naya 'sortPriority' field banayein
+        $addFields: {
+          sortPriority: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$status", "pending"] }, then: 1 },
+                { case: { $eq: ["$status", "approved"] }, then: 2 },
+                { case: { $eq: ["$status", "rejected"] }, then: 3 }
+              ],
+              default: 4 
+            }
+          }
+        }
+      },
+      {
+        // 2. Custom field se sort karein, phir date se
+        $sort: {
+          sortPriority: 1,  // 1 = Ascending (1, 2, 3)
+          createdAt: -1   // Naya sabse upar
+        }
+      },
+      {
+        // 3. Pagination ke liye $facet
+        $facet: {
+          metadata: [ 
+            { $count: 'totalTransactions' }
+          ],
+          data: [ 
+            { $skip: skip },
+            { $limit: limit }
+          ]
+        }
+      }
+    ];
+
+    // Pipeline ko run karein
+    const results = await TransactionDetail.aggregate(pipeline);
+
+    const transactions = results[0].data;
+    const totalTransactions = results[0].metadata[0] ? results[0].metadata[0].totalTransactions : 0;
+    
     // 4. Frontend ko sab kuch bhejein
     return res.status(200).json({
       message: "Fetched all transactions",
