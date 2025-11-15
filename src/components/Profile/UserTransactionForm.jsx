@@ -35,6 +35,7 @@ const UserTransactionForm = () => {
       const res = await axios.get(`https://ladlilakshmi.onrender.com/api/v1/transaction/check-utr/${utr}`);
       // res.data ab { exists: true } ya { exists: false } hoga
       const foundDuplicate = res.data.exists;
+      console.log("UTR Duplication Check:", res.data);
 
       setIsUtrDuplicate(foundDuplicate);
       if (foundDuplicate) {

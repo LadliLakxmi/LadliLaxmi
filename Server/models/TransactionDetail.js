@@ -23,7 +23,7 @@ const TransactionDetailSchema = new mongoose.Schema(
       required: true,
       trim: true,
       unique: true, 
-    index: true,
+      index: true,
       set: (value) => value.replace(/\s+/g, ""), // ✅ removes all spaces inside string
     },
 

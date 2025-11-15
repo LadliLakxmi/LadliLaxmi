@@ -162,7 +162,7 @@ exports.getAllTransactions = async (req, res) => {
     //    status: -1 (Z-A) = "rejected", "pending", "approved"
     //    createdAt: -1 = Naya sabse upar
     const transactions = await TransactionDetail.find()
-      .sort({ status: -1, createdAt: -1 }) 
+      .sort({ createdAt: -1 }) 
       .skip(skip)
       .limit(limit);
 
