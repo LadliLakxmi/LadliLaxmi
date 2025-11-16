@@ -59,15 +59,13 @@ const UserTransactionForm = ({user}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormMessage({ type: "", text: "" }); // Clear previous messages
-    // ✅ FIX: Validation ko alag-alag check karein
-  const { name, email, Referalcode, amount, UTRno } = formData;
+    setFormMessage({ type: "", text: "" });
 
-    // Basic client-side validation for empty fields (though backend also validates)
-if (!UTRno.trim()) {
-    setFormMessage({ type: "error", text: "Please fill in UTR number" });
-    return;
-  }
+    // Yeh validation ab 'UTRno' (state se) ko check karega
+    if (!UTRno.trim()) { 
+      setFormMessage({ type: "error", text: "Please fill in UTR number" });
+      return;
+    }
 
     // Don't submit if UTR is detected as duplicate
     if (isUtrDuplicate) {
@@ -75,7 +73,8 @@ if (!UTRno.trim()) {
       return;
     }
     try {
-      const payload = { UTRno };
+      // Yeh payload ab 'UTRno' (state se) ko bhejega
+      const payload = { UTRno: UTRno };
       await axios.post("https://ladlilakshmi.onrender.com/api/v1/transaction", payload);
       alert("Transaction Submitted Successfully");
       setUTRno(""); // Form reset karein
@@ -94,9 +93,11 @@ if (!UTRno.trim()) {
       }
     }
   };
- // Determine if the submit button should be disabled
-  const isSubmitDisabled = !formData.UTRno || isUtrDuplicate;
 
+
+  // Yeh ab 'UTRno' (state se) ko check karega
+  const isSubmitDisabled = !UTRno || isUtrDuplicate;
+ 
   return (
     <form onSubmit={handleSubmit} className="p-4 max-w-xl mx-auto bg-white rounded-lg shadow-xl space-y-4 font-inter">
       <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">Submit Your Transaction</h2>
