@@ -9,7 +9,7 @@ const {
    checkUtrExists
 } = require("../controllers/transactiondata");
 
-router.post("/transaction", transactiondetails);
+router.post("/transaction",auth, transactiondetails);
 router.get("/transactions", getAllTransactions);
 router.put("/transaction/:id/status", updateTransactionStatus);
 router.get("/my-transactions",auth, getUserTransactions);

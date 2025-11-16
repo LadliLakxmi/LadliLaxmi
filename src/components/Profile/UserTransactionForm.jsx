@@ -73,9 +73,20 @@ const UserTransactionForm = ({user}) => {
       return;
     }
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setFormMessage({ type: "error", text: "Token not found. Please log in again." });
+        return;
+      }
       // Yeh payload ab 'UTRno' (state se) ko bhejega
       const payload = { UTRno: UTRno };
-      await axios.post("https://ladlilakshmi.onrender.com/api/v1/transaction", payload);
+
+      const config = {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      };
+      await axios.post("https://ladlilakshmi.onrender.com/api/v1/transaction", payload,config);
       alert("Transaction Submitted Successfully");
       setUTRno(""); // Form reset karein
       setIsUtrDuplicate(false);
