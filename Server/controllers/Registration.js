@@ -7,7 +7,8 @@ require("dotenv").config();
 // Ensure process.env.JWT_SECRET is set in your .env file
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user._id, email: user.email, role: user.role },
+    { id: user._id, email: user.email, role: user.role,name: user.name, 
+      referralCode: user.referralCode },
     process.env.JWT_SECRET,
     {
       expiresIn: "1d",

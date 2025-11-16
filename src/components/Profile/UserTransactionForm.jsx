@@ -1,14 +1,15 @@
 import React, { useState,useRef } from "react";
 import axios from "axios";
 
-const UserTransactionForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    Referalcode: "",
-    amount: 0,
-    UTRno: ""
-  });
+const UserTransactionForm = ({user}) => {
+  // const [formData, setFormData] = useState({
+  //   name: "",
+  //   email: "",
+  //   Referalcode: "",
+  //   amount: 0,
+  //   UTRno: ""
+  // });
+  const [UTRno, setUTRno] = useState("");
   const [isUtrDuplicate, setIsUtrDuplicate] = useState(false);
   const [utrValidationMessage, setUtrValidationMessage] = useState("");
   const [formMessage, setFormMessage] = useState({ type: "", text: "" }); // { type: 'success' | 'error', text: 'message' }
@@ -24,14 +25,7 @@ const UserTransactionForm = () => {
     }
 
     try {
-      // Assuming you'll add an API endpoint for checking UTR existence
-      // For now, we will simulate by fetching all transactions and checking locally.
-      // In a real application, you should create a specific backend endpoint
-      // like GET /api/v1/transactions/check-utr?utr=YOUR_UTR_NO
-      // const res = await axios.get("https://ladlilakshmi.onrender.com/api/v1/transactions");
-      // const transactions = res.data.transactions;
-      // const foundDuplicate = transactions.some(tx => tx.UTRno === utr);
-
+   
       const res = await axios.get(`https://ladlilakshmi.onrender.com/api/v1/transaction/check-utr/${utr}`);
       // res.data ab { exists: true } ya { exists: false } hoga
       const foundDuplicate = res.data.exists;
@@ -50,21 +44,17 @@ const UserTransactionForm = () => {
     }
   };
   const handleChange = (e) => {
-    // setFormData({...formData, [e.target.name]: e.target.value });
-    const { name, value } = e.target; // ✅ FIX: 'name' aur 'value' ko yahaan define karein
-    const processedValue = name === 'amount' ? parseFloat(value) || 0 : value;
+    const { value } = e.target;
+    setUTRno(value); // Sirf UTR ko update karein
 
-  setFormData({ ...formData, [name]: processedValue });
-     if (name === "UTRno") {
-      // Clear previous timeout
-      if (utrCheckTimeoutRef.current) {
-        clearTimeout(utrCheckTimeoutRef.current);
-      }
-      // Set a new timeout to check UTR after user stops typing
-      utrCheckTimeoutRef.current = setTimeout(() => {
-        checkUtrDuplication(value);
-      }, 500); // 500ms delay
+
+    // UTR check logic
+    if (utrCheckTimeoutRef.current) {
+      clearTimeout(utrCheckTimeoutRef.current);
     }
+    utrCheckTimeoutRef.current = setTimeout(() => {
+      checkUtrDuplication(value);
+    }, 500);
   };
 
   const handleSubmit = async (e) => {
@@ -74,14 +64,8 @@ const UserTransactionForm = () => {
   const { name, email, Referalcode, amount, UTRno } = formData;
 
     // Basic client-side validation for empty fields (though backend also validates)
-if (!name.trim() || !email.trim() || !Referalcode.trim() || !UTRno.trim()) {
-    setFormMessage({ type: "error", text: "Please fill in all text fields." });
-    return;
-  }
-
-  // Check karein ki amount ek valid number hai aur 0 se zyada hai
-  if (typeof amount !== 'number' || amount <= 0) {
-    setFormMessage({ type: "error", text: "Please enter a valid amount." });
+if (!UTRno.trim()) {
+    setFormMessage({ type: "error", text: "Please fill in UTR number" });
     return;
   }
 
@@ -91,17 +75,12 @@ if (!name.trim() || !email.trim() || !Referalcode.trim() || !UTRno.trim()) {
       return;
     }
     try {
-      await axios.post("https://ladlilakshmi.onrender.com/api/v1/transaction", formData);
+      const payload = { UTRno };
+      await axios.post("https://ladlilakshmi.onrender.com/api/v1/transaction", payload);
       alert("Transaction Submitted Successfully");
-      setFormData({
-        name: "",
-        email: "",
-        Referalcode: "",
-        amount: 0,
-        UTRno: ""
-      });
-            setIsUtrDuplicate(false); // Reset duplicate status after successful submission
-      setUtrValidationMessage(""); // Clear UTR validation message
+      setUTRno(""); // Form reset karein
+      setIsUtrDuplicate(false);
+      setUtrValidationMessage("");
     } catch (err) {
        if (err.response && err.response.status === 409) {
         // Backend specifically returned a 409 for duplicate UTR
@@ -116,7 +95,7 @@ if (!name.trim() || !email.trim() || !Referalcode.trim() || !UTRno.trim()) {
     }
   };
  // Determine if the submit button should be disabled
-  const isSubmitDisabled = !formData.name || !formData.email || !formData.Referalcode || !formData.amount || !formData.UTRno || isUtrDuplicate;
+  const isSubmitDisabled = !formData.UTRno || isUtrDuplicate;
 
   return (
     <form onSubmit={handleSubmit} className="p-4 max-w-xl mx-auto bg-white rounded-lg shadow-xl space-y-4 font-inter">
@@ -132,48 +111,18 @@ if (!name.trim() || !email.trim() || !Referalcode.trim() || !UTRno.trim()) {
       )}
 
       <div className="space-y-3">
-        <input
-          type="text"
-          name="name"
-          placeholder="Your Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full p-3 border text-black border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Your Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-3 border text-black border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          required
-        />
-        <input
-          type="text"
-          name="Referalcode"
-          placeholder="User ID"
-          value={formData.Referalcode}
-          onChange={handleChange}
-          className="w-full p-3 border text-black border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          required
-        />
-        <input
-          type="number" // Changed to number type for amount
-          name="amount"
-          placeholder="Amount"
-          value={formData.amount}
-          onChange={handleChange}
-          className="w-full p-3 border text-black border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" // Tailwind to hide spinner
-          required
-        />
+        <div className="bg-gray-100 p-4 rounded-md text-gray-700 space-y-2">
+          <p><strong>Name:</strong> {user?.name || 'Loading...'}</p>
+          <p><strong>Email:</strong> {user?.email || 'Loading...'}</p>
+          <p><strong>User ID:</strong> {user?.referralCode || 'Loading...'}</p>
+          <p><strong>Amount:</strong> <span className="font-bold text-green-600">₹400 </span></p>
+        </div>
         <div>
           <input
             type="text"
             name="UTRno"
             placeholder="UTR Number"
-            value={formData.UTRno}
+            value={UTRno}
             onChange={handleChange}
             className="w-full p-3 border text-black border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition-colors"
             required

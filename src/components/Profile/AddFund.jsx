@@ -2,7 +2,7 @@ import React from "react";
 import QRcode from "../../assets/QR_Code.jpg";
 import UserTransactionForm from "./UserTransactionForm";
 
-const AddFund = () => {
+const AddFund = ({user}) => {
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
   };
@@ -36,7 +36,7 @@ const AddFund = () => {
             </p>
           </div>
           <div className="mt-6">
-            <UserTransactionForm />
+            <UserTransactionForm user={user} />
           </div>
         </div>
 

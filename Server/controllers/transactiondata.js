@@ -6,24 +6,30 @@ const { v4: uuidv4 } = require("uuid");
 // 1. Create Transaction (used by users)
 exports.transactiondetails = async (req, res) => {
   try {
-    const { name, email, Referalcode, amount, UTRno } = req.body;
+    // 1. Frontend se sirf UTRno lein
+    const { UTRno } = req.body;
 
-    if (!name || !email || !Referalcode || !amount || !UTRno) {
-      return res.status(400).json({ message: "All fields are required" });
+    // 2. User details (jo logged-in hai) auth middleware se lein
+    const { name, email, referralCode } = req.user; 
+    
+    // 3. Amount ko backend mein fix karein
+    const amount = 400;
+
+    // 4. Validation
+    if (!UTRno) {
+      return res.status(400).json({ message: "UTR number is required" });
     }
 
-    //  // --- NEW: Prevent duplicate UTRno ---
-    // const existingTransaction = await TransactionDetail.findOne({ UTRno });
-    // if (existingTransaction) {
-    //   return res.status(409).json({ message: "A transaction with this UTR number already exists." });
-    // }
+    if (!name || !email || !referralCode) {
+        return res.status(400).json({ message: "User details (name, email, or code) not found." });
+    }
 
     const newTransaction = new TransactionDetail({
-      name,
-      email,
-      Referalcode,
-      amount,
-      UTRno,
+      name: name,
+      email: email,
+      Referalcode: referralCode, // ✅ Sahi User ID (token se)
+      amount: amount,
+      UTRno: UTRno,
       status: "pending", // default, but adding explicitly
     });
 
