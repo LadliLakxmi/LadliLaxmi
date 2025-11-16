@@ -14,6 +14,7 @@ const UserTransactionForm = ({user}) => {
   const [utrValidationMessage, setUtrValidationMessage] = useState("");
   const [formMessage, setFormMessage] = useState({ type: "", text: "" }); // { type: 'success' | 'error', text: 'message' }
   const utrCheckTimeoutRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
    // Function to check UTR number duplication
@@ -29,7 +30,6 @@ const UserTransactionForm = ({user}) => {
       const res = await axios.get(`https://ladlilakshmi.onrender.com/api/v1/transaction/check-utr/${utr}`);
       // res.data ab { exists: true } ya { exists: false } hoga
       const foundDuplicate = res.data.exists;
-      console.log("UTR Duplication Check:", res.data);
 
       setIsUtrDuplicate(foundDuplicate);
       if (foundDuplicate) {
@@ -72,6 +72,8 @@ const UserTransactionForm = ({user}) => {
       setFormMessage({ type: "error", text: "Cannot submit: UTR number is a duplicate." });
       return;
     }
+
+    setIsSubmitting(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -102,12 +104,15 @@ const UserTransactionForm = ({user}) => {
       } else {
         setFormMessage({ type: "error", text: "Error submitting transaction. Please try again." });
       }
+    }finally {
+      // ⭐ Set isSubmitting back to false after submission is complete (success or error)
+      setIsSubmitting(false); 
     }
   };
 
 
   // Yeh ab 'UTRno' (state se) ko check karega
-  const isSubmitDisabled = !UTRno || isUtrDuplicate;
+  const isSubmitDisabled = !UTRno || isUtrDuplicate ||isSubmitting ;
  
   return (
     <form onSubmit={handleSubmit} className="p-4 max-w-xl mx-auto bg-white rounded-lg shadow-xl space-y-4 font-inter">
@@ -150,10 +155,36 @@ const UserTransactionForm = ({user}) => {
       <button
         type="submit"
         disabled={isSubmitDisabled}
-        className={`w-full p-3 rounded-md text-white font-semibold transition-all duration-300
+        className={`w-full p-3 rounded-md text-white font-semibold transition-all duration-300 flex items-center justify-center
           ${isSubmitDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg"}`}
       >
-        Submit Transaction
+        {isSubmitting ? (
+          <>
+            <svg 
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24"
+            >
+              <circle 
+                className="opacity-25" 
+                cx="12" 
+                cy="12" 
+                r="10" 
+                stroke="currentColor" 
+                strokeWidth="4"
+              ></circle>
+              <path 
+                className="opacity-75" 
+                fill="currentColor" 
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Submitting...
+          </>
+        ) : (
+          "Submit Transaction"
+        )}
       </button>
     </form>
   );
