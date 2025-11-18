@@ -161,19 +161,19 @@ exports.getAllTransactions = async (req, res) => {
     const limit = parseInt(req.query.limit) || 30; // Ek page par 20 records
     const skip = (page - 1) * limit; // Kitne records skip karne hain
 
-    // // 2. Database se TOTAL count pata karein (pagination ke liye)
-    // const totalTransactions = await TransactionDetail.countDocuments();
-    
-    // // 3. Sorting ko backend me karein:
-    // //    status: -1 (Z-A) = "rejected", "pending", "approved"
-    // //    createdAt: -1 = Naya sabse upar
-    // const transactions = await TransactionDetail.find()
-    //   .sort({ createdAt: -1 }) 
-    //   .skip(skip)
-    //   .limit(limit);
+     // 1. Search Query lein
+    const searchQuery = req.query.search || "";
+
+    // 2. Match Stage Banayein (Search Logic)
+    const matchStage = searchQuery 
+      ? { UTRno: { $regex: searchQuery, $options: "i" } } // Partial match (regex)
+      : {}; // Agar search empty hai to sab dikhao
+
+ 
 
     // ✅ Aggregation Pipeline for Custom Sort (pending > approved > rejected)
     const pipeline = [
+      { $match: matchStage }, // Search filter
       {
         // 1. Naya 'sortPriority' field banayein
         $addFields: {

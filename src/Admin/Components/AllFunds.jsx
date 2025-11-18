@@ -21,14 +21,16 @@ const AllFunds = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // ✅ Search State
 
-  const fetchTransactions = async (page = 1) => {
+
+  const fetchTransactions = async (page = 1 , search = "") => {
     setLoading(true);
     setErrorMessage("");
   try {
     // ✅ API call ko page aur limit ke sath update karein
       const res = await axios.get(
-        `https://ladlilakshmi.onrender.com/api/v1/transactions?page=${page}&limit=30`
+        `https://ladlilakshmi.onrender.com/api/v1/transactions?page=${page}&limit=30&search=${search}`
       );
 
     // ✅ Naya data aur pagination state set karein
@@ -54,8 +56,24 @@ const AllFunds = () => {
   };
 
   useEffect(() => {
-    fetchTransactions(1);
+    fetchTransactions(1,"");
   }, []);
+
+    // ✅ Handle Search Button Click
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Jab search karein, to hamesha Page 1 se start karein
+    setCurrentPage(1);
+    fetchTransactions(1, searchTerm);
+  };
+
+  // ✅ Handle Clear Search
+  const handleClear = () => {
+    setSearchTerm("");
+    setCurrentPage(1);
+    fetchTransactions(1, "");
+  };
+
 
   // ✅ Page change handlers
   const handleNextPage = () => {
@@ -74,6 +92,33 @@ const AllFunds = () => {
   return (
     <div className="p-4  w-full overflow-x-auto">
       <h2 className="text-2xl font-bold mb-4">All incoming Funds </h2>
+
+      {/* ✅ SEARCH BAR SECTION */}
+      <form onSubmit={handleSearch} className="mb-6 flex gap-2 items-center flex-wrap">
+        <input 
+          type="text" 
+          placeholder="Search by UTR Number..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border border-gray-400 rounded px-3 py-2 w-full sm:w-64 text-white"
+        />
+        <button 
+          type="submit" 
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold"
+        >
+          Search
+        </button>
+        {searchTerm && (
+          <button 
+            type="button" 
+            onClick={handleClear} 
+            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded font-semibold"
+          >
+            Clear
+          </button>
+        )}
+      </form>
+      
       {errorMessage && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Error!</strong>
