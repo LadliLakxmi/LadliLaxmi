@@ -480,8 +480,7 @@ const UpdateUser = () => {
                 name="walletBalance"
                 value={formData.walletBalance}
                 onChange={handleChange}
-                step="0.01"
-                min="0"
+                step="0.1"
                 className="w-full p-2 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 no-spinner bg-gray-700 text-white"
               />
             </div>

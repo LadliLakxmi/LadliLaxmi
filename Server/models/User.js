@@ -85,7 +85,6 @@ const userSchema = new mongoose.Schema(
     walletBalance: {
       type: Number,
       default: 0,
-      min: 0,
     },
     panCard: {
       type: String,
