@@ -1,5 +1,6 @@
 import React from "react";
 import QRcode from "../../assets/QR_Code.jpg";
+import QR from "../../assets/QR.jpeg";
 import UserTransactionForm from "./UserTransactionForm";
 
 const AddFund = ({user}) => {
@@ -27,7 +28,8 @@ const AddFund = ({user}) => {
           <div className="flex flex-col items-center ">
             <img
               className="w-64 h-80 md:w-[70%] md:h-[60%] rounded-2xl border border-gray-300"
-              src={QRcode}
+              // src={QRcode}
+              src={QR}
               alt="QR Code for Payment"
             />
             <p className="text-4xl mt-4 font-bold text-green-600">₹400</p>
